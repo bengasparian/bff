@@ -1,9 +1,9 @@
 {
  "6": {
   "wk": 6,
-  "made": "2026-10-12T21:48+00:00",
+  "made": "2026-10-12T23:21+00:00",
   "locks": "2026-10-15T20:15:00-04:00",
-  "lines_at": "2026-10-12T21:48+00:00",
+  "lines_at": "2026-10-12T23:21+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -87,7 +87,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0863,
+    "prob": 0.0867,
     "legs": [
      {
       "pid": "00-0037834",
@@ -142,16 +142,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039739",
-      "t": "PIT",
-      "opp": "TB",
-      "k": "rec",
-      "line": 1.5,
+      "pid": "00-0031503",
+      "t": "NYG",
+      "opp": "NO",
+      "k": "py",
+      "line": 233.5,
       "lean": "Over",
-      "pr": 0.604,
+      "pr": 0.607,
       "book": "bff",
-      "n": "Roman Wilson",
-      "pos": "WR",
+      "n": "Jameis Winston",
+      "pos": "QB",
       "res": "pending"
      }
     ],
