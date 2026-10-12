@@ -2,7 +2,7 @@ name: Update Gridiron Fantasy
 
 on:
   schedule:
-    - cron: "23 */6 * * *"   # every 6 hours, at 23 minutes past (the top of the hour is GitHub's busiest time)
+    - cron: "23 */3 * * *"   # every 3 hours, at 23 minutes past (the top of the hour is GitHub's busiest time)
   workflow_dispatch: {}
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
         run: pip install pandas pyarrow scikit-learn scipy
       - name: Download data
         run: python fetch_data.py 2026
-      - name: Build projections
+      - name: Build projections and collect news
         run: python ff_produce.py
       - name: Sync Sleeper league (optional)
         env:
@@ -38,13 +38,17 @@ jobs:
           python parlay_update.py
       - name: Build the page
         run: python assemble.py
+      - name: Check the page before saving (keeps the last good page if anything is wrong)
+        run: |
+          python check_page.py
+          python check_page.py --json
       - name: Save the updated page
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html proj_history.json parlay_history.json
+          for f in index.html proj_history.json parlay_history.json bet_inputs.json lines.json parlays.json news.json; do if [ -f "$f" ]; then git add "$f"; fi; done
           if git diff --cached --quiet; then echo "No changes to save"; exit 0; fi
-          git commit -m "Data update $(date -u +%F)"
+          git commit -m "Data update $(date -u +%F-%H%M)"
           for i in 1 2 3; do
             if git pull --rebase --autostash && git push; then exit 0; fi
             echo "Save attempt $i did not go through; retrying"; sleep $((i*15))
