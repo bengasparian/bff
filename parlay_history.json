@@ -21,7 +21,8 @@
       "book": "bff",
       "n": "Jameis Winston",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 3
      },
      {
       "pid": "00-0039739",
@@ -34,10 +35,11 @@
       "book": "bff",
       "n": "Roman Wilson",
       "pos": "WR",
-      "res": "pending"
+      "res": "miss",
+      "act": 0
      }
     ],
-    "status": "pending"
+    "status": "lost"
    },
    {
     "type": "bal",
@@ -54,7 +56,8 @@
       "book": "bff",
       "n": "Jameis Winston",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 3
      },
      {
       "pid": "00-0039739",
@@ -67,7 +70,8 @@
       "book": "bff",
       "n": "Roman Wilson",
       "pos": "WR",
-      "res": "pending"
+      "res": "miss",
+      "act": 0
      },
      {
       "pid": "00-0040727",
@@ -80,10 +84,11 @@
       "book": "bff",
       "n": "Tre Harris",
       "pos": "WR",
-      "res": "pending"
+      "res": "hit",
+      "act": 2
      }
     ],
-    "status": "pending"
+    "status": "lost"
    },
    {
     "type": "long",
@@ -100,7 +105,8 @@
       "book": "bff",
       "n": "Jameis Winston",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 3
      },
      {
       "pid": "00-0039739",
@@ -113,7 +119,8 @@
       "book": "bff",
       "n": "Roman Wilson",
       "pos": "WR",
-      "res": "pending"
+      "res": "miss",
+      "act": 0
      },
      {
       "pid": "00-0040727",
@@ -126,7 +133,8 @@
       "book": "bff",
       "n": "Tre Harris",
       "pos": "WR",
-      "res": "pending"
+      "res": "hit",
+      "act": 2
      },
      {
       "pid": "00-0032950",
@@ -139,7 +147,8 @@
       "book": "bff",
       "n": "Carson Wentz",
       "pos": "QB",
-      "res": "pending"
+      "res": "void",
+      "act": null
      },
      {
       "pid": "00-0038728",
@@ -152,6 +161,167 @@
       "book": "bff",
       "n": "Jared Wayne",
       "pos": "WR",
+      "res": "miss",
+      "act": 0
+     }
+    ],
+    "status": "lost"
+   }
+  ]
+ },
+ "6": {
+  "wk": 6,
+  "made": "2026-10-12T00:52+00:00",
+  "locks": "2026-10-15T20:15:00-04:00",
+  "lines_at": "2026-10-12T00:52+00:00",
+  "src": "BFF predicted lines",
+  "parlays": [
+   {
+    "type": "safe",
+    "prob": 0.3775,
+    "legs": [
+     {
+      "pid": "00-0040727",
+      "t": "LAC",
+      "opp": "KC",
+      "k": "rec",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Tre Harris",
+      "pos": "WR",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039066",
+      "t": "LV",
+      "opp": "BUF",
+      "k": "rec",
+      "line": 2.5,
+      "lean": "Over",
+      "pr": 0.6088,
+      "book": "bff",
+      "n": "Michael Mayer",
+      "pos": "TE",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "bal",
+    "prob": 0.2267,
+    "legs": [
+     {
+      "pid": "00-0040727",
+      "t": "LAC",
+      "opp": "KC",
+      "k": "rec",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Tre Harris",
+      "pos": "WR",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039066",
+      "t": "LV",
+      "opp": "BUF",
+      "k": "rec",
+      "line": 2.5,
+      "lean": "Over",
+      "pr": 0.6088,
+      "book": "bff",
+      "n": "Michael Mayer",
+      "pos": "TE",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039163",
+      "t": "HOU",
+      "opp": "JAX",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.6005,
+      "book": "bff",
+      "n": "C.J. Stroud",
+      "pos": "QB",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "long",
+    "prob": 0.0764,
+    "legs": [
+     {
+      "pid": "00-0040727",
+      "t": "LAC",
+      "opp": "KC",
+      "k": "rec",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Tre Harris",
+      "pos": "WR",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039066",
+      "t": "LV",
+      "opp": "BUF",
+      "k": "rec",
+      "line": 2.5,
+      "lean": "Over",
+      "pr": 0.6088,
+      "book": "bff",
+      "n": "Michael Mayer",
+      "pos": "TE",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039163",
+      "t": "HOU",
+      "opp": "JAX",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.6005,
+      "book": "bff",
+      "n": "C.J. Stroud",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0030565",
+      "t": "NYJ",
+      "opp": "NE",
+      "k": "ptd",
+      "line": 0.5,
+      "lean": "Over",
+      "pr": 0.5964,
+      "book": "bff",
+      "n": "Geno Smith",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0038996",
+      "t": "GB",
+      "opp": "DAL",
+      "k": "ty",
+      "line": 45.5,
+      "lean": "Over",
+      "pr": 0.5653,
+      "book": "bff",
+      "n": "Tucker Kraft",
+      "pos": "TE",
       "res": "pending"
      }
     ],
