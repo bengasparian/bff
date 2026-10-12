@@ -1,9 +1,9 @@
 {
- "5": {
-  "wk": 5,
-  "made": "2026-10-08T18:44+00:00",
-  "locks": "2026-10-08T20:15:00-04:00",
-  "lines_at": "2026-10-08T18:44+00:00",
+ "6": {
+  "wk": 6,
+  "made": "2026-10-12T21:48+00:00",
+  "locks": "2026-10-15T20:15:00-04:00",
+  "lines_at": "2026-10-12T21:48+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -11,199 +11,29 @@
     "prob": 0.3844,
     "legs": [
      {
-      "pid": "00-0031503",
-      "t": "NYG",
+      "pid": "00-0037834",
+      "t": "SF",
       "opp": "WAS",
       "k": "ptd",
-      "line": 0.5,
+      "line": 1.5,
       "lean": "Over",
       "pr": 0.62,
       "book": "bff",
-      "n": "Jameis Winston",
+      "n": "Brock Purdy",
       "pos": "QB",
-      "res": "hit",
-      "act": 3
-     },
-     {
-      "pid": "00-0039739",
-      "t": "PIT",
-      "opp": "IND",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Roman Wilson",
-      "pos": "WR",
-      "res": "miss",
-      "act": 0
-     }
-    ],
-    "status": "lost"
-   },
-   {
-    "type": "bal",
-    "prob": 0.2383,
-    "legs": [
-     {
-      "pid": "00-0031503",
-      "t": "NYG",
-      "opp": "WAS",
-      "k": "ptd",
-      "line": 0.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Jameis Winston",
-      "pos": "QB",
-      "res": "hit",
-      "act": 3
-     },
-     {
-      "pid": "00-0039739",
-      "t": "PIT",
-      "opp": "IND",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Roman Wilson",
-      "pos": "WR",
-      "res": "miss",
-      "act": 0
-     },
-     {
-      "pid": "00-0040727",
-      "t": "LAC",
-      "opp": "DEN",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Tre Harris",
-      "pos": "WR",
-      "res": "hit",
-      "act": 2
-     }
-    ],
-    "status": "lost"
-   },
-   {
-    "type": "long",
-    "prob": 0.0807,
-    "legs": [
-     {
-      "pid": "00-0031503",
-      "t": "NYG",
-      "opp": "WAS",
-      "k": "ptd",
-      "line": 0.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Jameis Winston",
-      "pos": "QB",
-      "res": "hit",
-      "act": 3
-     },
-     {
-      "pid": "00-0039739",
-      "t": "PIT",
-      "opp": "IND",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Roman Wilson",
-      "pos": "WR",
-      "res": "miss",
-      "act": 0
-     },
-     {
-      "pid": "00-0040727",
-      "t": "LAC",
-      "opp": "DEN",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Tre Harris",
-      "pos": "WR",
-      "res": "hit",
-      "act": 2
-     },
-     {
-      "pid": "00-0032950",
-      "t": "MIN",
-      "opp": "NO",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Under",
-      "pr": 0.5963,
-      "book": "bff",
-      "n": "Carson Wentz",
-      "pos": "QB",
-      "res": "void",
-      "act": null
-     },
-     {
-      "pid": "00-0038728",
-      "t": "HOU",
-      "opp": "TEN",
-      "k": "ty",
-      "line": 17.5,
-      "lean": "Over",
-      "pr": 0.5678,
-      "book": "bff",
-      "n": "Jared Wayne",
-      "pos": "WR",
-      "res": "miss",
-      "act": 0
-     }
-    ],
-    "status": "lost"
-   }
-  ]
- },
- "6": {
-  "wk": 6,
-  "made": "2026-10-12T18:46+00:00",
-  "locks": "2026-10-15T20:15:00-04:00",
-  "lines_at": "2026-10-12T18:46+00:00",
-  "src": "BFF predicted lines",
-  "parlays": [
-   {
-    "type": "safe",
-    "prob": 0.3802,
-    "legs": [
-     {
-      "pid": "00-0040727",
-      "t": "LAC",
-      "opp": "KC",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Tre Harris",
-      "pos": "WR",
       "res": "pending"
      },
      {
-      "pid": "00-0040126",
-      "t": "CHI",
-      "opp": "ATL",
-      "k": "rec",
-      "line": 2.5,
-      "lean": "Over",
-      "pr": 0.6133,
+      "pid": "00-0040676",
+      "t": "TEN",
+      "opp": "IND",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
       "book": "bff",
-      "n": "Colston Loveland",
-      "pos": "TE",
+      "n": "Cam Ward",
+      "pos": "QB",
       "res": "pending"
      }
     ],
@@ -211,103 +41,31 @@
    },
    {
     "type": "bal",
-    "prob": 0.2312,
+    "prob": 0.2353,
     "legs": [
      {
-      "pid": "00-0040727",
-      "t": "LAC",
-      "opp": "KC",
-      "k": "rec",
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "WAS",
+      "k": "ptd",
       "line": 1.5,
       "lean": "Over",
       "pr": 0.62,
       "book": "bff",
-      "n": "Tre Harris",
-      "pos": "WR",
+      "n": "Brock Purdy",
+      "pos": "QB",
       "res": "pending"
      },
      {
-      "pid": "00-0040126",
-      "t": "CHI",
-      "opp": "ATL",
-      "k": "rec",
-      "line": 2.5,
-      "lean": "Over",
-      "pr": 0.6133,
-      "book": "bff",
-      "n": "Colston Loveland",
-      "pos": "TE",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0039163",
-      "t": "HOU",
-      "opp": "JAX",
+      "pid": "00-0040676",
+      "t": "TEN",
+      "opp": "IND",
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.6081,
-      "book": "bff",
-      "n": "C.J. Stroud",
-      "pos": "QB",
-      "res": "pending"
-     }
-    ],
-    "status": "pending"
-   },
-   {
-    "type": "long",
-    "prob": 0.0776,
-    "legs": [
-     {
-      "pid": "00-0040727",
-      "t": "LAC",
-      "opp": "KC",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
       "pr": 0.62,
       "book": "bff",
-      "n": "Tre Harris",
-      "pos": "WR",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0040126",
-      "t": "CHI",
-      "opp": "ATL",
-      "k": "rec",
-      "line": 2.5,
-      "lean": "Over",
-      "pr": 0.6133,
-      "book": "bff",
-      "n": "Colston Loveland",
-      "pos": "TE",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0039163",
-      "t": "HOU",
-      "opp": "JAX",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Under",
-      "pr": 0.6081,
-      "book": "bff",
-      "n": "C.J. Stroud",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0039732",
-      "t": "DEN",
-      "opp": "SEA",
-      "k": "ptd",
-      "line": 0.5,
-      "lean": "Over",
-      "pr": 0.5907,
-      "book": "bff",
-      "n": "Bo Nix",
+      "n": "Cam Ward",
       "pos": "QB",
       "res": "pending"
      },
@@ -315,12 +73,84 @@
       "pid": "00-0040867",
       "t": "PHI",
       "opp": "CAR",
-      "k": "ty",
-      "line": 16.5,
+      "k": "rec",
+      "line": 2.5,
       "lean": "Over",
-      "pr": 0.5681,
+      "pr": 0.612,
       "book": "bff",
       "n": "Makai Lemon",
+      "pos": "WR",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "long",
+    "prob": 0.0863,
+    "legs": [
+     {
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "WAS",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Brock Purdy",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0040676",
+      "t": "TEN",
+      "opp": "IND",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Cam Ward",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0040867",
+      "t": "PHI",
+      "opp": "CAR",
+      "k": "rec",
+      "line": 2.5,
+      "lean": "Over",
+      "pr": 0.612,
+      "book": "bff",
+      "n": "Makai Lemon",
+      "pos": "WR",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0026498",
+      "t": "LA",
+      "opp": "ARI",
+      "k": "py",
+      "line": 290.5,
+      "lean": "Over",
+      "pr": 0.607,
+      "book": "bff",
+      "n": "Matthew Stafford",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039739",
+      "t": "PIT",
+      "opp": "TB",
+      "k": "rec",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.604,
+      "book": "bff",
+      "n": "Roman Wilson",
       "pos": "WR",
       "res": "pending"
      }

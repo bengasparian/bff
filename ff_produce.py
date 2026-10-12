@@ -62,11 +62,27 @@ pool={x for x in set(S26.player_id)|set(dc2[dc2.pos_rank<=(3)].gsis_id) if isins
 info=st.sort_values(['season','week']).groupby('player_id').tail(1).set_index('player_id')
 idx=ids.dropna(subset=['gsis_id']).drop_duplicates('gsis_id').set_index('gsis_id')
 dv=pd.read_csv('values.csv'); dvm=dv.set_index('fp_id').value_1qb.to_dict(); dvm2=dv.set_index('fp_id').value_2qb.to_dict() if 'value_2qb' in dv.columns else {}
+# also keep injured and reserve players who still matter (market value or real production), e.g. on IR or PUP with no 2026 snaps
+_pp1=st[st.season==SEASON-1].groupby('player_id').fantasy_points_ppr.agg(['mean','size']); _pp2=st[st.season==SEASON-2].groupby('player_id').fantasy_points_ppr.agg(['mean','size'])
+_fpid=idx['fantasypros_id'].to_dict() if 'fantasypros_id' in idx.columns else {}
+def _relevant(pid):
+    v=dvm.get(_fpid.get(pid)) if pid in _fpid else None
+    if v is not None and v==v and v>=150: return True
+    if pid in _pp1.index and _pp1.loc[pid,'size']>=4 and _pp1.loc[pid,'mean']>=7: return True
+    return bool(pid in _pp2.index and _pp2.loc[pid,'size']>=6 and _pp2.loc[pid,'mean']>=9)
+_extra={pid for pid,r_ in cur.iterrows() if r_.get('position') in POS and r_.get('status') in ('RES','ACT','INA') and pid not in pool and _relevant(pid)}
+pool|=_extra; print(f'player pool: {len(pool)} ({len(_extra)} injured or reserve players added back)')
 SC26=SC[SC.season==SEASON]; import sys
 if SC26.pts.isna().sum()==0: print('Regular season complete: no unplayed games, keeping the current page.'); sys.exit(0)
 NEXT=int(SC26[SC26.pts.isna()].week.min()); byes={}   # current NFL week = earliest week with an unplayed game
 for t in SC26.team.unique():
     wk=set(SC26[SC26.team==t].week); byes[t]=[w for w in range(1,19) if w not in wk]
+RET={}
+for pid_,G_ in wr[wr.gsis_id.isin(set(cur[cur.status=='RES'].index))].groupby('gsis_id'):
+    G_=G_.sort_values('week'); st_=list(G_.status); wk_=list(G_.week); i_=len(st_)-1
+    while i_>0 and st_[i_-1]=='RES': i_-=1
+    RET[pid_]=max(NEXT+1,int(wk_[i_])+4)   # still on the list now, so next week at the earliest
+RSV={pid_:('PUP' if str(x).startswith('P') else 'NFI' if str(x).startswith('N') else 'Suspended' if str(x).startswith('S') else 'IR') for pid_,x in cur[cur.status=='RES'].get('status_description_abbr',pd.Series(dtype=str)).items()}
 def team_of(pid):
     if pid in cur.index and cur.loc[pid,'status'] in ('ACT','RES','INA','DEV'): return cur.loc[pid,'team'],cur.loc[pid,'status']
     if pid in role.index: return role.loc[pid,'team'],'ACT'
@@ -103,13 +119,14 @@ def sit_feats(pid,pos,tm,which):
 for pid in pool:
     tm,status=team_of(pid)
     if tm is None: continue
-    pos=(info.loc[pid,'position'] if pid in info.index else (role.loc[pid,'pg'] if pid in role.index else None))
+    pos=(info.loc[pid,'position'] if pid in info.index else (role.loc[pid,'pg'] if pid in role.index else (cur.loc[pid,'position'] if pid in cur.index else None)))
     if pos not in POS: continue
     name=(info.loc[pid,'player_display_name'] if pid in info.index else role.loc[pid,'player_name'])
     if (not isinstance(name,str) or not name.strip()) and pid in cur.index: name=cur.loc[pid,'full_name']
     if not isinstance(name,str) or not name.strip(): continue
     rows=S26[S26.player_id==pid].sort_values('week')
     base=feats(SEASON,99,rows,None); pv=prev_pg.get((pid,SEASON),np.nan)
+    if (pv is None or pv!=pv) and pid in _pp2.index and _pp2.loc[pid,'size']>=6: pv=0.9*float(_pp2.loc[pid,'mean'])   # missed last season: use the season before
     sched=SC26[(SC26.team==tm)&SC26.pts.isna()].sort_values('week')   # this team's unplayed games
     wk_rows=[]
     for gi_,g in enumerate(sched.itertuples()):
@@ -122,10 +139,11 @@ for pid in pool:
     nxt=wk_rows[0]; proj_next=float(P[0])
     if out=='Out' or ir: proj_next=0.0
     rec_pg=float(rows.receptions.mean()) if len(rows) else float(st[(st.player_id==pid)&(st.season==SEASON-1)].receptions.mean() or 0)
-    ros=[[int(w[0]),w[1],r(P[i],1)] for i,w in enumerate(wk_rows) if w[0]<=17]
+    ret_=RET.get(pid) if ir else None
+    ros=[[int(w[0]),w[1],r((0.0 if ret_ and w[0]<ret_ else (0.75 if ret_ else 1.0))*P[i],1)] for i,w in enumerate(wk_rows) if w[0]<=17]
     rl=role.loc[pid] if pid in role.index else None
     players.append({'id':pid,'n':name,'p':pos,'t':tm,'age':r(idx.loc[pid,'age'],1) if pid in idx.index and 'age' in idx.columns else None,
-      'role':f"{rl['pg']}{int(rl['pos_rank'])}" if rl is not None and rl['team']==tm else None,'inj':('IR' if ir else out),
+      'role':f"{rl['pg']}{int(rl['pos_rank'])}" if rl is not None and rl['team']==tm else None,'inj':('IR' if ir else out),'ret':ret_,'bmp':[[int(w[0]),r(w[4]['bump'],2)] for w in wk_rows[:2]],'rsv':(RSV.get(pid,'IR') if ir else None),
       'num':int(cur.loc[pid,'jersey_number']) if pid in cur.index and pd.notna(cur.loc[pid,'jersey_number']) else None,'g':int(len(rows)),'fp':r(rows.fp.sum(),1),'fpg':r(rows.fp.mean(),1) if len(rows) else None,'xfpg':r(rows.xfp.mean(),1) if len(rows) else None,
       'snap':r(rows.offense_pct.mean(),3) if len(rows) and rows.offense_pct.notna().any() else None,'ts':r(rows.target_share.mean(),3) if len(rows) else None,
       'ays':r(rows.air_yards_share.mean(),3) if len(rows) else None,'wopr':r(rows.wopr.mean(),3) if len(rows) else None,'tpg':r(rows.targets.mean(),1) if len(rows) else None,
@@ -189,8 +207,8 @@ from ff_news import build_news
 REL={p['id'] for p in players if (p.get('prev') or 0)>=6 or (p.get('fpg') or 0)>=6 or (p.get('role') or 'X9')[-1] in '12'}
 NEWS=build_news(SEASON,REL)
 try:
-    from news_update import fetch_headlines
-    HEAD={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds'),'items':fetch_headlines()}
+    from news_update import build_news as collect_news
+    HEAD=collect_news()[0]
 except Exception as e:
     print('headlines unavailable:',e); HEAD=None
 # ---- projection history: each player's projection is refreshed every run until his game kicks off, then it stays frozen
