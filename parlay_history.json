@@ -171,14 +171,14 @@
  },
  "6": {
   "wk": 6,
-  "made": "2026-10-12T06:53+00:00",
+  "made": "2026-10-12T13:05+00:00",
   "locks": "2026-10-15T20:15:00-04:00",
-  "lines_at": "2026-10-12T06:53+00:00",
+  "lines_at": "2026-10-12T13:05+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
     "type": "safe",
-    "prob": 0.3801,
+    "prob": 0.3795,
     "legs": [
      {
       "pid": "00-0040727",
@@ -194,16 +194,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0041547",
-      "t": "CLE",
-      "opp": "BAL",
+      "pid": "00-0039066",
+      "t": "LV",
+      "opp": "BUF",
       "k": "rec",
       "line": 2.5,
       "lean": "Over",
-      "pr": 0.6131,
+      "pr": 0.6121,
       "book": "bff",
-      "n": "KC Concepcion",
-      "pos": "WR",
+      "n": "Michael Mayer",
+      "pos": "TE",
       "res": "pending"
      }
     ],
@@ -211,7 +211,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2281,
+    "prob": 0.2275,
     "legs": [
      {
       "pid": "00-0040727",
@@ -227,75 +227,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0041547",
-      "t": "CLE",
-      "opp": "BAL",
+      "pid": "00-0039066",
+      "t": "LV",
+      "opp": "BUF",
       "k": "rec",
       "line": 2.5,
       "lean": "Over",
-      "pr": 0.6131,
+      "pr": 0.6121,
       "book": "bff",
-      "n": "KC Concepcion",
-      "pos": "WR",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0039163",
-      "t": "HOU",
-      "opp": "JAX",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Under",
-      "pr": 0.6001,
-      "book": "bff",
-      "n": "C.J. Stroud",
-      "pos": "QB",
-      "res": "pending"
-     }
-    ],
-    "status": "pending"
-   },
-   {
-    "type": "long",
-    "prob": 0.0774,
-    "legs": [
-     {
-      "pid": "00-0040727",
-      "t": "LAC",
-      "opp": "KC",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Tre Harris",
-      "pos": "WR",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0041547",
-      "t": "CLE",
-      "opp": "BAL",
-      "k": "rec",
-      "line": 2.5,
-      "lean": "Over",
-      "pr": 0.6131,
-      "book": "bff",
-      "n": "KC Concepcion",
-      "pos": "WR",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0039163",
-      "t": "HOU",
-      "opp": "JAX",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Under",
-      "pr": 0.6001,
-      "book": "bff",
-      "n": "C.J. Stroud",
-      "pos": "QB",
+      "n": "Michael Mayer",
+      "pos": "TE",
       "res": "pending"
      },
      {
@@ -305,9 +246,68 @@
       "k": "ptd",
       "line": 0.5,
       "lean": "Over",
-      "pr": 0.5997,
+      "pr": 0.5994,
       "book": "bff",
       "n": "Bo Nix",
+      "pos": "QB",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "long",
+    "prob": 0.0771,
+    "legs": [
+     {
+      "pid": "00-0040727",
+      "t": "LAC",
+      "opp": "KC",
+      "k": "rec",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Tre Harris",
+      "pos": "WR",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039066",
+      "t": "LV",
+      "opp": "BUF",
+      "k": "rec",
+      "line": 2.5,
+      "lean": "Over",
+      "pr": 0.6121,
+      "book": "bff",
+      "n": "Michael Mayer",
+      "pos": "TE",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039732",
+      "t": "DEN",
+      "opp": "SEA",
+      "k": "ptd",
+      "line": 0.5,
+      "lean": "Over",
+      "pr": 0.5994,
+      "book": "bff",
+      "n": "Bo Nix",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039163",
+      "t": "HOU",
+      "opp": "JAX",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.599,
+      "book": "bff",
+      "n": "C.J. Stroud",
       "pos": "QB",
       "res": "pending"
      },
