@@ -1,8 +1,8 @@
-name: Live scores and news
+name: Live scores, news and lines
 
 on:
   schedule:
-    - cron: "4-59/10 * * * *"   # every 10 minutes (stays under GitHub Pages' 10 site builds per hour); only saves when a score changed
+    - cron: "4-59/10 * * * *"   # every 10 minutes (stays under GitHub Pages' 10 site builds per hour); only saves when something changed
   workflow_dispatch: {}
 
 permissions:
@@ -22,17 +22,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Refresh live.json and news.json
+      - name: Refresh scores and news (ESPN, CBS Sports, Yahoo Sports, Pro Football Talk, RotoWire, RotoBaller, PFF, Sharp Football, Sleeper)
         run: |
           python live_update.py
           python news_update.py
+      - name: Move prop lines with the latest odds and news, refresh parlay picks
+        run: |
+          python ff_lines.py --refresh
+          python parlay_update.py --refresh
+      - name: Check the files before saving
+        run: python check_page.py --json
       - name: Save
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in live.json news.json; do if [ -f "$f" ]; then git add "$f"; fi; done
-          if git diff --cached --quiet; then echo "No score changes"; exit 0; fi
-          git commit -m "Live scores $(date -u +%H:%M)"
+          for f in live.json news.json lines.json parlays.json parlay_history.json; do if [ -f "$f" ]; then git add "$f"; fi; done
+          if git diff --cached --quiet; then echo "Nothing changed"; exit 0; fi
+          git commit -m "Live update $(date -u +%H:%M)"
           for i in 1 2 3; do
             if git pull --rebase --autostash && git push; then exit 0; fi
             echo "Save attempt $i did not go through; retrying"; sleep $((i*10))
