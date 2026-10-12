@@ -171,14 +171,14 @@
  },
  "6": {
   "wk": 6,
-  "made": "2026-10-12T00:52+00:00",
+  "made": "2026-10-12T06:53+00:00",
   "locks": "2026-10-15T20:15:00-04:00",
-  "lines_at": "2026-10-12T00:52+00:00",
+  "lines_at": "2026-10-12T06:53+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
     "type": "safe",
-    "prob": 0.3775,
+    "prob": 0.3801,
     "legs": [
      {
       "pid": "00-0040727",
@@ -194,16 +194,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039066",
-      "t": "LV",
-      "opp": "BUF",
+      "pid": "00-0041547",
+      "t": "CLE",
+      "opp": "BAL",
       "k": "rec",
       "line": 2.5,
       "lean": "Over",
-      "pr": 0.6088,
+      "pr": 0.6131,
       "book": "bff",
-      "n": "Michael Mayer",
-      "pos": "TE",
+      "n": "KC Concepcion",
+      "pos": "WR",
       "res": "pending"
      }
     ],
@@ -211,7 +211,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2267,
+    "prob": 0.2281,
     "legs": [
      {
       "pid": "00-0040727",
@@ -227,16 +227,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039066",
-      "t": "LV",
-      "opp": "BUF",
+      "pid": "00-0041547",
+      "t": "CLE",
+      "opp": "BAL",
       "k": "rec",
       "line": 2.5,
       "lean": "Over",
-      "pr": 0.6088,
+      "pr": 0.6131,
       "book": "bff",
-      "n": "Michael Mayer",
-      "pos": "TE",
+      "n": "KC Concepcion",
+      "pos": "WR",
       "res": "pending"
      },
      {
@@ -246,7 +246,7 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.6005,
+      "pr": 0.6001,
       "book": "bff",
       "n": "C.J. Stroud",
       "pos": "QB",
@@ -257,7 +257,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0764,
+    "prob": 0.0774,
     "legs": [
      {
       "pid": "00-0040727",
@@ -273,16 +273,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039066",
-      "t": "LV",
-      "opp": "BUF",
+      "pid": "00-0041547",
+      "t": "CLE",
+      "opp": "BAL",
       "k": "rec",
       "line": 2.5,
       "lean": "Over",
-      "pr": 0.6088,
+      "pr": 0.6131,
       "book": "bff",
-      "n": "Michael Mayer",
-      "pos": "TE",
+      "n": "KC Concepcion",
+      "pos": "WR",
       "res": "pending"
      },
      {
@@ -292,35 +292,35 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.6005,
+      "pr": 0.6001,
       "book": "bff",
       "n": "C.J. Stroud",
       "pos": "QB",
       "res": "pending"
      },
      {
-      "pid": "00-0030565",
-      "t": "NYJ",
-      "opp": "NE",
+      "pid": "00-0039732",
+      "t": "DEN",
+      "opp": "SEA",
       "k": "ptd",
       "line": 0.5,
       "lean": "Over",
-      "pr": 0.5964,
+      "pr": 0.5997,
       "book": "bff",
-      "n": "Geno Smith",
+      "n": "Bo Nix",
       "pos": "QB",
       "res": "pending"
      },
      {
-      "pid": "00-0038996",
-      "t": "GB",
-      "opp": "DAL",
+      "pid": "00-0040126",
+      "t": "CHI",
+      "opp": "ATL",
       "k": "ty",
-      "line": 45.5,
+      "line": 28.5,
       "lean": "Over",
-      "pr": 0.5653,
+      "pr": 0.5656,
       "book": "bff",
-      "n": "Tucker Kraft",
+      "n": "Colston Loveland",
       "pos": "TE",
       "res": "pending"
      }
