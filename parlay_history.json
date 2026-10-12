@@ -171,14 +171,14 @@
  },
  "6": {
   "wk": 6,
-  "made": "2026-10-12T13:05+00:00",
+  "made": "2026-10-12T18:46+00:00",
   "locks": "2026-10-15T20:15:00-04:00",
-  "lines_at": "2026-10-12T13:05+00:00",
+  "lines_at": "2026-10-12T18:46+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
     "type": "safe",
-    "prob": 0.3795,
+    "prob": 0.3802,
     "legs": [
      {
       "pid": "00-0040727",
@@ -194,15 +194,15 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039066",
-      "t": "LV",
-      "opp": "BUF",
+      "pid": "00-0040126",
+      "t": "CHI",
+      "opp": "ATL",
       "k": "rec",
       "line": 2.5,
       "lean": "Over",
-      "pr": 0.6121,
+      "pr": 0.6133,
       "book": "bff",
-      "n": "Michael Mayer",
+      "n": "Colston Loveland",
       "pos": "TE",
       "res": "pending"
      }
@@ -211,7 +211,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2275,
+    "prob": 0.2312,
     "legs": [
      {
       "pid": "00-0040727",
@@ -227,75 +227,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039066",
-      "t": "LV",
-      "opp": "BUF",
+      "pid": "00-0040126",
+      "t": "CHI",
+      "opp": "ATL",
       "k": "rec",
       "line": 2.5,
       "lean": "Over",
-      "pr": 0.6121,
+      "pr": 0.6133,
       "book": "bff",
-      "n": "Michael Mayer",
+      "n": "Colston Loveland",
       "pos": "TE",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0039732",
-      "t": "DEN",
-      "opp": "SEA",
-      "k": "ptd",
-      "line": 0.5,
-      "lean": "Over",
-      "pr": 0.5994,
-      "book": "bff",
-      "n": "Bo Nix",
-      "pos": "QB",
-      "res": "pending"
-     }
-    ],
-    "status": "pending"
-   },
-   {
-    "type": "long",
-    "prob": 0.0771,
-    "legs": [
-     {
-      "pid": "00-0040727",
-      "t": "LAC",
-      "opp": "KC",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Tre Harris",
-      "pos": "WR",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0039066",
-      "t": "LV",
-      "opp": "BUF",
-      "k": "rec",
-      "line": 2.5,
-      "lean": "Over",
-      "pr": 0.6121,
-      "book": "bff",
-      "n": "Michael Mayer",
-      "pos": "TE",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0039732",
-      "t": "DEN",
-      "opp": "SEA",
-      "k": "ptd",
-      "line": 0.5,
-      "lean": "Over",
-      "pr": 0.5994,
-      "book": "bff",
-      "n": "Bo Nix",
-      "pos": "QB",
       "res": "pending"
      },
      {
@@ -305,23 +246,82 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.599,
+      "pr": 0.6081,
       "book": "bff",
       "n": "C.J. Stroud",
       "pos": "QB",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "long",
+    "prob": 0.0776,
+    "legs": [
+     {
+      "pid": "00-0040727",
+      "t": "LAC",
+      "opp": "KC",
+      "k": "rec",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Tre Harris",
+      "pos": "WR",
       "res": "pending"
      },
      {
       "pid": "00-0040126",
       "t": "CHI",
       "opp": "ATL",
-      "k": "ty",
-      "line": 28.5,
+      "k": "rec",
+      "line": 2.5,
       "lean": "Over",
-      "pr": 0.5656,
+      "pr": 0.6133,
       "book": "bff",
       "n": "Colston Loveland",
       "pos": "TE",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039163",
+      "t": "HOU",
+      "opp": "JAX",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.6081,
+      "book": "bff",
+      "n": "C.J. Stroud",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039732",
+      "t": "DEN",
+      "opp": "SEA",
+      "k": "ptd",
+      "line": 0.5,
+      "lean": "Over",
+      "pr": 0.5907,
+      "book": "bff",
+      "n": "Bo Nix",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0040867",
+      "t": "PHI",
+      "opp": "CAR",
+      "k": "ty",
+      "line": 16.5,
+      "lean": "Over",
+      "pr": 0.5681,
+      "book": "bff",
+      "n": "Makai Lemon",
+      "pos": "WR",
       "res": "pending"
      }
     ],
