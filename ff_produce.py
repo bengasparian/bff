@@ -61,7 +61,46 @@ dc2=dc[dc.pos_abb.isin(RMAP)].copy(); dc2['pg']=dc2.pos_abb.map(RMAP); role=dc2.
 pool={x for x in set(S26.player_id)|set(dc2[dc2.pos_rank<=(3)].gsis_id) if isinstance(x,str) and x}
 info=st.sort_values(['season','week']).groupby('player_id').tail(1).set_index('player_id')
 idx=ids.dropna(subset=['gsis_id']).drop_duplicates('gsis_id').set_index('gsis_id')
-dv=pd.read_csv('values.csv'); dvm=dv.set_index('fp_id').value_1qb.to_dict(); dvm2=dv.set_index('fp_id').value_2qb.to_dict() if 'value_2qb' in dv.columns else {}
+try: dv=pd.read_csv('values.csv'); dvm=dv.set_index('fp_id').value_1qb.to_dict()   # dynasty market value: only used to keep injured stars in the player pool
+except Exception as _e: print('dynasty values unavailable:',_e); dvm={}
+# ---- FantasyPros rest-of-season expert consensus (PPR; mirrored daily by DynastyProcess): overall rank, position rank, and how widely each player is rostered.
+# This is the redraft market check for trade values and the draft board (backtested 2023-25: see README).
+ECR={}; ECR_DATE=None
+try:
+    _E=pd.read_csv('db_fpecr_latest.csv',dtype={'id':str},low_memory=False)
+    _ro=_E[_E.page_type=='redraft-overall'].sort_values('ecr'); _rp=_E[_E.page_type.isin(['redraft-qb','redraft-rb','redraft-wr','redraft-te'])]
+    for _k,_x in enumerate(_ro.itertuples()):
+        ECR.setdefault(str(_x.id),{})['o']=_k+1
+        if _x.player_owned_avg==_x.player_owned_avg: ECR[str(_x.id)]['own']=round(float(_x.player_owned_avg))
+    for _pg,_G in _rp.groupby('page_type'):
+        for _k,_x in enumerate(_G.sort_values('ecr').itertuples()):
+            ECR.setdefault(str(_x.id),{})['p']=_k+1
+            if 'own' not in ECR[str(_x.id)] and _x.player_owned_avg==_x.player_owned_avg: ECR[str(_x.id)]['own']=round(float(_x.player_owned_avg))
+    ECR_DATE=str(_ro.scrape_date.max()) if len(_ro) else None
+    print('consensus rankings:',len(_ro),'overall,',len(_rp),'by position, as of',ECR_DATE)
+    if ECR_DATE and (datetime.date.today()-datetime.date.fromisoformat(ECR_DATE[:10])).days>14:
+        print('consensus rankings are more than two weeks old; not using them'); ECR={}; ECR_DATE=None
+except Exception as _e: print('consensus rankings unavailable (trade values fall back to projections only):',_e)
+# ---- FantasyPros WEEKLY expert consensus for the coming week (PPR ranks by position). Blended into next week's projection:
+# 2023-25 backtest on every week (out of sample): rank accuracy 0.419 -> 0.467, average miss 5.56 -> 5.43 points with a 65% consensus weight.
+WK={}; WK_W=0.65
+try:
+    _W=pd.read_csv('fp_latest_weekly.csv',low_memory=False); _W=_W[_W.page.isin(['qb','ppr-rb','ppr-wr','ppr-te'])]
+    _gd=pd.to_datetime(gm[(gm.season==SEASON)&(gm.week==int(SC[(SC.season==SEASON)&SC.pts.isna()].week.min()))].gameday)
+    _kd=pd.to_datetime(_W.player_game_kickoff_ts,unit='s',utc=True).dt.tz_convert('America/New_York').dt.tz_localize(None).dt.normalize()
+    _W=_W[(_kd>=_gd.min()-pd.Timedelta(days=1))&(_kd<=_gd.max()+pd.Timedelta(days=1))]   # only rankings for this week's games
+    for _x in _W.itertuples(): WK[str(int(_x.fantasypros_id))]=int(_x.rank)
+    print('weekly consensus:',len(WK),'players ranked for this week')
+except Exception as _e: print('weekly consensus unavailable (next-week projections use the model only):',_e)
+def wk_of(pid):
+    if pid not in idx.index or 'fantasypros_id' not in idx.columns: return None
+    f=idx.loc[pid,'fantasypros_id']
+    return None if f is None or f!=f else WK.get(str(int(f)))
+def ecr_of(pid):
+    if pid not in idx.index or 'fantasypros_id' not in idx.columns: return {}
+    f=idx.loc[pid,'fantasypros_id']
+    if f is None or f!=f: return {}
+    return ECR.get(str(int(f)),{})
 # also keep injured and reserve players who still matter (market value or real production), e.g. on IR or PUP with no 2026 snaps
 _pp1=st[st.season==SEASON-1].groupby('player_id').fantasy_points_ppr.agg(['mean','size']); _pp2=st[st.season==SEASON-2].groupby('player_id').fantasy_points_ppr.agg(['mean','size'])
 _fpid=idx['fantasypros_id'].to_dict() if 'fantasypros_id' in idx.columns else {}
@@ -156,8 +195,16 @@ for pid in pool:
       'sid':str(int(idx.loc[pid,'sleeper_id'])) if pid in idx.index and pd.notna(idx.loc[pid,'sleeper_id']) else None,
       'eid':str(int(idx.loc[pid,'espn_id'])) if pid in idx.index and pd.notna(idx.loc[pid,'espn_id']) else None,
       'yid':str(int(idx.loc[pid,'yahoo_id'])) if pid in idx.index and pd.notna(idx.loc[pid,'yahoo_id']) else None,
-      'dv':int(dvm[idx.loc[pid,'fantasypros_id']]) if pid in idx.index and idx.loc[pid,'fantasypros_id'] in dvm else None,
-      'dv2':int(dvm2[idx.loc[pid,'fantasypros_id']]) if pid in idx.index and idx.loc[pid,'fantasypros_id'] in dvm2 and dvm2[idx.loc[pid,'fantasypros_id']]==dvm2[idx.loc[pid,'fantasypros_id']] else None})
+      'ecr':ecr_of(pid).get('o'),'ecp':ecr_of(pid).get('p'),'own':ecr_of(pid).get('own'),'wkr':wk_of(pid) if int(nxt[0])==NEXT else None})
+# blend next week's projection with the weekly consensus: the k-th ranked player at a position gets our k-th best projection (so the scale stays ours)
+for _pos in POS:
+    _L=[p for p in players if p['p']==_pos and p['nw']==NEXT and (p['proj'] or 0)>0]
+    _curve=sorted((p['proj'] for p in _L),reverse=True); _rk=sorted([p for p in _L if p.get('wkr')],key=lambda p:p['wkr'])
+    if not _curve or not _rk: continue
+    _m={p['id']:_curve[min(i,len(_curve)-1)] for i,p in enumerate(_rk)}; _fl=_curve[min(len(_rk),len(_curve)-1)]
+    for p in _L:
+        _mv=_m.get(p['id'],min(p['proj'],_fl)); _b=r((1-WK_W)*p['proj']+WK_W*_mv,1); p['adjc']=r(_b-p['proj'],1); p['proj']=_b
+        if p['ros'] and p['ros'][0][0]==NEXT: p['ros'][0][2]=_b
 players.sort(key=lambda p:-(p['proj'] or 0))
 # defense vs position, 2026 to date (PPR points allowed per game) with ranks (1 = allows the fewest)
 a26,lg26=dvp_table(SEASON,99); DVP={}
@@ -235,7 +282,7 @@ for _x in gm[gm.season==SEASON].itertuples():
     _sp=None if pd.isna(_x.spread_line) else float(_x.spread_line); _to=None if pd.isna(_x.total_line) else float(_x.total_line)
     _KX[(int(_x.week),_x.home_team)]=(_k,None if _sp is None else -_sp,_to); _KX[(int(_x.week),_x.away_team)]=(_k,_sp,_to)
 SCHED={t:[[int(g.week),g.opp,int(g.home),r(g.it,1),None if pd.isna(g.pts) else int(g.pts)]+list(_KX.get((int(g.week),t),(None,None,None))) for g in SC26[SC26.team==t].sort_values('week').itertuples()] for t in SC26.team.unique()}
-OUT={'asof':{'season':SEASON,'last_week':LAST,'next_week':NEXT,'built':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'),'depth':str(dc.dt.max())[:10],'dp_values':str(dv.scrape_date.iloc[0])},
+OUT={'asof':{'season':SEASON,'last_week':LAST,'next_week':NEXT,'built':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'),'depth':str(dc.dt.max())[:10],'ecr':ECR_DATE},
      'players':players,'live':LIVE,'news':NEWS,'headlines':HEAD,'ph':HS.get(str(NEXT),{}),'acc':ACC,'trendsval':json.load(open('trends_val.json')) if os.path.exists('trends_val.json') else None,'dvp':DVP,'lgpos':{p:r(lg26.get(p,np.nan),1) for p in POS},'sched':SCHED,'byes':byes,'model':{'test':res,'range':RNG,'qs':QS,'posavg':{k:r(v,1) for k,v in POSAVG.items()}}}
 def clean(o):
     if isinstance(o,float) and (o!=o or abs(o)==float('inf')): return None

@@ -2,7 +2,8 @@
 """NFL and fantasy news from many sources -> news.json. Run every 10 minutes by the scores workflow.
 
 Every item keeps its source, a link to the original article, and its publish time, so the page can credit and link it.
-Only a headline and a short teaser (at most 160 characters) are stored; readers follow the link for the full story.
+Only a headline, a short teaser (at most 160 characters) and the link to the story's own feed picture are stored;
+readers follow the link for the full story.
 Sources were checked by hand before being added; any source that fails is skipped and its last good items are kept,
 so one broken feed never stops the update. Items older than 7 days drop off.
 
@@ -50,13 +51,33 @@ def when(s):
         try: return datetime.datetime.fromisoformat(s.replace('Z', '+00:00')).astimezone(datetime.timezone.utc).isoformat(timespec='seconds')
         except Exception: return None
 
+MRSS = '{http://search.yahoo.com/mrss/}'
+IMG_RE = re.compile(r'<img[^>]+src=["\'](https://[^"\']+)["\']', re.I)
+def image_of(it):
+    """the story's own picture from the feed (media:content, media:thumbnail, an image enclosure, or the first image in
+    the summary); publishers put these in their feeds for display next to the headline. https only, no tracking pixels"""
+    c = []
+    for tag in ('content', 'thumbnail'):
+        for m in it.iter(MRSS + tag):
+            if (m.get('medium') in (None, 'image')) and not str(m.get('type') or 'image').startswith(('video', 'audio')): c.append(m.get('url'))
+    for e in it.findall('enclosure'):
+        if str(e.get('type') or '').startswith('image'): c.append(e.get('url'))
+    for txt in (it.findtext('description') or '', it.findtext('{http://purl.org/rss/1.0/modules/content/}encoded') or ''):
+        m = IMG_RE.search(txt)
+        if m: c.append(html.unescape(m.group(1)))
+    for x in c:
+        if x and x.startswith('https://') and not re.search(r'pixel|tracking|feedburner|1x1|spacer', x, re.I): return x
+    return None
 def rss(name, url, keep):
     root = ET.fromstring(get(url)); out = []
     for it in root.iter('item'):
         t = clean(it.findtext('title')); u = (it.findtext('link') or '').strip()
         if not t or not u.startswith('http'): continue
         if keep and not keep(u, t): continue
-        out.append({'h': t, 'u': u, 'd': when(it.findtext('pubDate') or ''), 'x': clean(it.findtext('description'), 160), 's': name})
+        x = {'h': t, 'u': u, 'd': when(it.findtext('pubDate') or ''), 'x': clean(it.findtext('description'), 160), 's': name}
+        im = image_of(it)
+        if im: x['img'] = im
+        out.append(x)
     return out
 def espn(name, url, keep):
     j = json.loads(get(url)); out = []
@@ -64,7 +85,10 @@ def espn(name, url, keep):
         h = clean(a.get('headline')); u = (((a.get('links') or {}).get('web') or {}).get('href'))
         if not h or not u: continue
         ath = [str(c.get('athleteId') or (c.get('athlete') or {}).get('id')) for c in a.get('categories') or [] if c.get('type') == 'athlete' and (c.get('athleteId') or (c.get('athlete') or {}).get('id'))]
-        out.append({'h': h, 'u': u, 'd': when(a.get('published') or a.get('lastModified') or ''), 'x': clean(a.get('description'), 160), 's': name, 'a': ath, 'prem': bool(a.get('premium'))})
+        x = {'h': h, 'u': u, 'd': when(a.get('published') or a.get('lastModified') or ''), 'x': clean(a.get('description'), 160), 's': name, 'a': ath, 'prem': bool(a.get('premium'))}
+        im = next((i.get('url') for i in a.get('images') or [] if str(i.get('url') or '').startswith('https://')), None)
+        if im: x['img'] = im
+        out.append(x)
     return out
 
 def player_index():

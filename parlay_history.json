@@ -1,9 +1,9 @@
 {
  "6": {
   "wk": 6,
-  "made": "2026-10-14T21:52+00:00",
+  "made": "2026-10-14T21:58+00:00",
   "locks": "2026-10-15T20:15:00-04:00",
-  "lines_at": "2026-10-14T21:52+00:00",
+  "lines_at": "2026-10-14T21:58+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -41,7 +41,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2353,
+    "prob": 0.2379,
     "legs": [
      {
       "pid": "00-0037834",
@@ -70,16 +70,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0040867",
-      "t": "PHI",
-      "opp": "CAR",
+      "pid": "00-0041032",
+      "t": "NYJ",
+      "opp": "NE",
       "k": "rec",
       "line": 2.5,
-      "lean": "Over",
-      "pr": 0.612,
+      "lean": "Under",
+      "pr": 0.619,
       "book": "bff",
-      "n": "Makai Lemon",
-      "pos": "WR",
+      "n": "Kenyon Sadiq",
+      "pos": "TE",
       "res": "pending"
      }
     ],
@@ -87,7 +87,7 @@
    },
    {
     "type": "long",
-    "prob": 0.085,
+    "prob": 0.0888,
     "legs": [
      {
       "pid": "00-0037834",
@@ -116,6 +116,19 @@
       "res": "pending"
      },
      {
+      "pid": "00-0041032",
+      "t": "NYJ",
+      "opp": "NE",
+      "k": "rec",
+      "line": 2.5,
+      "lean": "Under",
+      "pr": 0.619,
+      "book": "bff",
+      "n": "Kenyon Sadiq",
+      "pos": "TE",
+      "res": "pending"
+     },
+     {
       "pid": "00-0040867",
       "t": "PHI",
       "opp": "CAR",
@@ -129,28 +142,15 @@
       "res": "pending"
      },
      {
-      "pid": "00-0033908",
-      "t": "SEA",
-      "opp": "DEN",
-      "k": "rec",
-      "line": 2.5,
-      "lean": "Under",
-      "pr": 0.606,
-      "book": "bff",
-      "n": "Cooper Kupp",
-      "pos": "WR",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0031503",
-      "t": "NYG",
-      "opp": "NO",
+      "pid": "00-0041251",
+      "t": "TB",
+      "opp": "PIT",
       "k": "py",
-      "line": 230.5,
+      "line": 177.5,
       "lean": "Over",
-      "pr": 0.596,
+      "pr": 0.61,
       "book": "bff",
-      "n": "Jameis Winston",
+      "n": "Jalon Daniels",
       "pos": "QB",
       "res": "pending"
      }
