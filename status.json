@@ -1,0 +1,21 @@
+{
+ "date": "2026-10-15",
+ "failing_since": null,
+ "last_good": "2026-10-15",
+ "ok": true,
+ "season": {
+  "asof": "2026-10-15",
+  "phase": "season",
+  "schedule": true,
+  "season": 2026
+ },
+ "steps": {
+  "calls": "success",
+  "check": "success",
+  "fetch": "success",
+  "lines": "success",
+  "page": "success",
+  "produce": "success",
+  "save": "success"
+ }
+}
