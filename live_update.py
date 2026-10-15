@@ -25,6 +25,8 @@ def games(sb):
                     "poss": (ab(h) if poss == h.get("id") else ab(a)) if poss else None, "dd": sit.get("shortDownDistanceText") or sit.get("downDistanceText"),
                     "ddl": sit.get("downDistanceText"), "down": sit.get("down"), "dist": sit.get("distance"), "yl": sit.get("yardLine"), "ptxt": sit.get("possessionText"),
                     "rz": bool(sit.get("isRedZone")), "kick": e.get("date"), "venue": (c.get("venue") or {}).get("fullName"),
+                    "vid": (c.get("venue") or {}).get("id"), "neutral": bool(c.get("neutralSite")),
+                    "rimg": ((((c.get("headlines") or [{}])[0]).get("video") or [{}])[0]).get("thumbnail"), "rhl": ((c.get("headlines") or [{}])[0]).get("shortLinkText"),
                     "tv": (((c.get("broadcasts") or [{}])[0]).get("names") or [None])[0], "odds": o.get("details"), "ou": o.get("overUnder"),
                     "last": (sit.get("lastPlay") or {}).get("text")})
     return out
@@ -58,20 +60,47 @@ def box(sm):
         ts[tm] = [[s.get("label") or s.get("name"), s.get("displayValue")] for s in (tt.get("statistics") or []) if s.get("displayValue") is not None]
     return {"players": list(players.values()), "cats": cats, "ts": ts}
 
+def recent(g, hours=36):
+    """kicked off within the last day and a half (recap photos are published after the game)"""
+    try: return (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(str(g.get("kick")).replace("Z", "+00:00"))).total_seconds() < hours * 3600
+    except Exception: return False
+
+def media(sm):
+    """Pictures for a game, as ESPN publishes them with its coverage: the recap photo, story photos, video thumbnails,
+    and the stadium photo. Only links are kept; the pictures stay on ESPN's servers."""
+    out, seen = [], set()
+    def add(u, h, l, k):
+        if u and str(u).startswith("https://") and u not in seen: seen.add(u); out.append({"u": u, "h": h or "", "l": l or "", "k": k})
+    art = sm.get("article") or {}
+    add(next((i.get("url") for i in art.get("images") or [] if i.get("url")), None), art.get("headline"), ((art.get("links") or {}).get("web") or {}).get("href"), "Recap")
+    for a in (sm.get("news") or {}).get("articles") or []:
+        add(next((i.get("url") for i in a.get("images") or [] if i.get("url")), None), a.get("headline"), ((a.get("links") or {}).get("web") or {}).get("href"), "Story")
+    for v in sm.get("videos") or []: add(v.get("thumbnail"), v.get("headline"), (((v.get("links") or {}).get("web")) or {}).get("href"), "Video")
+    vi = [i for i in (((sm.get("gameInfo") or {}).get("venue") or {}).get("images") or []) if i.get("href")]
+    day = next((i for i in vi if "interior" not in i["href"]), vi[0] if vi else None)
+    return {"ph": out[:8], "venue": day["href"] if day else None}
+
 if __name__ == "__main__":
     old = json.load(open("live.json")) if os.path.exists("live.json") else {}
     try:
         sb = get(BASE + "scoreboard"); G = games(sb); B = {k: v for k, v in (old.get("box") or {}).items() if isinstance(v, dict)}
-        need = [g for g in G if g["state"] == "in" or (g["state"] == "post" and not B.get(g["id"]))]
+        M = {k: v for k, v in (old.get("media") or {}).items() if isinstance(v, dict)}; V = dict(old.get("venues") or {})
+        for g in G:
+            if g.get("vid") and not g.get("neutral"): V[g["home"]] = str(g["vid"])
+        need = [g for g in G if g["state"] == "in" or (g["state"] == "post" and not B.get(g["id"])) or g["id"] not in M
+                or (g["state"] == "post" and recent(g) and not any(p.get("k") in ("Recap", "Story") for p in M[g["id"]].get("ph") or []))]
         t0 = time.time()
         with ThreadPoolExecutor(max_workers=4) as ex:   # box scores 4 at a time, and never more than ~2 minutes in total
             futs = {ex.submit(get, BASE + "summary?event=" + str(g["id"])): g["id"] for g in need}
             for f in as_completed(futs, timeout=150):
-                try: B[futs[f]] = box(f.result())
+                try:
+                    sm = f.result(); gid = futs[f]; M[gid] = media(sm)
+                    if next(g for g in G if g["id"] == gid)["state"] != "pre": B[gid] = box(sm)
                 except Exception as e: print("box score unavailable for", futs[f], e)
                 if time.time() - t0 > 140: print("time budget reached; keeping earlier box scores for the rest"); break
-        new = {"src": "ESPN, refreshed every few minutes", "week": (sb.get("week") or {}).get("number"), "games": G, "box": {k: v for k, v in B.items() if any(str(x["id"]) == str(k) for x in G)}}
-        if {k: old.get(k) for k in ("games", "box")} != {k: new[k] for k in ("games", "box")}:
+        cur = lambda d: {k: v for k, v in d.items() if any(str(x["id"]) == str(k) for x in G)}
+        new = {"src": "ESPN, refreshed every few minutes", "week": (sb.get("week") or {}).get("number"), "games": G, "box": cur(B), "media": cur(M), "venues": V}
+        if {k: old.get(k) for k in ("games", "box", "media", "venues")} != {k: new[k] for k in ("games", "box", "media", "venues")}:
             new["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
             json.dump(new, open("live.json", "w"), separators=(",", ":")); print("live.json updated:", sum(g["state"] == "in" for g in G), "games live")
         else: print("no change")

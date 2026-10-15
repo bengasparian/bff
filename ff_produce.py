@@ -116,7 +116,7 @@ if SC26.pts.isna().sum()==0: print('Regular season complete: no unplayed games, 
 NEXT=int(SC26[SC26.pts.isna()].week.min()); byes={}   # current NFL week = earliest week with an unplayed game
 for t in SC26.team.unique():
     wk=set(SC26[SC26.team==t].week); byes[t]=[w for w in range(1,19) if w not in wk]
-RET={}
+RET={}; AIR=[.12,.24,.30,.35,.42,.47,.50,.52]
 for pid_,G_ in wr[wr.gsis_id.isin(set(cur[cur.status=='RES'].index))].groupby('gsis_id'):
     G_=G_.sort_values('week'); st_=list(G_.status); wk_=list(G_.week); i_=len(st_)-1
     while i_>0 and st_[i_-1]=='RES': i_-=1
@@ -179,7 +179,9 @@ for pid in pool:
     if out=='Out' or ir: proj_next=0.0
     rec_pg=float(rows.receptions.mean()) if len(rows) else float(st[(st.player_id==pid)&(st.season==SEASON-1)].receptions.mean() or 0)
     ret_=RET.get(pid) if ir else None
-    ros=[[int(w[0]),w[1],r((0.0 if ret_ and w[0]<ret_ else (0.75 if ret_ else 1.0))*P[i],1)] for i,w in enumerate(wk_rows) if w[0]<=17]
+    # injured reserve: nothing before his estimated return, then the share of games such players really played after it
+    # (2023-25: 11% the first week, 34% by the fourth, about half later; 53% did not play again that season)
+    ros=[[int(w[0]),w[1],r((0.0 if ret_ and w[0]<ret_ else (AIR[min(len(AIR)-1,int(w[0])-ret_)] if ret_ else 1.0))*P[i],1)] for i,w in enumerate(wk_rows) if w[0]<=17]
     rl=role.loc[pid] if pid in role.index else None
     players.append({'id':pid,'n':name,'p':pos,'t':tm,'age':r(idx.loc[pid,'age'],1) if pid in idx.index and 'age' in idx.columns else None,
       'role':f"{rl['pg']}{int(rl['pos_rank'])}" if rl is not None and rl['team']==tm else None,'inj':('IR' if ir else out),'ret':ret_,'bmp':[[int(w[0]),r(w[4]['bump'],2)] for w in wk_rows[:2]],'rsv':(RSV.get(pid,'IR') if ir else None),
@@ -282,8 +284,11 @@ for _x in gm[gm.season==SEASON].itertuples():
     _sp=None if pd.isna(_x.spread_line) else float(_x.spread_line); _to=None if pd.isna(_x.total_line) else float(_x.total_line)
     _KX[(int(_x.week),_x.home_team)]=(_k,None if _sp is None else -_sp,_to); _KX[(int(_x.week),_x.away_team)]=(_k,_sp,_to)
 SCHED={t:[[int(g.week),g.opp,int(g.home),r(g.it,1),None if pd.isna(g.pts) else int(g.pts)]+list(_KX.get((int(g.week),t),(None,None,None))) for g in SC26[SC26.team==t].sort_values('week').itertuples()] for t in SC26.team.unique()}
+# stadium ids learned by the live job (for real stadium photos on every game, any week)
+try: VENUES=json.load(open('live.json')).get('venues') or {}
+except Exception: VENUES={}
 OUT={'asof':{'season':SEASON,'last_week':LAST,'next_week':NEXT,'built':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'),'depth':str(dc.dt.max())[:10],'ecr':ECR_DATE},
-     'players':players,'live':LIVE,'news':NEWS,'headlines':HEAD,'ph':HS.get(str(NEXT),{}),'acc':ACC,'trendsval':json.load(open('trends_val.json')) if os.path.exists('trends_val.json') else None,'dvp':DVP,'lgpos':{p:r(lg26.get(p,np.nan),1) for p in POS},'sched':SCHED,'byes':byes,'model':{'test':res,'range':RNG,'qs':QS,'posavg':{k:r(v,1) for k,v in POSAVG.items()}}}
+     'players':players,'live':LIVE,'news':NEWS,'headlines':HEAD,'ph':HS.get(str(NEXT),{}),'acc':ACC,'trendsval':json.load(open('trends_val.json')) if os.path.exists('trends_val.json') else None,'dvp':DVP,'lgpos':{p:r(lg26.get(p,np.nan),1) for p in POS},'sched':SCHED,'byes':byes,'venues':VENUES,'model':{'test':res,'range':RNG,'qs':QS,'posavg':{k:r(v,1) for k,v in POSAVG.items()}}}
 def clean(o):
     if isinstance(o,float) and (o!=o or abs(o)==float('inf')): return None
     if isinstance(o,(np.floating,)): return clean(float(o))

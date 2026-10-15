@@ -69,18 +69,53 @@ last good version, so the published site never breaks.
   with flex and superflex filled by projection). Each week counts `0.98 x 0.985^weeks-away` (the chance he is still
   active) times the expected points above that level, allowing for weekly ups and downs, so fringe players keep a little
   upside value. Byes, injured reserve and "out" this week come from the weekly projections.
-- It is blended with the **FantasyPros rest-of-season expert consensus** (60% in PPR, 50% half PPR, 40% standard),
-  mapped onto the same curve, then scaled 0-100 (the top players sit near 100).
+- It is blended with the **FantasyPros rest-of-season expert consensus** (60% in PPR, 50% half PPR, 40% standard;
+  a little more for running backs and for players with two games or fewer this season, where the consensus proved more
+  reliable), mapped onto the same curve, then scaled 0-100 (the top players sit near 100).
+- **Injured reserve:** nothing before his estimated return, then (chance he plays) x (value if he plays), using what
+  really happened to such players in 2023-2025: about 1 in 10 played the first week after the estimated return, 1 in 3
+  by the fourth week, about half later, and 53% never played again that season. (The old rule counted 75% of every week.)
 - Packages: the best player counts fully, then 80%, 60%, 45% (measured: adding two players to a team added
   best + 0.82 x second). A trade is **fair** only when BFF value is within 10%, the consensus within 30% and our
   projections alone within 50%; labels run Even / Slightly favors / Favors / Heavily favors.
 - **Backtest, 2023-2025** (14 checkpoints, weeks 4-12, using only what was known at the time; truth = real
   starting-lineup points each player added in simulated 12-team leagues, and real points above a starter-level
-  replacement): value accuracy R² 0.22 -> 0.29 and 0.19 -> 0.26; more accurate at 13 of 14
-  checkpoints; "fair" calls that the expert consensus saw as 2x lopsided fell from 40% to 12% (0% with the
+  replacement): value accuracy R² 0.22 -> 0.30 and 0.18 -> 0.26; more accurate at 13 of 14
+  checkpoints; "fair" calls that the expert consensus saw as 2x lopsided fell from 41% to 9% (0% with the
   consensus check). The old formula used a dynasty market, which overrated young players for a one-season league.
 - The same value drives the Trade values chart, BFF rank on player cards, Find trades, the trade analyzer, the mock
   draft board (AI teams also follow the consensus), the draft guide, waiver targets and BFF Coach.
+
+## Trade analyzer and waivers
+- **Trade analyzer** (Fantasy Help, and "Analyze in depth" on every offer in My League): a photo card for each player
+  (BFF value, points a game, next 4 weeks, playoff weeks 15-17, bye, injury, usage signal, boom/bust), the package math,
+  the three fairness checks, your starting lineup's change week by week with next-4, rest-of-season and playoff totals,
+  the other team's change, the roster spots each side must open or can fill (drops and best free agents), startable
+  depth by position, and the single additions that would make an unfair offer fair.
+- **Waivers:** every target shows its BFF value, the value of the player you would drop, and a FAAB guide based on the
+  lineup points he adds the rest of the season (30+ points: 25-40% of your budget; 15-30: 12-25%; 8-15: 5-12%;
+  3-8: 1-5%; less: a minimum bid). Targets need a real role, and without a linked league "free" means rostered in under
+  half of ESPN and Yahoo leagues.
+
+## Look and pictures
+- Every tab reads like the News tab: a cover story on the tab's own artwork with picture headlines beside it, a headline
+  rail on wide screens (headlines under the page on smaller ones), and Top stories on Home.
+- **Real pictures** on your own site: when a recent real story fits a tab (your players on My League, top players on
+  Players, fantasy and betting stories on Fantasy Help, this week's teams on Live), its photo leads that tab's cover,
+  credited and linked; each story leads one tab only. Player stories show the player's ESPN headshot large, games show
+  both team logos, the Trade values chart opens with photo cards of the elite tier, and the trade analyzer uses photo
+  cards. Pages on claude.ai cannot load outside pictures, so that copy shows the tab artwork, jerseys and team colors.
+- **Game photos** (your own site): every Live game card opens with a photo band and both team logos. Before kickoff it
+  is the home stadium (ESPN's stadium photo, found from the venue id on ESPN's scoreboard); once a game starts it
+  switches to a photo from ESPN's coverage of that game, and after the final to the recap photo. The game center puts
+  that photo behind the score and its Overview tab adds a **Photos** row (recap, story and video pictures, each linked to
+  its story). The Home game carousel and the Live cover use the same photos; the header ticker shows team logos.
+- **Headshots everywhere a player is listed**: rankings, values, waivers, box scores (fantasy and official), top
+  performers, mock-draft picks, the trade picker and "Make it fair" suggestions, parlay legs, and the player-card News
+  tab, where each story shows its own picture. A player without an ESPN photo gets his jersey in team colors.
+- `live_update.py` also saves each game's photo links and stadium ids in `live.json` (links only; the pictures stay on
+  ESPN's servers), so the photos show even when the page can't reach ESPN directly. Turn all outside pictures off with
+  the camera button in the header.
 
 ## Predicted prop lines (`ff_lines.py`)
 - Built the way books build them, from **opportunity**: expected targets, carries or pass attempts (recent full
@@ -99,8 +134,8 @@ last good version, so the published site never breaks.
 - For entertainment, 21+ where legal. Gambling problem? Call or text 1-800-GAMBLER.
 
 ## Updating an existing site to this version
-Upload (replace) these files: `template.html`, `app.css`, `index.html`, `ff_produce.py`, `fetch_data.py`, `.gitignore`
-and `README.md`. Leave your `*_history.json`, `lines.json`, `parlays.json` and `bet_inputs.json` alone; your workflows
+Upload (replace) these files: `template.html`, `app.css`, `index.html`, `ff_produce.py`, `fetch_data.py`, `live_update.py`, `.gitignore`
+and `README.md` (the 10/15 photo update changed `template.html`, `app.css`, `index.html`, `ff_produce.py`, `live_update.py` and `README.md`). Leave your `*_history.json`, `lines.json`, `parlays.json` and `bet_inputs.json` alone; your workflows
 keep those up to date. Then run **Update Gridiron Fantasy** once.
 
 ## One-time setup (about 10 minutes)
