@@ -1,5 +1,7 @@
 name: Update Gridiron Fantasy
 
+# Runs on its own all year: it works out the season from the NFL schedule, retrains the projection model on the five
+# latest completed seasons, and rebuilds the page. Nothing needs editing from one season to the next.
 on:
   schedule:
     - cron: "23 */3 * * *"   # every 3 hours, at 23 minutes past (the top of the hour is GitHub's busiest time)
@@ -16,35 +18,53 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 50
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Install libraries
-        run: pip install pandas pyarrow scikit-learn scipy
-      - name: Download data
-        run: python fetch_data.py 2026
+      - name: Install libraries (tested versions; the newest ones if those ever stop installing)
+        run: pip install -r requirements.txt || pip install pandas pyarrow scikit-learn scipy
+      - name: Reuse the model's feature tables from earlier runs
+        uses: actions/cache@v5
+        with:
+          path: .cache
+          key: bff-features-${{ hashFiles('ff_build2.py') }}-${{ github.run_id }}
+          restore-keys: bff-features-${{ hashFiles('ff_build2.py') }}-
+      - name: Download data (works out the season on its own)
+        id: fetch
+        run: python fetch_data.py
       - name: Build projections and collect news
+        id: produce
         run: python ff_produce.py
       - name: Sync Sleeper league (optional)
+        id: sleeper
         env:
           SLEEPER_LEAGUE_ID: ${{ vars.SLEEPER_LEAGUE_ID }}
         run: python sync_sleeper.py
       - name: Predicted prop lines and parlay picks
+        id: lines
         run: |
           python ff_lines.py
           python parlay_update.py
       - name: Weekly calls (lock at kickoff, grade with official stats)
+        id: calls
         run: python calls_update.py
-      - name: Build the page
+      - name: Build the page (accounts turn on when BFF_FIREBASE is set; see README)
+        id: page
+        env:
+          BFF_FIREBASE: ${{ vars.BFF_FIREBASE }}
+          BFF_TERMS_STATE: ${{ vars.BFF_TERMS_STATE }}
+          BFF_CONTACT: ${{ vars.BFF_CONTACT }}
         run: python assemble.py
       - name: Check the page before saving (keeps the last good page if anything is wrong)
+        id: check
         run: |
           python check_page.py
           python check_page.py --json
       - name: Save the updated page
+        id: save
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -56,3 +76,25 @@ jobs:
             echo "Save attempt $i did not go through; retrying"; sleep $((i*15))
           done
           exit 1
+      - name: Health report (runs even when a step failed; also keeps the scheduled jobs from being paused)
+        if: always()
+        env:
+          STEP_FETCH: ${{ steps.fetch.outcome }}
+          STEP_PRODUCE: ${{ steps.produce.outcome }}
+          STEP_LINES: ${{ steps.lines.outcome }}
+          STEP_CALLS: ${{ steps.calls.outcome }}
+          STEP_PAGE: ${{ steps.page.outcome }}
+          STEP_CHECK: ${{ steps.check.outcome }}
+          STEP_SAVE: ${{ steps.save.outcome }}
+        run: |
+          python health.py
+          git config user.name "gridiron-fantasy-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add status.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Health $(date -u +%F)"
+          for i in 1 2 3; do
+            if git pull --rebase --autostash && git push; then exit 0; fi
+            sleep $((i*15))
+          done
+          echo "Could not save the health report this time"; exit 0
