@@ -11,7 +11,7 @@ Also collected: Sleeper's public "trending adds" (players fantasy managers are a
 Each item is tagged with the players it names, a category (injury, transaction, fantasy, betting, news), and, for
 clear statements such as "ruled out" or "expected to miss time", a status the prop lines use to pull a line.
 """
-import json, os, re, html, datetime, urllib.request, email.utils
+import json, re, html, datetime, urllib.request, email.utils
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 

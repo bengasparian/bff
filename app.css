@@ -1221,3 +1221,143 @@ body.boton .botfab{opacity:0;pointer-events:none}
 @media(max-width:900px){.gpgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.gph{height:78px}.nitem.hasimg{grid-template-columns:84px minmax(0,1fr)}.nitem.hasimg .nav0{display:none}.nthumb{width:84px}}
 .tr2 b{display:inline-flex;align-items:center;gap:5px}.tkl{width:16px;height:16px;object-fit:contain}
 .pkln{display:flex;align-items:center;gap:8px;min-width:0}
+/* ===== v30: Live = games first; readable text on every photo; phone app layout; accounts ===== */
+/* Live: Scores | Fantasy points */
+.lvseg{margin:0 0 14px}
+#live[data-lv=scores] .lside,#live[data-lv=scores] #mylive{display:none}
+#live[data-lv=scores] .livegrid{display:block;width:auto;margin-left:0}
+#live[data-lv=fan] #games{display:none}
+#live[data-lv=fan] .livegrid{grid-template-columns:repeat(2,minmax(0,1fr));width:auto;margin-left:0}
+#live[data-lv=fan] .lmain{grid-column:1/-1;order:-1}
+#live[data-lv=fan] .lside{position:static;max-height:none}
+#live .games{grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.livenote{margin:-6px 0 12px;font-size:.78rem}
+.cover.solo{grid-template-columns:minmax(0,1fr)}
+.cover.solo .cvside{display:none}
+#live .cover .cvlead{min-height:250px}
+@media(max-width:700px){#live[data-lv=fan] .livegrid{grid-template-columns:1fr}}
+/* readable text on photos: the scrim follows the text block and the picture's measured brightness (--sa) */
+.cover .cvlead::before{background:linear-gradient(90deg,rgba(3,6,13,calc(var(--sa,.64) + .2)) 0%,rgba(3,6,13,var(--sa,.64)) var(--sx,62%),rgba(3,6,13,calc(var(--sa,.64)*.4)) calc(var(--sx,62%) + 20%),rgba(3,6,13,.06) 100%),linear-gradient(0deg,rgba(3,6,13,.45) 0%,rgba(3,6,13,0) 42%)}
+.cover .cvlead[data-so=v]::before{background:linear-gradient(0deg,rgba(3,6,13,calc(var(--sa,.64) + .22)) 0%,rgba(3,6,13,var(--sa,.64)) var(--sy,62%),rgba(3,6,13,calc(var(--sa,.64)*.35)) calc(var(--sy,62%) + 18%),rgba(3,6,13,.04) 100%)}
+.cvh,.cvx,.cvmeta{text-shadow:0 1px 2px rgba(0,0,0,.55),0 2px 16px rgba(0,0,0,.4)}
+.gphero.hasph::before{background:linear-gradient(90deg,rgba(3,6,13,calc(var(--sa,.64) + .2)),rgba(3,6,13,var(--sa,.64)) 50%,rgba(3,6,13,calc(var(--sa,.64) + .2)))}
+.gphero.hasph .gpmid,.gphero.hasph .gpname,.gphero.hasph .gpscore,.gphero.hasph .sub{text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.gphc{text-shadow:0 1px 2px rgba(0,0,0,.7)}
+/* text on team colors: ink picked by contrast */
+.vcrk{color:var(--ink,#fff);text-shadow:var(--inksh,0 2px 10px rgba(0,0,0,.5))}
+.nart-num{color:var(--ink,#fff);opacity:.92;text-shadow:var(--inksh,0 6px 24px rgba(0,0,0,.4))}
+.nart-t,.nart-n{color:var(--ink,#fff);text-shadow:var(--inksh,none)}
+@media(max-width:900px){.cover .cvlead::before{background:linear-gradient(0deg,rgba(3,6,13,calc(var(--sa,.64) + .22)) 0%,rgba(3,6,13,var(--sa,.64)) var(--sy,64%),rgba(3,6,13,calc(var(--sa,.64)*.35)) calc(var(--sy,64%) + 18%),rgba(3,6,13,.04) 100%)}}
+/* accounts */
+.accbtn{position:relative;padding:0;overflow:hidden}
+.accbtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round}
+.accbtn.in{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0a1402;border-color:transparent}
+.accbtn img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.accini{font:800 .82rem var(--cond);letter-spacing:.04em}
+.accdlg{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:20px}
+.accdlg[hidden]{display:none}
+.accbg{position:absolute;inset:0;background:rgba(3,6,13,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.accbox{position:relative;width:min(460px,100%);max-height:min(720px,calc(100vh - 40px));overflow:auto;background:var(--solid,var(--panel));color:var(--ink,inherit);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.35);padding:20px 22px 22px;overscroll-behavior:contain}
+.acchd{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;margin-bottom:12px}
+.acchd h2{margin:0;font:800 1.3rem/1.1 var(--cond);text-transform:uppercase;letter-spacing:.03em}
+.acchd .m{margin:2px 0 0;font-size:.82rem}
+.accico{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0a1402}
+.accico svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round}
+.accx{width:36px;height:36px;padding:0;border-radius:12px}
+.acctabs{display:flex;width:100%;margin:2px 0 12px}.acctabs button{flex:1}
+.accform{display:flex;flex-direction:column;gap:12px}
+.accform label{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.86rem}
+.accform input:not([type=checkbox]){font:inherit;padding:11px 12px;border-radius:12px;border:1px solid var(--line2,var(--line));background:var(--bg2);color:inherit;min-height:44px}
+.accform input:focus-visible{outline:2px solid var(--acc2);outline-offset:1px}
+.accform .btn{min-height:46px;font-size:1rem}
+label.accagree{flex-direction:row;align-items:flex-start;gap:10px;font-weight:500;font-size:.84rem;line-height:1.45;padding:10px 12px;border-radius:12px;background:var(--bg2);border:1px solid var(--line)}
+.accagree input{width:20px;height:20px;margin:1px 0 0;flex:0 0 auto;accent-color:var(--acc)}
+.accerr{margin:0 0 10px;padding:9px 12px;border-radius:12px;background:color-mix(in srgb,#e34948 14%,transparent);border:1px solid color-mix(in srgb,#e34948 45%,transparent);font-size:.86rem}
+.accok{margin:0 0 10px;padding:9px 12px;border-radius:12px;background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);font-size:.86rem}
+.accrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.accrow>*{flex:1 1 auto}
+.acclinks{margin-top:14px;font-size:.84rem;color:var(--mute)}.acclinks a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.accsum{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:var(--bg2);border:1px solid var(--line)}
+.accsum b{display:block;margin-bottom:2px}
+.accwipe{display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:.82rem;color:var(--mute)}
+.accdanger{margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid color-mix(in srgb,#e34948 50%,transparent)}
+.btn.danger{background:#d93b3a;color:#fff;border-color:#d93b3a}
+.acclegal{font-size:.86rem;line-height:1.55}.acclegal h3{margin:14px 0 4px;font-size:.92rem}.acclegal p{margin:0 0 6px}
+.acclayer{position:absolute;inset:0;background:var(--solid,var(--panel));padding:20px 22px;overflow:auto;border-radius:inherit;z-index:2}
+.sheetacc b{display:flex;align-items:center;gap:6px}
+@media(max-width:700px){
+ .accdlg{align-items:flex-end;padding:0}
+ .accbox{width:100%;max-height:calc(100dvh - 40px);border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+ .accform input:not([type=checkbox]){font-size:16px}
+}
+.acclab{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}.acclab .m{font-weight:500}
+.accwipe input{margin:3px 0 0;flex:0 0 auto}
+/* phone: an app layout */
+.askbtn{display:none}
+.askbtn svg{width:19px;height:19px}
+@media(max-width:700px){
+ .top{position:sticky;top:0;z-index:60}
+ .top .in{padding:8px 12px;gap:8px;flex-wrap:nowrap}
+ .top .in .logo{margin-right:auto;min-width:0}
+ .qsbtn,.askbtn,.accbtn{display:inline-grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:12px}
+ .botfab{display:none!important}
+ .nbar{display:none!important}
+ body.nbon main{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+ body.nbon .totop,body.nbon .toasts,.totop,.toasts{bottom:calc(70px + env(safe-area-inset-bottom,0px))}
+ .ticker{display:none!important}
+ /* section tabs stay in reach under the header */
+ .subtabs[data-pane],#pview{position:sticky;top:var(--hh,56px);z-index:40;margin:0 -12px 12px;padding:8px 12px;border-radius:0;border:0;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);max-width:none;width:auto;display:flex}
+ .subtabs[data-pane] button,#pview button{flex:0 0 auto;min-height:36px}
+ .vh{margin-bottom:6px}.vh h1{font-size:1.9rem}.vh p{font-size:.86rem;margin:2px 0 0}
+ /* covers: one compact story under the section tabs */
+ .cover{margin:0 0 14px}
+ .cover:not(.solo) .cvside{display:none}
+ .cover .cvlead{aspect-ratio:auto;min-height:196px;border-radius:18px}
+ .cvtxt{padding:14px 14px 13px;gap:6px}
+ .cvh{font-size:clamp(1.3rem,5.6vw,1.65rem)}
+ .cvx{-webkit-line-clamp:2;font-size:.84rem}
+ .cvmeta{font-size:.72rem}
+ .cvteams{display:none}
+ #live .cover .cvlead{min-height:170px}
+ /* player rows: rank | name and matchup | projection and call */
+ .row{grid-template-columns:38px minmax(0,1fr) auto;column-gap:10px;row-gap:4px;padding:10px 12px;margin:6px 0}
+ .row>input[type=checkbox]{display:none}
+ .row .rk{grid-column:1;grid-row:1/3;align-self:center;font-size:1rem;text-align:center;white-space:normal;line-height:1.05}
+ .row>div:nth-of-type(2){grid-column:2;grid-row:1;min-width:0}
+ .row>div:nth-of-type(2)>div:first-child{display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;overflow:hidden}
+ .row .pnm{overflow:hidden;text-overflow:ellipsis;min-width:0}
+ .row .av,.row .jr{--s:34px!important}
+ .row .c-match{grid-column:2;grid-row:2;display:flex;gap:8px;align-items:center;font-size:.8rem}
+ .row .c-match>div{margin:0!important}
+ .row>div:nth-of-type(4){grid-column:3;grid-row:1;text-align:right}
+ .row .rng,.row>div:nth-of-type(4) .sub{display:none}
+ .row .proj{font-size:1.45rem}
+ .row .c-verd{grid-column:3;grid-row:2;align-items:flex-end!important}
+ .row .whybtn{display:none}
+ .row .why{grid-column:1/-1}
+ /* Home: a calmer hero */
+ .h2sub,.hstats{display:none}
+ .herocta>*:nth-child(n+3){display:none}
+ .herocta{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ /* comfortable tap targets */
+ .pills button,.subtabs button{min-height:36px}
+ .iconbtn{min-width:40px;min-height:40px}
+}
+@media(max-width:700px){
+ .top{background:color-mix(in srgb,var(--bg) 95%,transparent)}
+ .row>div:nth-of-type(2) .pos,.row>div:nth-of-type(2) .jn{display:none}
+ .row>div:nth-of-type(2)>div:first-child .avw,.row>div:nth-of-type(2)>div:first-child .jr{flex:0 0 auto}
+ .row .pnm{font-size:.98rem}
+ .wkbar{display:grid;grid-template-columns:40px minmax(0,1fr) 40px auto;gap:6px;align-items:center}
+ .wkbar select{min-width:0;width:100%}
+ .wkbar #wkinfo{grid-column:1/-1}
+ .wkbar #wknow{white-space:nowrap;padding-inline:10px}
+}
+/* player card hero: a scrim sized to the team colors keeps white text readable on gold, silver or light green */
+.phtxt{isolation:isolate}
+.phtxt::before{content:"";position:absolute;inset:-36px 0 0 0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(3,6,13,0) 0,rgba(3,6,13,var(--phs,0)) 36px,rgba(3,6,13,calc(var(--phs,0) + .1)) 100%)}
+.phtxt .pname,.phtxt .pmeta{text-shadow:0 1px 3px rgba(0,0,0,.55),0 4px 18px rgba(0,0,0,.35)}
+@media(max-width:700px){.whint{display:none}}
+.empty.offs{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;padding:22px;grid-column:1/-1}
+.empty.offs b{font:800 1.3rem var(--cond);text-transform:uppercase;letter-spacing:.03em}
+/* phone: a tab's top story shows on its first section only, so the other sections start right under the tabs */
+@media(max-width:700px){.subtabs[data-pane]:has(button:not(:first-child).on)+.cover,#pview:has(button:not(:first-child).on)+.cover,.vh:has(#pview button:not(:first-child).on)+.cover{display:none}}

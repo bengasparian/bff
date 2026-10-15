@@ -1,7 +1,7 @@
 # BFF · Ben's Fantasy Football: auto-updating version
 
-This folder turns BFF (Ben's Fantasy Football) into a free website that keeps itself up to date. Two GitHub
-workflows do the work, no API keys needed:
+This folder turns BFF (Ben's Fantasy Football) into a free website that keeps itself up to date all year, with nothing
+to edit from one season to the next. Two GitHub workflows do the work, no API keys needed:
 
 | Workflow | File | When | What it does |
 |---|---|---|---|
@@ -17,8 +17,9 @@ last good version, so the published site never breaks.
   performer of each. It stays on that week until 12:00 AM Eastern on the Wednesday after its last game, then switches to
   next week's upcoming games (kickoff, spread, total, win chances, players to watch). Below: every tool one tap away,
   the week's games, and dashboard sections (swipeable on phones). Every card links to its full section.
-- **Live:** scores, down and distance, and a full-screen game center for every game (outlook, win chances,
-  injuries, expected top performers, box score). Past and future weeks too.
+- **Live:** just the games and scores, each with its photo: the featured game on top, then every game of the week.
+  **Fantasy points** (your lineup live, top performers, leaders by position) is one tap away on the same tab. Tap a game
+  for its full-screen game center (outlook, win chances, injuries, top performers, box score). Past and future weeks too.
 - **News:** a sports-site layout with a top story, lead stories with pictures, a trending list (players covered by
   the most outlets in the last day), most-added players on Sleeper and the official injury report. Stories come from
   ESPN, CBS Sports, Yahoo Sports, Pro Football Talk, RotoWire, RotoBaller, PFF and Sharp Football Analysis. Headlines
@@ -41,21 +42,33 @@ last good version, so the published site never breaks.
   from the same model using only pre-game information and are labeled "rebuilt"; everything from week 6 on is saved live.
 - **Favorites:** star any player to track him in Players → Favorites (this week's outlook, live points, status, props,
   news) and on Home. Saved in each visitor's own browser.
-- **BFF Coach:** the chat button on every page answers start/sit, trade, waiver, prop and "how does BFF work"
+- **BFF Coach:** the chat button on every page (in the header on phones) answers start/sit, trade, waiver, prop and "how does BFF work"
   questions instantly with the site's own projections, trade values and lines, and declines questions that are not
   about football or the site. On your GitHub site it runs on BFF's own rules (no AI service or key needed). On the
   claude.ai copy it can also ask Claude, on the visitor's own Claude account with their permission, for open-ended
   scenarios; Claude gets the same BFF numbers through the page's tools.
 - **Learn:** how everything works, accuracy, and **Sources & citations** for every number and story.
-- **Updates bar:** a broadcast-style bar at the bottom of every page cycles through updates that fit the page
+- **Updates bar:** on wider screens, a broadcast-style bar at the bottom of every page cycles through updates that fit the page
   (Home: everything; Live: scores and top performers; News: news; Fantasy Help: fantasy and betting updates;
   My League: your players). Pause, step through, or hide it.
-- **Phones:** an app-style layout with a bottom tab bar and a More sheet. Add it to your home screen for an app
-  icon (on iPhone it then opens full screen).
+- **Accounts:** visitors can create an account (they must agree to the Terms of Use and Privacy Policy) to save their
+  linked leagues, team, favorite players and settings and get them back on any device. See **Accounts** below.
+- **Phones:** an app-style layout: a compact header (search, BFF Coach, account), each tab's sections pinned under it,
+  one compact top story under the sections, a bottom tab bar and a More sheet, and tighter player rows. The floating
+  updates bar and chat button are left to bigger screens. Add it to your home screen for an app icon (on iPhone it then
+  opens full screen).
 
 ## Projections
-- A model trained on 2021-2024 games and tested on every 2025 game (usage-based expected points, scoring this season
-  blended with last season, the defense, the Vegas team total, home/away and injured teammates).
+- A model trained on the four seasons before the latest completed one and tested on every game of that season (in 2026:
+  trained on 2021-2024, tested on 2025). It retrains every run, and each finished season joins the window on its own.
+  Inputs: usage-based expected points, scoring this season blended with last season, the defense, the Vegas team total,
+  home/away and injured teammates.
+- **Recent games count more.** Every input also has a recent-form version (each game counts half as much as the one 2.5
+  games after it), plus how his snap, target and carry shares are trending against his season average; rookies start
+  from what players drafted in their range usually score. A second model aims at the rest of the season (each player's
+  next six games), and later weeks use the average of the two. 2023-2025 backtest, out of sample: rest-of-season rank
+  accuracy 0.390 -> 0.415, average miss 3.54 -> 3.45 points a game; next game 4.57 -> 4.53 and 0.622 -> 0.630. How much
+  recent games count is learned from the data each run, not fixed by hand.
 - **Expert consensus blend:** next week's projection blends the model (35%) with the FantasyPros weekly expert
   consensus (65%), mapped onto our own projection scale (the k-th ranked RB gets our k-th best RB projection). On every
   2023-2025 week, out of sample, rank accuracy went from 0.419 to 0.467 and the average miss from 5.56 to 5.43 points.
@@ -72,6 +85,11 @@ last good version, so the published site never breaks.
 - It is blended with the **FantasyPros rest-of-season expert consensus** (60% in PPR, 50% half PPR, 40% standard;
   a little more for running backs and for players with two games or fewer this season, where the consensus proved more
   reliable), mapped onto the same curve, then scaled 0-100 (the top players sit near 100).
+- **Games since the consensus count right away.** The consensus file updates on Fridays, so Sunday's and Monday's games
+  are not in it yet. BFF adds half of the change in its own value from the games played since the consensus was taken
+  (2023-2025: value accuracy R² 0.297 -> 0.305, lopsided trades called for the side that really added more 68.5% ->
+  70.2%, points above replacement about the same). Example, week 6 of 2026: Jaylen Warren, slow start then 20.6, 15.6
+  and 36.8 points, rose from RB16 to RB12 by BFF value while the week-old consensus still had him RB19.
 - **Injured reserve:** nothing before his estimated return, then (chance he plays) x (value if he plays), using what
   really happened to such players in 2023-2025: about 1 in 10 played the first week after the estimated return, 1 in 3
   by the fourth week, about half later, and 53% never played again that season. (The old rule counted 75% of every week.)
@@ -100,22 +118,66 @@ last good version, so the published site never breaks.
 ## Look and pictures
 - Every tab reads like the News tab: a cover story on the tab's own artwork with picture headlines beside it, a headline
   rail on wide screens (headlines under the page on smaller ones), and Top stories on Home.
-- **Real pictures** on your own site: when a recent real story fits a tab (your players on My League, top players on
-  Players, fantasy and betting stories on Fantasy Help, this week's teams on Live), its photo leads that tab's cover,
-  credited and linked; each story leads one tab only. Player stories show the player's ESPN headshot large, games show
-  both team logos, the Trade values chart opens with photo cards of the elite tier, and the trade analyzer uses photo
-  cards. Pages on claude.ai cannot load outside pictures, so that copy shows the tab artwork, jerseys and team colors.
-- **Game photos** (your own site): every Live game card opens with a photo band and both team logos. Before kickoff it
-  is the home stadium (ESPN's stadium photo, found from the venue id on ESPN's scoreboard); once a game starts it
-  switches to a photo from ESPN's coverage of that game, and after the final to the recap photo. The game center puts
-  that photo behind the score and its Overview tab adds a **Photos** row (recap, story and video pictures, each linked to
-  its story). The Home game carousel and the Live cover use the same photos; the header ticker shows team logos.
-- **Headshots everywhere a player is listed**: rankings, values, waivers, box scores (fantasy and official), top
-  performers, mock-draft picks, the trade picker and "Make it fair" suggestions, parlay legs, and the player-card News
-  tab, where each story shows its own picture. A player without an ESPN photo gets his jersey in team colors.
-- `live_update.py` also saves each game's photo links and stadium ids in `live.json` (links only; the pictures stay on
-  ESPN's servers), so the photos show even when the page can't reach ESPN directly. Turn all outside pictures off with
-  the camera button in the header.
+- **News that fits the tab:** every headline gets a relevance score for each tab (your players on My League; top
+  players on Players; start/sit, waivers and betting on Fantasy Help; rookies and drafts on Draft; analytics on Learn;
+  this week's games on Live), less a point for each day of age. Covers, side stories and rails use it, and each real
+  story photo leads one tab only.
+- **Readable text on every picture:** text on a photo sits on a dark scrim sized to the text block. When the picture
+  can be measured, its brightness behind the text sets the scrim (strong on a white photo, light on a dark one);
+  otherwise BFF assumes the brightest possible photo, so white text keeps at least 4.5:1 contrast either way. Text on
+  team colors switches to dark ink where white would be hard to read (Steelers gold, Raiders silver, Seahawks green).
+- **Real pictures** on your own site: story photos, ESPN headshots everywhere a player is listed, team logos, photo
+  cards on the Trade values chart and in the trade analyzer, and the player-card News tab with each story's picture.
+  A player without an ESPN photo gets his jersey in team colors. Pages on claude.ai cannot load outside pictures, so
+  that copy shows the tab artwork, jerseys and team colors.
+- **Game photos:** every Live game card opens with a photo band and both team logos: the home stadium before kickoff,
+  a photo from ESPN's coverage once it starts, the recap photo after the final. The game center puts that photo behind
+  the score (no separate photo section). `live_update.py` saves each game's photo links and stadium ids in `live.json`
+  (links only), so the photos show even when the page can't reach ESPN directly. The camera button turns outside
+  pictures off.
+
+## Accounts (optional; about 10 minutes, free)
+Without this the site works exactly as before: everything a visitor links or stars is saved in their own browser.
+With it, the account button (top right) lets visitors create an account and get their leagues, team, favorites and
+settings back on any device. Creating one requires ticking a box agreeing to the **Terms of Use** and **Privacy Policy**
+(both open from the account panel and the footer). Accounts are stored in a free Google Firebase project that you own:
+1. Go to [console.firebase.google.com](https://console.firebase.google.com), **Create a project** (any name; Google
+   Analytics is not needed).
+2. **Security > Authentication > Get started > Sign-in method:** enable **Email/password**, then **Save**.
+3. **Databases & Storage > Firestore > Create database:** pick a location, choose **production mode**, create it. Open
+   its **Rules** tab, replace everything with the contents of `firestore.rules` from this kit, and **Publish**. (These
+   rules let each signed-in person read, save and delete only their own data.)
+4. **Project settings** (gear icon) **> General > Your apps > Web app (</>)**: register an app (any nickname, no
+   hosting needed) and copy the `firebaseConfig` snippet it shows.
+5. In GitHub: **Settings > Secrets and variables > Actions > Variables > New repository variable**, name it
+   `BFF_FIREBASE` and paste the snippet. Optional variables: `BFF_TERMS_STATE` (the state whose law governs the terms;
+   California if not set) and `BFF_CONTACT` (an email address or link where people can reach you about their data).
+6. Run **Update Gridiron Fantasy** once. The account button now offers **Create account** and **Sign in**.
+
+The Firebase web config is not a secret (it is meant to be in web pages); the Firestore rules are what protect the
+data. The free plan allows 50,000 reads and 20,000 writes a day, far more than a personal site needs. People can delete
+their account and its data from the account panel. On the claude.ai copy, the visitor's Claude sign-in is the account
+and the data is saved with the page itself, private to each person. The Terms of Use and Privacy Policy are a
+plain-language starting point, not legal advice: have a lawyer review them if the site grows, and note that no terms
+can stop every lawsuit; they limit liability, require individual arbitration and rule out class actions where the law
+allows.
+
+## Runs by itself all year
+- **Seasons roll over on their own.** `fetch_data.py` reads the NFL schedule to decide the season: in progress, about
+  to start, or (after the last regular-season game) the next one. The model always learns from the five latest completed
+  seasons and tests on the most recent, so each finished season joins on its own; nothing is tied to a year.
+- **Offseason:** once a regular season ends, the site switches to the next season: rankings, trade values and the mock
+  draft are built from last season's data, rookies and players who changed teams come in through the rosters and the
+  consensus top 300, and Live says when the schedule usually arrives (May). When the schedule is published, week 1
+  projections, opponents, byes and prop lines appear automatically, and live scores start with the first game.
+- **New players** join from rosters, depth charts, the consensus top 300 and weekly stats; nobody keeps a list.
+- **Health report:** after every data run `health.py` writes `status.json` (which steps worked, the season, the last
+  good build). It changes at least once a day, which also keeps GitHub from pausing the scheduled jobs (GitHub pauses
+  them after 60 days without activity in a public repository).
+- **Safe by default:** tested library versions are pinned in `requirements.txt` (the newest versions install if those
+  ever stop installing); each run checks the page before saving and keeps the last good version if anything fails;
+  missing or late data files are skipped and picked up on the next run; GitHub emails you if a run fails.
+- Feature tables for past seasons are cached between runs (`.cache`), so a run takes a few minutes.
 
 ## Predicted prop lines (`ff_lines.py`)
 - Built the way books build them, from **opportunity**: expected targets, carries or pass attempts (recent full
@@ -134,9 +196,12 @@ last good version, so the published site never breaks.
 - For entertainment, 21+ where legal. Gambling problem? Call or text 1-800-GAMBLER.
 
 ## Updating an existing site to this version
-Upload (replace) these files: `template.html`, `app.css`, `index.html`, `ff_produce.py`, `fetch_data.py`, `live_update.py`, `.gitignore`
-and `README.md` (the 10/15 photo update changed `template.html`, `app.css`, `index.html`, `ff_produce.py`, `live_update.py` and `README.md`). Leave your `*_history.json`, `lines.json`, `parlays.json` and `bet_inputs.json` alone; your workflows
-keep those up to date. Then run **Update Gridiron Fantasy** once.
+Upload (replace) these files: `template.html`, `app.css`, `index.html`, `ff_build2.py`, `ff_produce.py`,
+`fetch_data.py`, `assemble.py`, `ff_lines.py`, `parlay_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`,
+`health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `README.md`, and both workflow files in
+`.github/workflows/` (`update.yml`, `scores.yml`). Leave your `*_history.json`, `lines.json`, `parlays.json` and
+`bet_inputs.json` alone; your workflows keep those up to date. `DTR.parquet` and `D25.parquet` are no longer used and
+can be deleted. Then run **Update Gridiron Fantasy** once (the first run builds the feature tables, about 5 extra minutes).
 
 ## One-time setup (about 10 minutes)
 1. Create a free account at github.com and sign in.
@@ -152,6 +217,7 @@ keep those up to date. Then run **Update Gridiron Fantasy** once.
    `https://YOUR-USERNAME.github.io/gridiron-fantasy/`.
 7. Test it: **Actions** tab > **Update Gridiron Fantasy** > **Run workflow**. A run takes about 5 to 10 minutes
    because it downloads several seasons of play-by-play data. Then run **Live scores, news and lines** once.
+8. Optional: switch on **Accounts** (above) and **Sleeper sync** (below).
 
 ## Sync your Sleeper league automatically (optional)
 1. Find your league ID: the long number in your league's web address on sleeper.com.
@@ -170,10 +236,8 @@ keep those up to date. Then run **Update Gridiron Fantasy** once.
   team-color graphics instead.
 - A free GitHub Pages site is public. A synced Sleeper league's team names and rosters are visible to anyone with
   the link. Leagues you import by hand are saved only in your own browser.
-- GitHub pauses scheduled workflows in a public repository after 60 days with no activity. The workflows' own
-  saves count as activity during the season; if updates stop in the offseason, re-enable them in **Actions**.
-- The trained models (`DTR.parquet`, `D25.parquet`, `ff_build2.py`) are set up for the 2026 season. Before 2027,
-  ask Claude to retrain them with 2026 included.
+- GitHub pauses scheduled workflows in a public repository after 60 days with no activity; the daily health report
+  keeps the repository active. If updates ever stop, open **Actions** and re-enable the workflows.
 - If a run fails, open it in the **Actions** tab to see the error. The usual cause is a data file that has not been
   published yet. The site keeps the last good version until the next run succeeds.
 

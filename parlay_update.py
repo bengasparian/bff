@@ -23,6 +23,12 @@ D = json.load(open(SRC)); P = D['players']; PI = {p['id']: p for p in P}; SCHED 
 LN = json.load(open('lines.json')); FW = LN['wk']
 HIST_FILE = 'parlay_history.json'
 H = json.load(open(HIST_FILE)) if os.path.exists(HIST_FILE) else {}
+# one season per file: when a new season starts, last season's record is kept as parlay_history_<season>.json
+SEASON = int(D['asof'].get('season') or NOW.year)
+if H.get('_season') not in (None, SEASON):
+    json.dump(H, open(f"parlay_history_{H['_season']}.json", 'w'), indent=1); print('new season: archived', H['_season']); H = {}
+H['_season'] = SEASON
+WKS = lambda: [k for k in H if not k.startswith('_')]
 
 def suggest():
     legs = []
@@ -61,8 +67,8 @@ else: print(f'week {FW}: first kickoff passed before any parlay was recorded')
 STAT = {'py': lambda r: r[3], 'ptd': lambda r: r[4], 'ry': lambda r: r[7], 'ty': lambda r: r[11], 'rec': lambda r: r[9], 'td': lambda r: r[8] + r[12]}
 def final(team, w):
     e = next((x for x in SCHED.get(team, []) if x[0] == w), None); return bool(e and e[4] is not None)
-for wk, W in H.items():
-    w = int(wk)
+for wk in WKS():
+    W = H[wk]; w = int(wk)
     for par in W['parlays']:
         for lg in par['legs']:
             if lg.get('res') in ('hit', 'miss', 'void'): continue                       # graded once, never changed
@@ -76,10 +82,10 @@ for wk, W in H.items():
         par['status'] = 'lost' if 'miss' in R else 'pending' if 'pending' in R else 'won' if 'hit' in R else 'void'
 new_h = json.dumps(H, indent=1)
 if not os.path.exists(HIST_FILE) or open(HIST_FILE).read() != new_h: open(HIST_FILE, 'w').write(new_h)
-page = {'fw': FW, 'start': min((int(k) for k in H), default=FW), 'weeks': [H[k] for k in sorted(H, key=int, reverse=True)]}
+page = {'fw': FW, 'season': SEASON, 'start': min((int(k) for k in WKS()), default=FW), 'weeks': [H[k] for k in sorted(WKS(), key=int, reverse=True)]}
 new_p = json.dumps(page, separators=(',', ':'))
 if not os.path.exists('parlays.json') or open('parlays.json').read() != new_p: open('parlays.json', 'w').write(new_p)
 if not REFRESH:
     D['parl'] = page; json.dump(D, open('ff_data.json', 'w'), separators=(',', ':'))
-done = [p for W in H.values() for p in W['parlays'] if p['status'] in ('won', 'lost')]
-print(f'parlay tracker: {len(H)} week(s) recorded, {sum(p["status"] == "won" for p in done)} won of {len(done)} graded')
+done = [p for k in WKS() for p in H[k]['parlays'] if p['status'] in ('won', 'lost')]
+print(f'parlay tracker: {len(WKS())} week(s) recorded, {sum(p["status"] == "won" for p in done)} won of {len(done)} graded')

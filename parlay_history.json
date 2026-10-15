@@ -1,9 +1,9 @@
 {
  "6": {
   "wk": 6,
-  "made": "2026-10-15T18:05+00:00",
+  "made": "2026-10-15T17:17+00:00",
   "locks": "2026-10-15T20:15:00-04:00",
-  "lines_at": "2026-10-15T17:37+00:00",
+  "lines_at": "2026-10-15T17:17+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -41,7 +41,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2379,
+    "prob": 0.2372,
     "legs": [
      {
       "pid": "00-0037834",
@@ -70,16 +70,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0041032",
-      "t": "NYJ",
-      "opp": "NE",
+      "pid": "00-0036309",
+      "t": "NYG",
+      "opp": "NO",
       "k": "rec",
-      "line": 2.5,
-      "lean": "Under",
-      "pr": 0.619,
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.617,
       "book": "bff",
-      "n": "Kenyon Sadiq",
-      "pos": "TE",
+      "n": "Darnell Mooney",
+      "pos": "WR",
       "res": "pending"
      }
     ],
@@ -87,7 +87,7 @@
    },
    {
     "type": "long",
-    "prob": 0.089,
+    "prob": 0.0885,
     "legs": [
      {
       "pid": "00-0037834",
@@ -116,16 +116,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0041032",
-      "t": "NYJ",
-      "opp": "NE",
+      "pid": "00-0036309",
+      "t": "NYG",
+      "opp": "NO",
       "k": "rec",
-      "line": 2.5,
-      "lean": "Under",
-      "pr": 0.619,
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.617,
       "book": "bff",
-      "n": "Kenyon Sadiq",
-      "pos": "TE",
+      "n": "Darnell Mooney",
+      "pos": "WR",
       "res": "pending"
      },
      {
@@ -148,7 +148,7 @@
       "k": "py",
       "line": 177.5,
       "lean": "Over",
-      "pr": 0.611,
+      "pr": 0.61,
       "book": "bff",
       "n": "Jalon Daniels",
       "pos": "QB",
@@ -158,5 +158,6 @@
     "status": "pending"
    }
   ]
- }
+ },
+ "_season": 2026
 }

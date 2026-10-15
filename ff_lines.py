@@ -272,10 +272,14 @@ if __name__ == '__main__':
         I = json.load(open('bet_inputs.json')); D = None
     else:
         I, D = build_inputs()
-    try:
-        L = build_lines(I)
-    except Exception as ex:   # never break the job: keep the previous lines
-        print('could not rebuild lines, keeping the previous ones:', ex); sys.exit(0)
+    a_ = I.get('asof') or {}
+    if a_.get('phase') == 'preseason' and a_.get('sched') is False:   # offseason before the schedule: no games to price
+        L = []; print('the schedule is not out yet: no prop lines this run')
+    else:
+        try:
+            L = build_lines(I)
+        except Exception as ex:   # never break the job: keep the previous lines
+            print('could not rebuild lines, keeping the previous ones:', ex); sys.exit(0)
     out, changed = merge_history(L, I['fw'])
     out['odds_from'] = 'ESPN (current odds)' if any(l['its'] == 'ESPN' for l in L) else 'nflverse schedule (opening odds)'
     if changed or not os.path.exists('lines.json'):

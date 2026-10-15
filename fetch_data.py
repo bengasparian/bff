@@ -1,25 +1,97 @@
-"""Download the public data the pipeline needs (nflverse, DynastyProcess, FantasyPros consensus) into this folder.
-The consensus rankings are optional: if they cannot be downloaded the site falls back to its own projections."""
-import sys, urllib.request
-SEASON = int(sys.argv[1]) if len(sys.argv) > 1 else 2026
+"""Download the public data the pipeline needs (nflverse, DynastyProcess, FantasyPros consensus) into this folder,
+and work out which season it is (season.json), so nothing has to be changed by hand from one season to the next.
+
+  season in progress  -> that season, phase "season"
+  schedule out, no game played yet -> that season, phase "preseason"
+  last season finished, next schedule not out yet -> next season, phase "preseason" (draft prep on last season's data)
+
+The model learns from the five completed seasons before the current one. Files for the current season are optional:
+they do not exist until its first game. The consensus rankings are optional too: without them the site uses its own
+projections only.
+
+  python fetch_data.py                 download everything and write season.json
+  python fetch_data.py --season-only   only work out the season from the saved schedule (no downloads)
+  (testing: BFF_AS_OF=YYYY-MM-DD pretends it is that day; BFF_HIDE_SCHED=2027 pretends a schedule is not out yet)
+"""
+import os, sys, csv, json, datetime, urllib.request
+
 B = "https://github.com/nflverse/nflverse-data/releases/download/"
 DP = "https://raw.githubusercontent.com/dynastyprocess/data/master/files/"
-files = {}
-for y in range(2021, SEASON + 1):
-    files[f"pbp_{y}.parquet"] = B + f"pbp/play_by_play_{y}.parquet"
-    files[f"stats_player_week_{y}.parquet"] = B + f"stats_player/stats_player_week_{y}.parquet"
-    files[f"snap_counts_{y}.parquet"] = B + f"snap_counts/snap_counts_{y}.parquet"
-files["db_playerids.csv"] = DP + "db_playerids.csv"              # player ID crosswalk
-optional = {
+GAMES = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
+AS_OF = os.environ.get("BFF_AS_OF")
+TODAY = datetime.date.fromisoformat(AS_OF) if AS_OF else datetime.datetime.now(datetime.timezone.utc).date()
+
+
+def get(name, url, tries=3):
+    last = None
+    for k in range(tries):
+        try:
+            with urllib.request.urlopen(url, timeout=300) as r: data = r.read()
+            with open(name, "wb") as f: f.write(data)
+            print("downloaded", name, flush=True); return True
+        except Exception as e:
+            last = e
+    raise last
+
+
+# ---- the schedule decides the season
+ONLY = "--season-only" in sys.argv
+if not ONLY:
+    try: get("games.csv", GAMES)
+    except Exception as e:
+        if not os.path.exists("games.csv"): raise
+        print("schedule download failed; using the saved copy:", e)
+rows = [g for g in csv.DictReader(open("games.csv", newline="")) if g.get("game_type") == "REG"]
+hide = {int(x) for x in os.environ.get("BFF_HIDE_SCHED", "").split(",") if x}          # testing only: pretend a schedule is not out
+rows = [g for g in rows if int(g["season"]) not in hide]
+if AS_OF:   # testing only: games on or after the pretend date have not been played yet
+    for g in rows:
+        if g["gameday"] and g["gameday"] >= AS_OF: g["home_score"] = g["away_score"] = ""
+played = lambda g: g.get("home_score", "") not in ("", "NA")
+L = max(int(g["season"]) for g in rows)
+GL = [g for g in rows if int(g["season"]) == L]
+if any(not played(g) for g in GL):
+    SEASON, PHASE = L, ("season" if any(played(g) for g in GL) else "preseason")
+else:
+    SEASON, PHASE = L + 1, "preseason"
+SCHED = any(int(g["season"]) == SEASON for g in rows)
+json.dump({"season": SEASON, "phase": PHASE, "schedule": SCHED, "asof": TODAY.isoformat()}, open("season.json", "w"))
+print(f"season {SEASON}, phase {PHASE}, schedule out: {SCHED}", flush=True)
+if AS_OF or hide:   # keep the pretend schedule for the rest of the pipeline
+    with open("games.csv", newline="") as f: allr = list(csv.DictReader(f))
+    flds = list(allr[0].keys()); out = []
+    for g in allr:
+        if int(g["season"]) in hide: continue
+        if AS_OF and g["gameday"] and g["gameday"] >= AS_OF:
+            for k in ("home_score", "away_score", "result", "total", "overtime"):
+                if k in g: g[k] = ""
+        out.append(g)
+    with open("games.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=flds); w.writeheader(); w.writerows(out)
+
+if ONLY: sys.exit(0)
+# ---- nflverse: five completed seasons plus the current one (its files appear after its first game)
+need, opt = {}, {}
+for y in range(SEASON - 5, SEASON + 1):
+    d = need if y < SEASON else opt
+    d[f"pbp_{y}.parquet"] = B + f"pbp/play_by_play_{y}.parquet"
+    d[f"stats_player_week_{y}.parquet"] = B + f"stats_player/stats_player_week_{y}.parquet"
+    d[f"snap_counts_{y}.parquet"] = B + f"snap_counts/snap_counts_{y}.parquet"
+    opt[f"roster_weekly_{y}.parquet"] = B + f"weekly_rosters/roster_weekly_{y}.parquet"   # teammate-injury signal (optional)
+    opt[f"injuries_{y}.parquet"] = B + f"injuries/injuries_{y}.parquet"
+for y in (SEASON, SEASON - 1):   # rosters and depth charts: this season's, or last season's before it starts
+    opt[f"roster_{y}.parquet"] = B + f"rosters/roster_{y}.parquet"
+    opt[f"depth_charts_{y}.parquet"] = B + f"depth_charts/depth_charts_{y}.parquet"
+need["db_playerids.csv"] = DP + "db_playerids.csv"              # player ID crosswalk
+opt.update({
     "values.csv": DP + "values-players.csv",                    # dynasty market (only used to keep injured stars in the player pool)
-    "db_fpecr_latest.csv": DP + "db_fpecr_latest.csv",          # FantasyPros consensus rankings, rest of season
+    "db_fpecr_latest.csv": DP + "db_fpecr_latest.csv",          # FantasyPros consensus rankings, rest of season (draft rankings in the offseason)
     "fp_latest_weekly.csv": DP + "fp_latest_weekly.csv",        # FantasyPros consensus rankings, this week
-}
-def get(name, url):
-    with urllib.request.urlopen(url, timeout=300) as r, open(name, "wb") as f:
-        f.write(r.read())
-    print("downloaded", name)
-for name, url in files.items(): get(name, url)
-for name, url in optional.items():
-    try: get(name, url)
-    except Exception as e: print(f"could not download {name} ({e}); continuing without it")
+})
+skip = {f for f in os.environ.get("BFF_SKIP", "").split(",") if f}   # testing only: files to leave out
+for name, url in need.items():
+    if name not in skip: get(name, url)
+for name, url in opt.items():
+    if name in skip: continue
+    try: get(name, url, tries=2)
+    except Exception as e: print(f"not available yet: {name} ({e}); continuing without it")

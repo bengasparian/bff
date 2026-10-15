@@ -1,6 +1,6 @@
 """News items detected from official data: injuries, injured reserve, depth chart changes, roster moves.
 Every item is computed from nflverse feeds, so the list refreshes itself whenever the data updates."""
-import io, urllib.request, datetime
+import io, urllib.request
 import pandas as pd
 B = 'https://github.com/nflverse/nflverse-data/releases/download/'
 FPOS = {'QB': 'QB', 'RB': 'RB', 'HB': 'RB', 'FB': 'RB', 'WR': 'WR', 'LWR': 'WR', 'RWR': 'WR', 'SWR': 'WR', 'TE': 'TE'}
