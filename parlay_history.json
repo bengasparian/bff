@@ -1,9 +1,9 @@
 {
  "6": {
   "wk": 6,
-  "made": "2026-10-15T21:37+00:00",
+  "made": "2026-10-15T21:54+00:00",
   "locks": "2026-10-15T20:15:00-04:00",
-  "lines_at": "2026-10-15T21:37+00:00",
+  "lines_at": "2026-10-15T21:54+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -11,15 +11,15 @@
     "prob": 0.3844,
     "legs": [
      {
-      "pid": "00-0039910",
-      "t": "WAS",
-      "opp": "SF",
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "WAS",
       "k": "ptd",
       "line": 1.5,
-      "lean": "Under",
+      "lean": "Over",
       "pr": 0.62,
       "book": "bff",
-      "n": "Jayden Daniels",
+      "n": "Brock Purdy",
       "pos": "QB",
       "res": "pending"
      },
@@ -44,15 +44,15 @@
     "prob": 0.2383,
     "legs": [
      {
-      "pid": "00-0039910",
-      "t": "WAS",
-      "opp": "SF",
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "WAS",
       "k": "ptd",
       "line": 1.5,
-      "lean": "Under",
+      "lean": "Over",
       "pr": 0.62,
       "book": "bff",
-      "n": "Jayden Daniels",
+      "n": "Brock Purdy",
       "pos": "QB",
       "res": "pending"
      },
@@ -90,15 +90,15 @@
     "prob": 0.0891,
     "legs": [
      {
-      "pid": "00-0039910",
-      "t": "WAS",
-      "opp": "SF",
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "WAS",
       "k": "ptd",
       "line": 1.5,
-      "lean": "Under",
+      "lean": "Over",
       "pr": 0.62,
       "book": "bff",
-      "n": "Jayden Daniels",
+      "n": "Brock Purdy",
       "pos": "QB",
       "res": "pending"
      },
