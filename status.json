@@ -10,6 +10,7 @@
   "season": 2026
  },
  "steps": {
+  "articles": "success",
   "calls": "success",
   "check": "success",
   "fetch": "success",
