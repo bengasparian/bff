@@ -1,4 +1,5 @@
-"""Refresh live.json with ESPN's public scoreboard and box scores (run every few minutes on game days).
+"""Refresh live.json with ESPN's public scoreboard and box scores (run every few minutes on game days), and ESPN's injury
+list for every game not yet started (the data build and the page use it for each player's status).
 The page loads ESPN directly every 30 seconds when it can; live.json is the backup copy it falls back to."""
 import json, os, time, urllib.request, datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -60,6 +61,23 @@ def box(sm):
         ts[tm] = [[s.get("label") or s.get("name"), s.get("displayValue")] for s in (tt.get("statistics") or []) if s.get("displayValue") is not None]
     return {"players": list(players.values()), "cats": cats, "ts": ts}
 
+FPOS = {"QB", "RB", "WR", "TE", "FB"}
+def injuries(sm):
+    """ESPN's injury list for each team in a game (fantasy positions): [espn id, name, position, status, injury, estimated return, date]"""
+    out = {}
+    for blk in sm.get("injuries") or []:
+        k = (blk.get("team") or {}).get("abbreviation"); tm = EMAP.get(k, k)
+        if not tm: continue
+        L = []
+        for it in blk.get("injuries") or []:
+            a = it.get("athlete") or {}; pos = (a.get("position") or {}).get("abbreviation") or ""
+            if pos not in FPOS or not a.get("displayName"): continue
+            d = it.get("details") or {}
+            st = it.get("status") or (it.get("type") or {}).get("description") or ""
+            L.append([str(a.get("id") or ""), a.get("displayName"), pos, str(st), str(d.get("type") or ""), str(d.get("returnDate") or "")[:10], str(it.get("date") or "")[:10]])
+        out[tm] = sorted(L)
+    return out
+
 def recent(g, hours=36):
     """kicked off within the last day and a half (recap photos are published after the game)"""
     try: return (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(str(g.get("kick")).replace("Z", "+00:00"))).total_seconds() < hours * 3600
@@ -85,22 +103,29 @@ if __name__ == "__main__":
     try:
         sb = get(BASE + "scoreboard"); G = games(sb); B = {k: v for k, v in (old.get("box") or {}).items() if isinstance(v, dict)}
         M = {k: v for k, v in (old.get("media") or {}).items() if isinstance(v, dict)}; V = dict(old.get("venues") or {})
+        I = {k: v for k, v in (old.get("inj") or {}).items() if isinstance(v, dict)}
         for g in G:
             if g.get("vid") and not g.get("neutral"): V[g["home"]] = str(g["vid"])
-        need = [g for g in G if g["state"] == "in" or (g["state"] == "post" and not B.get(g["id"])) or g["id"] not in M
+        # every game not yet started is re-read each run for its injury list (the official report and ESPN's updates)
+        need = [g for g in G if g["state"] in ("in", "pre") or (g["state"] == "post" and not B.get(g["id"])) or g["id"] not in M
                 or (g["state"] == "post" and recent(g) and not any(p.get("k") in ("Recap", "Story") for p in M[g["id"]].get("ph") or []))]
         t0 = time.time()
         with ThreadPoolExecutor(max_workers=4) as ex:   # box scores 4 at a time, and never more than ~2 minutes in total
             futs = {ex.submit(get, BASE + "summary?event=" + str(g["id"])): g["id"] for g in need}
             for f in as_completed(futs, timeout=150):
                 try:
-                    sm = f.result(); gid = futs[f]; M[gid] = media(sm)
-                    if next(g for g in G if g["id"] == gid)["state"] != "pre": B[gid] = box(sm)
+                    sm = f.result(); gid = futs[f]; M[gid] = media(sm); stt = next(g for g in G if g["id"] == gid)["state"]
+                    if stt != "pre": B[gid] = box(sm)
+                    else:
+                        try:
+                            iv = injuries(sm)
+                            if iv or "injuries" in sm: I[gid] = {"t": iv, "w": (sb.get("week") or {}).get("number")}
+                        except Exception as e: print("injury list unavailable for", gid, e)
                 except Exception as e: print("box score unavailable for", futs[f], e)
                 if time.time() - t0 > 140: print("time budget reached; keeping earlier box scores for the rest"); break
         cur = lambda d: {k: v for k, v in d.items() if any(str(x["id"]) == str(k) for x in G)}
-        new = {"src": "ESPN, refreshed every few minutes", "week": (sb.get("week") or {}).get("number"), "games": G, "box": cur(B), "media": cur(M), "venues": V}
-        if {k: old.get(k) for k in ("games", "box", "media", "venues")} != {k: new[k] for k in ("games", "box", "media", "venues")}:
+        new = {"src": "ESPN, refreshed every few minutes", "week": (sb.get("week") or {}).get("number"), "games": G, "box": cur(B), "media": cur(M), "venues": V, "inj": cur(I)}
+        if {k: old.get(k) for k in ("games", "box", "media", "venues", "inj")} != {k: new[k] for k in ("games", "box", "media", "venues", "inj")}:
             new["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
             json.dump(new, open("live.json", "w"), separators=(",", ":")); print("live.json updated:", sum(g["state"] == "in" for g in G), "games live")
         else: print("no change")

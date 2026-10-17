@@ -5,34 +5,38 @@ to edit from one season to the next. Two GitHub workflows do the work, no API ke
 
 | Workflow | File | When | What it does |
 |---|---|---|---|
-| **Update Gridiron Fantasy** | `update.yml` | every 3 hours (23 minutes past) | downloads the latest NFL data, rebuilds every projection, ranking, trend and prop line, saves and grades the weekly calls, collects news, optionally syncs your Sleeper league, checks the page, saves it |
-| **Live scores, news and lines** | `scores.yml` | every 10 minutes | live scores and box scores, news from every source, prop lines moved by the latest odds and news, parlay picks; only saves when something changed |
+| **Update Gridiron Fantasy** | `update.yml` | every 3 hours (23 minutes past) | downloads the latest NFL data, rebuilds every projection, ranking, trend and prop line, saves and grades the weekly calls, collects news, writes and updates BFF Originals, optionally syncs your Sleeper league, checks the page, saves it |
+| **Live scores, news and lines** | `scores.yml` | every 10 minutes | live scores and box scores, news from every source, prop lines moved by the latest odds and news, parlay picks, BFF Originals (breaking news, previews, recaps); only saves when something changed |
 
 Both share one queue, so they never save at the same moment. Before anything is saved, `check_page.py` checks the
 page (data readable, enough players, no script errors) and the live files; anything broken is put back to the
 last good version, so the published site never breaks.
 
 ## What's on the site
-- **Home:** the first section cycles through the week's games: live games first, then finals, with the top fantasy
-  performer of each. It stays on that week until 12:00 AM Eastern on the Wednesday after its last game, then switches to
-  next week's upcoming games (kickoff, spread, total, win chances, players to watch). Below: every tool one tap away,
-  the week's games, and dashboard sections (swipeable on phones). Every card links to its full section.
+- **Home:** the player rankings screen, with the week built in: the week header (dates, live games), the week's games
+  strip, and **Quick hits** (your team or a link-your-league card, the latest BFF Originals, what changed since your last
+  visit, this week's calls, injury watch, trending adds, buy and sell, best picks). Its sections: **This week**
+  (rankings), **Trade values** (the rest-of-season BFF value chart, tiered, for your league settings), **Start/sit**
+  (cheat sheet) and **Favorites**. Every player has a card with projections, usage, game logs, schedule, VORP, news
+  and this week's prop lines. Old links to the Week and Players tabs open Home.
 - **Live:** just the games and scores, each with its photo: the featured game on top, then every game of the week.
   **Fantasy points** (your lineup live, top performers, leaders by position) is one tap away on the same tab. Tap a game
-  for its full-screen game center (outlook, win chances, injuries, top performers, box score). Past and future weeks too.
+  for its full-screen game center (outlook, win chances, injuries with the injury and its source, the expected starting
+  quarterbacks, top performers, box score). Past and future weeks too. Scores, injuries and projections update on
+  their own (see **Injuries** under Projections).
 - **News:** a sports-site layout with a top story, lead stories with pictures, a trending list (players covered by
   the most outlets in the last day), most-added players on Sleeper and the official injury report. Stories come from
   ESPN, CBS Sports, Yahoo Sports, Pro Football Talk, RotoWire, RotoBaller, PFF and Sharp Football Analysis. Headlines
   stay exactly as each publisher wrote them and link to the original; the labels (Breaking, Injury alert, Waiver
   wire...), outlet counts and "fantasy impact" notes are BFF's. Pictures load from each publisher's own feed image.
-- **Players:** this week's rankings, **Trade values** (the rest-of-season BFF value chart, tiered, for your league
-  settings), a start/sit cheat sheet, and a card for every player with projections, usage, game logs, schedule, news
-  and this week's prop lines.
+  **BFF Originals** (below) are mixed into the feed with a gold "BFF Original" label, lead it while fresh, and have
+  their own panel.
 - **My League:** link a Sleeper, ESPN or Yahoo league for your best lineup, waiver targets, trade ideas and a
   matchup simulator.
-- **Draft:** a mock draft against AI teams with different strategies, graded at the end.
-- **Fantasy Help:** **Weekly calls** (below), Trends (best bets, buy & sell, usage, proof), Matchups (this week,
-  defenses, schedules), draft guide, waivers & trades, the trade analyzer with **Find trades**, betting, and tips.
+- **Draft:** everything for draft day: **Mock draft** against AI teams with different strategies (graded at the end),
+  the pick-by-pick **Draft guide** for your league settings, and draft tips.
+- **Fantasy Help:** the in-season toolkit: **Weekly calls** (below), Trends (best bets, buy & sell, usage, proof),
+  Matchups (this week, defenses, schedules), waivers & trades, the trade analyzer with **Find trades**, betting, and tips.
 - **Weekly calls:** every week's must starts, must sits, buy lows and sell highs, saved by `calls_update.py`. Start and
   sit calls keep updating until that player's game kicks off, then lock; buy and sell calls lock at the week's first
   kickoff. After the games each call is graded with official stats: a must start hits when he finishes as a starter
@@ -40,13 +44,21 @@ last good version, so the published site never breaks.
   highs are graded on the player's next 3 games. A season scorecard shows the hit rates next to honest yardsticks
   (starting the best season averages; all usual starters). Weeks 2-5 of 2026 were rebuilt with `calls_backfill.py`
   from the same model using only pre-game information and are labeled "rebuilt"; everything from week 6 on is saved live.
-- **Favorites:** star any player to track him in Players → Favorites (this week's outlook, live points, status, props,
-  news) and on Home. Saved in each visitor's own browser.
-- **BFF Coach:** the chat button on every page (in the header on phones) answers start/sit, trade, waiver, prop and "how does BFF work"
-  questions instantly with the site's own projections, trade values and lines, and declines questions that are not
-  about football or the site. On your GitHub site it runs on BFF's own rules (no AI service or key needed). On the
+- **Favorites:** star any player to track him in Home → Favorites (this week's outlook, live points, status, props,
+  news). Saved in each visitor's own browser (and in their account, if they have one).
+- **Scoring:** PPR, half PPR, standard, or **Custom** (the Scoring menu): TE premium (extra points per tight-end
+  catch), 6-point passing touchdowns, points per carry or first down, interception and fumble penalties, and the
+  rest. Every projection, ranking, BFF value, trade value, draft pick and waiver target re-scores for it. A linked
+  Sleeper league's scoring is read automatically.
+- **BFF Coach (Ask BFF):** the chat button on every page (in the header on phones) answers any football or site
+  question it has data for, instantly, with the site's own projections, trade values and lines: start/sit, trades,
+  **trade ideas for a team you type in** ("My team: Josh Allen, Bijan Robinson, ... give me mock trades"; it remembers
+  the team for follow-ups), your best lineup and waiver adds, league leaders, a team's record, next game, injuries and
+  starting quarterback, Super Bowl and conference title results, fantasy terms and rules basics, and how BFF works.
+  It only declines clearly unrelated topics. On your GitHub site it runs on BFF's own rules (no AI service or key needed). On the
   claude.ai copy it can also ask Claude, on the visitor's own Claude account with their permission, for open-ended
-  scenarios; Claude gets the same BFF numbers through the page's tools.
+  scenarios and anything the instant answers do not cover; Claude gets the same BFF numbers through the page's tools
+  (or in the question when tools are unavailable) and is told never to refuse a football or site question.
 - **Learn:** how everything works, accuracy, and **Sources & citations** for every number and story.
 - **Updates bar:** on wider screens, a broadcast-style bar at the bottom of every page cycles through updates that fit the page
   (Home: everything; Live: scores and top performers; News: news; Fantasy Help: fantasy and betting updates;
@@ -54,7 +66,8 @@ last good version, so the published site never breaks.
 - **Accounts:** visitors can create an account (they must agree to the Terms of Use and Privacy Policy) to save their
   linked leagues, team, favorite players and settings and get them back on any device. See **Accounts** below.
 - **Phones:** an app-style layout: a compact header (search, BFF Coach, account), each tab's sections pinned under it,
-  one compact top story under the sections, a bottom tab bar and a More sheet, and tighter player rows. The floating
+  one compact top story under the sections, a bottom tab bar (Home, Live, News, Help, More; the More sheet holds your
+  account, My League, Draft and Learn), full-screen article reader, and tighter player rows. The floating
   updates bar and chat button are left to bigger screens. Add it to your home screen for an app icon (on iPhone it then
   opens full screen).
 
@@ -73,8 +86,28 @@ last good version, so the published site never breaks.
   consensus (65%), mapped onto our own projection scale (the k-th ranked RB gets our k-th best RB projection). On every
   2023-2025 week, out of sample, rank accuracy went from 0.419 to 0.467 and the average miss from 5.56 to 5.43 points.
   The page's **Why?** breakdown shows the consensus adjustment as its own bar.
+- **Injuries:** each player's status for his next game comes from ESPN's injury list for that game (`live_update.py`
+  saves it every 10 minutes until kickoff), else the official injury report, else what the practice reports imply
+  before Friday's game statuses. Measured on every 2021-2025 report against who really played (QB/RB/WR/TE with 3+
+  games): Out played 0.1% of the time, Doubtful 0.4% (both projected 0), Questionable 61% (full projection, tagged Q);
+  missed last week and not practicing 1.3% (projected 0, tagged as expected out), limited 40% (tagged Q). A report from
+  a game already played never tags anyone. Later weeks for a player out now use the measured return curve (39% the
+  next week, 69% after two, 85% after three, about 90% later, compared with healthy players) or ESPN's estimated
+  return date. The page also lays ESPN's newest list over the data between runs.
+- **Starting quarterbacks:** only a team's expected starter is projected (the best quarterback on the depth chart who
+  is not out). Backups are projected 0; when the starter is out, the fill-in gets that game and, later, the chance the
+  starter is still out.
+- **Games a player left hurt** still count toward his rates: we tested leaving them out (2025 test season) and next-game
+  and rest-of-season errors got slightly worse, because players coming back from those injuries really did score less.
 - **Half PPR and standard:** a player's catches are removed in proportion to how much the projection regressed his
   scoring (tested on 2023-2025: lower error than removing his full catches per game).
+- **Custom scoring:** each player carries his own stat mix per game (passing yards, touchdowns and two-pointers,
+  interceptions, carries, rushing and receiving yards and touchdowns, catches, first downs, fumbles lost): this
+  season's games, shrunk toward last season's mix (or his position's average) as if he had 3 more games of it. His PPR
+  projection is converted by the ratio of his points under your rules to his PPR points on that mix (limited to
+  0.3x-3x). Example, week 6 of 2026: with TE premium (1.5 points per tight-end catch) Brock Bowers rose from 11th to 5th
+  by BFF value; with 6-point passing touchdowns quarterback projections rose about 11%. In custom leagues the expert
+  consensus (which is scored in PPR) counts 10 points less.
 
 ## BFF value: trade values and rankings
 - For every week from now through week 17, BFF value adds up the starting-lineup points a player should give you over
@@ -101,12 +134,57 @@ last good version, so the published site never breaks.
   replacement): value accuracy R² 0.22 -> 0.30 and 0.18 -> 0.26; more accurate at 13 of 14
   checkpoints; "fair" calls that the expert consensus saw as 2x lopsided fell from 41% to 9% (0% with the
   consensus check). The old formula used a dynasty market, which overrated young players for a one-season league.
+- **Value over replacement (VORP):** like basketball's VORP, the points a player should score from now to week 17 over
+  the best player at his position likely to be on waivers in your league (in a 12-team league with one QB, two RB, two
+  WR, one TE and a flex: about the 20th quarterback, the 61st running back and wide receiver, and the 20th tight end,
+  by projected points a game; it moves with your settings). It is on every player card, the Trade values chart and the trade analyzer, and BFF value takes
+  15% of its weight from it (the rest stays on points over the best non-starter, the most accurate single measure).
+  Tested on 2023-2025 (10 simulated 12-team leagues at each of 14 checkpoints, four roster setups, truth = real lineup
+  points each player added over the best free agent): lopsided trades called for the side that really added more
+  69.2% -> 70.2%, rank accuracy 0.422 -> 0.427, running backs overvalued by 8.9% -> 5.4% of a top-50 player's worth,
+  overall fit R² 0.230 -> 0.226 (about the same). Pure VORP alone was less accurate (R² 0.15).
+- **Lineup fit:** quarterbacks were not overvalued in general; a backup quarterback is just worth little to a team
+  that already starts one. So trade suggestions count a player only if he would crack the lineup of the team that gets
+  him: with your league linked, its best lineup in at least 35% of his remaining games; without a league, better than
+  three quarters of starters at QB or TE, or the middle team's last starter at RB or WR. That ends offers padded with
+  backup quarterbacks (such as Joe Burrow or Trevor Lawrence as filler). **Looking for: a QB** (or RB, WR, TE) in the
+  trade analyzer lifts that rule for the position you need.
 - The same value drives the Trade values chart, BFF rank on player cards, Find trades, the trade analyzer, the mock
   draft board (AI teams also follow the consensus), the draft guide, waiver targets and BFF Coach.
 
+## BFF Originals: our own articles (`articles.py`)
+Data-driven fantasy articles written for BFF and published on their own, mixed into the News tab (gold "BFF Original"
+label, lead story while fresh, their own panel, a Home card, and on each mentioned player's card). Each opens in a
+full-screen reader with linked players, a byline, the time, update notes and sources, and has its own link
+(`#news/a/<id>`).
+
+| Article | When it publishes |
+|---|---|
+| **Sunday preview** (every Sunday game: line, total, players to start and sit, matchups, injuries, best prop picks) | Saturday from 8 AM Eastern |
+| **Game previews** for Thursday, Monday and any other day (Friday, Saturday, holidays, international games) | 10 hours before that day's first kickoff |
+| **Recaps** (finals, top fantasy performers against their projections, surprises, usage, waiver watch) | as soon as every game that day is final |
+| **Breaking news** (a relevant player ruled out, doubtful, placed on IR, traded or released: who benefits, waiver priority, what to do) | on the next run after the report reaches BFF (every 10 minutes for headlines, every 3 hours for the official injury report) |
+
+- **Updated as news breaks:** previews are rewritten when their facts change (injuries, lines, projections) until
+  kickoff, with an "Updated:" note saying what changed. Recaps and breaking stories are written once.
+- **Rules:** news counts only if it is under 48 hours old and first seen in the last 6 hours (so a first run never
+  floods the page); at most 3 breaking stories per run and 12 a day; each story once; articles older than 21 days are
+  cleared. A failure here never stops scores, news or the page from saving.
+- **Who writes them:** without any key, BFF writes them from its own data (credited "BFF Data Desk"); every number
+  comes from the site's projections, lines, injury reports and box scores. **Optional, written by Claude:** add a
+  repository **secret** named `ANTHROPIC_API_KEY` (an API key from [console.anthropic.com](https://console.anthropic.com),
+  billed to your Anthropic account) and Claude rewrites each draft into a polished article (credited "BFF AI Desk
+  (Claude)"). Claude gets only the draft and a fact sheet; if its version contains any number that is not in them, it
+  is thrown out and BFF's own text is published instead. Optional variables: `BFF_AI_MODEL` (default
+  `claude-sonnet-5-5`) and `BFF_AI_MAX_DAY` (the most Claude calls in 24 hours, default 30; after that BFF's own text is
+  used). A typical week needs about 40 calls; a Sunday preview sends about 12,000 characters (roughly 3,000 tokens)
+  and gets up to 4,000 tokens back, a breaking story about 2,500 characters (under 1,000 tokens). See current prices at
+  [claude.com/pricing](https://claude.com/pricing#api).
+
 ## Trade analyzer and waivers
 - **Trade analyzer** (Fantasy Help, and "Analyze in depth" on every offer in My League): a photo card for each player
-  (BFF value, points a game, next 4 weeks, playoff weeks 15-17, bye, injury, usage signal, boom/bust), the package math,
+  (BFF value, points a game, next 4 weeks, playoff weeks 15-17, bye, injury, usage signal, boom/bust, VORP and whether
+  he would start for you), **Looking for** (lineup fit, or a QB, RB, WR or TE), the package math,
   the three fairness checks, your starting lineup's change week by week with next-4, rest-of-season and playoff totals,
   the other team's change, the roster spots each side must open or can fill (drops and best free agents), startable
   depth by position, and the single additions that would make an unfair offer fair.
@@ -117,9 +195,9 @@ last good version, so the published site never breaks.
 
 ## Look and pictures
 - Every tab reads like the News tab: a cover story on the tab's own artwork with picture headlines beside it, a headline
-  rail on wide screens (headlines under the page on smaller ones), and Top stories on Home.
+  rail on wide screens (headlines under the page on smaller ones).
 - **News that fits the tab:** every headline gets a relevance score for each tab (your players on My League; top
-  players on Players; start/sit, waivers and betting on Fantasy Help; rookies and drafts on Draft; analytics on Learn;
+  players on Home; start/sit, waivers and betting on Fantasy Help; rookies and drafts on Draft; analytics on Learn;
   this week's games on Live), less a point for each day of age. Covers, side stories and rails use it, and each real
   story photo leads one tab only.
 - **Readable text on every picture:** text on a photo sits on a dark scrim sized to the text block. When the picture
@@ -196,12 +274,14 @@ allows.
 - For entertainment, 21+ where legal. Gambling problem? Call or text 1-800-GAMBLER.
 
 ## Updating an existing site to this version
-Upload (replace) these files: `template.html`, `app.css`, `index.html`, `ff_build2.py`, `ff_produce.py`,
-`fetch_data.py`, `assemble.py`, `ff_lines.py`, `parlay_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`,
+Upload (replace) these files: `template.html`, `app.css`, `index.html`, `articles.py` (new), `articles.json` (new),
+`ff_build2.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`, `parlay_update.py`,
+`calls_update.py`, `calls_backfill.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `sync_sleeper.py`,
 `health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `README.md`, and both workflow files in
 `.github/workflows/` (`update.yml`, `scores.yml`). Leave your `*_history.json`, `lines.json`, `parlays.json` and
 `bet_inputs.json` alone; your workflows keep those up to date. `DTR.parquet` and `D25.parquet` are no longer used and
 can be deleted. Then run **Update Gridiron Fantasy** once (the first run builds the feature tables, about 5 extra minutes).
+Optional: add the `ANTHROPIC_API_KEY` secret for Claude-written articles (see **BFF Originals**).
 
 ## One-time setup (about 10 minutes)
 1. Create a free account at github.com and sign in.
@@ -247,5 +327,8 @@ can be deleted. Then run **Update Gridiron Fantasy** once (the first run builds 
 - [FantasyPros](https://www.fantasypros.com) expert consensus rankings (weekly and rest of season, PPR) and roster
   percentages, mirrored by [DynastyProcess](https://github.com/dynastyprocess/data), which also supplies the player ID
   crosswalk. If they cannot be downloaded, the site uses its own projections alone.
-- ESPN public scoreboard, game and news data; Sleeper trending adds; the news publishers listed above.
+- ESPN public scoreboard, game and news data; Sleeper trending adds and league scoring settings; the news publishers
+  listed above.
+- BFF Originals are written from the data above; when the optional key is set, Claude rewrites them through the
+  [Claude API (Messages)](https://docs.claude.com/en/api/messages).
 - BFF is not affiliated with the NFL, its teams, or any source listed here.

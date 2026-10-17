@@ -34,6 +34,24 @@ assert t.count("__CSS__") == 1 and t.count("__DATA__") == 1
 D = json.load(open("ff_data.json"))
 A = accounts()
 if A: D["auth"] = A
+# BFF Originals (articles.py): the latest ones ride along in the page, for copies that cannot load articles.json
+if os.path.exists("articles.json"):
+    try:
+        AR = json.load(open("articles.json")); D["articles"] = {"at": AR.get("at"), "items": [{k: v for k, v in a.items() if k not in ("digest", "sig", "key")} for a in AR.get("items", [])[:30]]}
+    except Exception as e: print("articles.json could not be read:", e)
+# ESPN's injury lists for games not yet started (live.json), so the page can lay the newest status over the data build
+if os.path.exists("live.json"):
+    try:
+        LV = json.load(open("live.json")); GS = {str(g.get("id")): g for g in LV.get("games") or []}
+        D["liveinj"] = {k: v for k, v in (LV.get("inj") or {}).items() if (GS.get(str(k)) or {}).get("state") == "pre" and isinstance(v, dict)}
+    except Exception as e: print("live.json injuries skipped:", e)
+# Super Bowl and conference championship results for BFF Coach (from the NFL schedule fetch_data.py downloads)
+if os.path.exists("games.csv"):
+    try:
+        import csv
+        D["post"] = [[int(g["season"]), g["game_type"], *((g["home_team"], g["away_team"], int(g["home_score"]), int(g["away_score"])) if int(g["home_score"]) >= int(g["away_score"]) else (g["away_team"], g["home_team"], int(g["away_score"]), int(g["home_score"]))), g.get("stadium") or "", g.get("gameday") or ""]
+                     for g in csv.DictReader(open("games.csv", newline="")) if g.get("game_type") in ("SB", "CON") and g.get("home_score") not in ("", "NA", None) and g.get("away_score") not in ("", "NA", None)]
+    except Exception as e: print("postseason results skipped:", e)
 print("accounts:", "on (Firebase project " + A["firebase"]["projectId"] + ")" if A.get("firebase") else "off (set BFF_FIREBASE to turn them on)")
 data = json.dumps(D, separators=(",", ":"), allow_nan=False).replace("</", "<\\/")
 open("index.html", "w").write(t.replace("__CSS__", open("app.css").read()).replace("__DATA__", data))
