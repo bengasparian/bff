@@ -58,6 +58,18 @@ jobs:
           BFF_TERMS_STATE: ${{ vars.BFF_TERMS_STATE }}
           BFF_CONTACT: ${{ vars.BFF_CONTACT }}
         run: python assemble.py
+      - name: BFF Originals, then put the newest ones in the page
+        id: articles
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BFF_AI_MODEL: ${{ vars.BFF_AI_MODEL }}
+          BFF_AI_MAX_DAY: ${{ vars.BFF_AI_MAX_DAY }}
+          BFF_FIREBASE: ${{ vars.BFF_FIREBASE }}
+          BFF_TERMS_STATE: ${{ vars.BFF_TERMS_STATE }}
+          BFF_CONTACT: ${{ vars.BFF_CONTACT }}
+        run: |
+          python articles.py || echo "BFF Originals skipped this run; the page still updates"
+          python assemble.py
       - name: Check the page before saving (keeps the last good page if anything is wrong)
         id: check
         run: |
@@ -68,7 +80,7 @@ jobs:
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in index.html proj_history.json parlay_history.json calls_history.json bet_inputs.json lines.json parlays.json news.json; do if [ -f "$f" ]; then git add "$f"; fi; done
+          for f in index.html proj_history.json parlay_history.json calls_history.json bet_inputs.json lines.json parlays.json news.json articles.json; do if [ -f "$f" ]; then git add "$f"; fi; done
           if git diff --cached --quiet; then echo "No changes to save"; exit 0; fi
           git commit -m "Data update $(date -u +%F-%H%M)"
           for i in 1 2 3; do
@@ -84,6 +96,7 @@ jobs:
           STEP_LINES: ${{ steps.lines.outcome }}
           STEP_CALLS: ${{ steps.calls.outcome }}
           STEP_PAGE: ${{ steps.page.outcome }}
+          STEP_ARTICLES: ${{ steps.articles.outcome }}
           STEP_CHECK: ${{ steps.check.outcome }}
           STEP_SAVE: ${{ steps.save.outcome }}
         run: |
