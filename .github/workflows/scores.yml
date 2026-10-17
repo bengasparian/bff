@@ -30,13 +30,19 @@ jobs:
         run: |
           python ff_lines.py --refresh
           python parlay_update.py --refresh
+      - name: BFF Originals (breaking news, game previews and recaps; Claude writes them if ANTHROPIC_API_KEY is set)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BFF_AI_MODEL: ${{ vars.BFF_AI_MODEL }}
+          BFF_AI_MAX_DAY: ${{ vars.BFF_AI_MAX_DAY }}
+        run: python articles.py || echo "BFF Originals skipped this run; scores and news still save"
       - name: Check the files before saving
         run: python check_page.py --json
       - name: Save
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in live.json news.json lines.json parlays.json parlay_history.json; do if [ -f "$f" ]; then git add "$f"; fi; done
+          for f in live.json news.json lines.json parlays.json parlay_history.json articles.json; do if [ -f "$f" ]; then git add "$f"; fi; done
           if git diff --cached --quiet; then echo "Nothing changed"; exit 0; fi
           git commit -m "Live update $(date -u +%H:%M)"
           for i in 1 2 3; do
