@@ -34,7 +34,8 @@
       "book": "bff",
       "n": "Cam Ward",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 1
      }
     ],
     "status": "pending"
@@ -67,7 +68,8 @@
       "book": "bff",
       "n": "Cam Ward",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 1
      },
      {
       "pid": "00-0036309",
@@ -80,10 +82,11 @@
       "book": "bff",
       "n": "Darnell Mooney",
       "pos": "WR",
-      "res": "pending"
+      "res": "miss",
+      "act": 0
      }
     ],
-    "status": "pending"
+    "status": "lost"
    },
    {
     "type": "long",
@@ -113,7 +116,8 @@
       "book": "bff",
       "n": "Cam Ward",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 1
      },
      {
       "pid": "00-0036309",
@@ -126,7 +130,8 @@
       "book": "bff",
       "n": "Darnell Mooney",
       "pos": "WR",
-      "res": "pending"
+      "res": "miss",
+      "act": 0
      },
      {
       "pid": "00-0040867",
@@ -139,7 +144,8 @@
       "book": "bff",
       "n": "Makai Lemon",
       "pos": "WR",
-      "res": "pending"
+      "res": "hit",
+      "act": 3
      },
      {
       "pid": "00-0041251",
@@ -152,10 +158,11 @@
       "book": "bff",
       "n": "Jalon Daniels",
       "pos": "QB",
-      "res": "pending"
+      "res": "miss",
+      "act": 164
      }
     ],
-    "status": "pending"
+    "status": "lost"
    }
   ]
  },
