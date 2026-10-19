@@ -166,5 +166,165 @@
    }
   ]
  },
- "_season": 2026
+ "_season": 2026,
+ "7": {
+  "wk": 7,
+  "made": "2026-10-19T01:06+00:00",
+  "locks": "2026-10-22T20:15:00-04:00",
+  "lines_at": "2026-10-19T01:06+00:00",
+  "src": "BFF predicted lines",
+  "parlays": [
+   {
+    "type": "safe",
+    "prob": 0.3844,
+    "legs": [
+     {
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "ATL",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Brock Purdy",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0040676",
+      "t": "TEN",
+      "opp": "CLE",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Cam Ward",
+      "pos": "QB",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "bal",
+    "prob": 0.2349,
+    "legs": [
+     {
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "ATL",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Brock Purdy",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0040676",
+      "t": "TEN",
+      "opp": "CLE",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Cam Ward",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0030565",
+      "t": "NYJ",
+      "opp": "MIA",
+      "k": "py",
+      "line": 207.5,
+      "lean": "Over",
+      "pr": 0.611,
+      "book": "bff",
+      "n": "Geno Smith",
+      "pos": "QB",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "long",
+    "prob": 0.0858,
+    "legs": [
+     {
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "ATL",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Brock Purdy",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0040676",
+      "t": "TEN",
+      "opp": "CLE",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Cam Ward",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0030565",
+      "t": "NYJ",
+      "opp": "MIA",
+      "k": "py",
+      "line": 207.5,
+      "lean": "Over",
+      "pr": 0.611,
+      "book": "bff",
+      "n": "Geno Smith",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039732",
+      "t": "DEN",
+      "opp": "ARI",
+      "k": "py",
+      "line": 209.5,
+      "lean": "Over",
+      "pr": 0.61,
+      "book": "bff",
+      "n": "Bo Nix",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0038994",
+      "t": "MIN",
+      "opp": "IND",
+      "k": "rec",
+      "line": 2.5,
+      "lean": "Over",
+      "pr": 0.599,
+      "book": "bff",
+      "n": "Jordan Addison",
+      "pos": "WR",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   }
+  ]
+ }
 }
