@@ -169,9 +169,9 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-19T15:38+00:00",
+  "made": "2026-10-19T15:55+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-19T13:11+00:00",
+  "lines_at": "2026-10-19T15:55+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -209,7 +209,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2353,
+    "prob": 0.2349,
     "legs": [
      {
       "pid": "00-0037834",
@@ -234,65 +234,6 @@
       "pr": 0.62,
       "book": "bff",
       "n": "Cam Ward",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0030565",
-      "t": "NYJ",
-      "opp": "MIA",
-      "k": "py",
-      "line": 207.5,
-      "lean": "Over",
-      "pr": 0.612,
-      "book": "bff",
-      "n": "Geno Smith",
-      "pos": "QB",
-      "res": "pending"
-     }
-    ],
-    "status": "pending"
-   },
-   {
-    "type": "long",
-    "prob": 0.086,
-    "legs": [
-     {
-      "pid": "00-0037834",
-      "t": "SF",
-      "opp": "ATL",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Brock Purdy",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0040676",
-      "t": "TEN",
-      "opp": "CLE",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Under",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Cam Ward",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0030565",
-      "t": "NYJ",
-      "opp": "MIA",
-      "k": "py",
-      "line": 207.5,
-      "lean": "Over",
-      "pr": 0.612,
-      "book": "bff",
-      "n": "Geno Smith",
       "pos": "QB",
       "res": "pending"
      },
@@ -301,7 +242,53 @@
       "t": "DEN",
       "opp": "ARI",
       "k": "py",
-      "line": 208.5,
+      "line": 209.5,
+      "lean": "Over",
+      "pr": 0.611,
+      "book": "bff",
+      "n": "Bo Nix",
+      "pos": "QB",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "long",
+    "prob": 0.0847,
+    "legs": [
+     {
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "ATL",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Brock Purdy",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0040676",
+      "t": "TEN",
+      "opp": "CLE",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Cam Ward",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039732",
+      "t": "DEN",
+      "opp": "ARI",
+      "k": "py",
+      "line": 209.5,
       "lean": "Over",
       "pr": 0.611,
       "book": "bff",
@@ -310,16 +297,29 @@
       "res": "pending"
      },
      {
-      "pid": "00-0038994",
+      "pid": "00-0035228",
       "t": "MIN",
       "opp": "IND",
+      "k": "py",
+      "line": 210.5,
+      "lean": "Over",
+      "pr": 0.611,
+      "book": "bff",
+      "n": "Kyler Murray",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0035700",
+      "t": "GB",
+      "opp": "DET",
       "k": "rec",
       "line": 2.5,
-      "lean": "Over",
-      "pr": 0.598,
+      "lean": "Under",
+      "pr": 0.59,
       "book": "bff",
-      "n": "Jordan Addison",
-      "pos": "WR",
+      "n": "Josh Jacobs",
+      "pos": "RB",
       "res": "pending"
      }
     ],
