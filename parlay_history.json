@@ -172,9 +172,9 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-20T12:45+00:00",
+  "made": "2026-10-20T13:09+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-20T09:56+00:00",
+  "lines_at": "2026-10-20T13:09+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -258,7 +258,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0806,
+    "prob": 0.0822,
     "legs": [
      {
       "pid": "00-0040676",
@@ -300,29 +300,29 @@
       "res": "pending"
      },
      {
-      "pid": "00-0033106",
-      "t": "DET",
-      "opp": "GB",
+      "pid": "00-0037834",
+      "t": "SF",
+      "opp": "ATL",
       "k": "ptd",
       "line": 1.5,
       "lean": "Over",
-      "pr": 0.59,
+      "pr": 0.602,
       "book": "bff",
-      "n": "Jared Goff",
+      "n": "Brock Purdy",
       "pos": "QB",
       "res": "pending"
      },
      {
-      "pid": "00-0036894",
-      "t": "PIT",
-      "opp": "NO",
+      "pid": "00-0035700",
+      "t": "GB",
+      "opp": "DET",
       "k": "rec",
       "line": 2.5,
-      "lean": "Over",
+      "lean": "Under",
       "pr": 0.59,
       "book": "bff",
-      "n": "Pat Freiermuth",
-      "pos": "TE",
+      "n": "Josh Jacobs",
+      "pos": "RB",
       "res": "pending"
      }
     ],
