@@ -172,14 +172,14 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-20T18:45+00:00",
+  "made": "2026-10-20T19:04+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-20T15:56+00:00",
+  "lines_at": "2026-10-20T19:04+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
     "type": "safe",
-    "prob": 0.3788,
+    "prob": 0.3813,
     "legs": [
      {
       "pid": "00-0040676",
@@ -195,15 +195,15 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039732",
-      "t": "DEN",
-      "opp": "ARI",
-      "k": "py",
-      "line": 209.5,
-      "lean": "Over",
-      "pr": 0.611,
+      "pid": "00-0035710",
+      "t": "IND",
+      "opp": "MIN",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.615,
       "book": "bff",
-      "n": "Bo Nix",
+      "n": "Daniel Jones",
       "pos": "QB",
       "res": "pending"
      }
@@ -212,7 +212,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2315,
+    "prob": 0.2307,
     "legs": [
      {
       "pid": "00-0040676",
@@ -228,28 +228,28 @@
       "res": "pending"
      },
      {
+      "pid": "00-0035710",
+      "t": "IND",
+      "opp": "MIN",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.615,
+      "book": "bff",
+      "n": "Daniel Jones",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
       "pid": "00-0039732",
       "t": "DEN",
       "opp": "ARI",
       "k": "py",
       "line": 209.5,
       "lean": "Over",
-      "pr": 0.611,
+      "pr": 0.605,
       "book": "bff",
       "n": "Bo Nix",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0035228",
-      "t": "MIN",
-      "opp": "IND",
-      "k": "py",
-      "line": 211.5,
-      "lean": "Over",
-      "pr": 0.611,
-      "book": "bff",
-      "n": "Kyler Murray",
       "pos": "QB",
       "res": "pending"
      }
@@ -258,7 +258,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0807,
+    "prob": 0.0821,
     "legs": [
      {
       "pid": "00-0040676",
@@ -274,55 +274,55 @@
       "res": "pending"
      },
      {
+      "pid": "00-0035710",
+      "t": "IND",
+      "opp": "MIN",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.615,
+      "book": "bff",
+      "n": "Daniel Jones",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
       "pid": "00-0039732",
       "t": "DEN",
       "opp": "ARI",
       "k": "py",
       "line": 209.5,
       "lean": "Over",
-      "pr": 0.611,
+      "pr": 0.605,
       "book": "bff",
       "n": "Bo Nix",
       "pos": "QB",
       "res": "pending"
      },
      {
-      "pid": "00-0035228",
-      "t": "MIN",
-      "opp": "IND",
-      "k": "py",
-      "line": 211.5,
+      "pid": "00-0036309",
+      "t": "NYG",
+      "opp": "HOU",
+      "k": "rec",
+      "line": 1.5,
       "lean": "Over",
-      "pr": 0.611,
+      "pr": 0.602,
       "book": "bff",
-      "n": "Kyler Murray",
-      "pos": "QB",
+      "n": "Darnell Mooney",
+      "pos": "WR",
       "res": "pending"
      },
      {
-      "pid": "00-0037834",
-      "t": "SF",
-      "opp": "ATL",
-      "k": "ptd",
-      "line": 1.5,
+      "pid": "00-0039793",
+      "t": "SEA",
+      "opp": "KC",
+      "k": "rec",
+      "line": 2.5,
       "lean": "Over",
       "pr": 0.591,
       "book": "bff",
-      "n": "Brock Purdy",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0035700",
-      "t": "GB",
-      "opp": "DET",
-      "k": "rec",
-      "line": 2.5,
-      "lean": "Under",
-      "pr": 0.59,
-      "book": "bff",
-      "n": "Josh Jacobs",
-      "pos": "RB",
+      "n": "AJ Barner",
+      "pos": "TE",
       "res": "pending"
      }
     ],
