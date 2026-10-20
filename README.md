@@ -55,7 +55,11 @@ last good version, so the published site never breaks.
   **trade ideas for a team you type in** ("My team: Josh Allen, Bijan Robinson, ... give me mock trades"; it remembers
   the team for follow-ups), your best lineup and waiver adds, league leaders, a team's record, next game, injuries and
   starting quarterback, Super Bowl and conference title results, fantasy terms and rules basics, and how BFF works.
-  It only declines clearly unrelated topics. On your GitHub site it runs on BFF's own rules (no AI service or key needed). On the
+  **Game and betting questions get the answer asked for:** "what would be a good three-leg parlay for tonight's game?"
+  returns exactly three legs from that game, the most likely of BFF's tested picks (no questionable players, one leg
+  per player), each with its chance and our projection, plus the combined chance; also "best bets for the Bears game",
+  "who will score a touchdown tonight", "who wins tonight" and "who should I start tonight". Once a game kicks off its
+  lines are closed and it says so. It only declines clearly unrelated topics. On your GitHub site it runs on BFF's own rules (no AI service or key needed). On the
   claude.ai copy it can also ask Claude, on the visitor's own Claude account with their permission, for open-ended
   scenarios and anything the instant answers do not cover; Claude gets the same BFF numbers through the page's tools
   (or in the question when tools are unavailable) and is told never to refuse a football or site question.
@@ -67,7 +71,9 @@ last good version, so the published site never breaks.
   linked leagues, team, favorite players and settings and get them back on any device. See **Accounts** below.
 - **Phones:** an app-style layout: a compact header (search, BFF Coach, account), each tab's sections pinned under it,
   one compact top story under the sections, a bottom tab bar (Home, Live, News, Help, More; the More sheet holds your
-  account, My League, Draft and Learn), full-screen article reader, and tighter player rows. The floating
+  account, My League, Draft and Learn), full-screen article reader, compact type and pictures sized for a phone, two
+  games per row on Live, news as thumbnail rows under the top story, and tighter player rows. On computers the cover
+  story's height follows the window height, so the week's games show on the first screen. The floating
   updates bar and chat button are left to bigger screens. Add it to your home screen for an app icon (on iPhone it then
   opens full screen).
 
@@ -93,7 +99,10 @@ last good version, so the published site never breaks.
   missed last week and not practicing 1.3% (projected 0, tagged as expected out), limited 40% (tagged Q). A report from
   a game already played never tags anyone. Later weeks for a player out now use the measured return curve (39% the
   next week, 69% after two, 85% after three, about 90% later, compared with healthy players) or ESPN's estimated
-  return date. The page also lays ESPN's newest list over the data between runs.
+  return date. When neither ESPN nor the official report lists a player for his next game yet, a timeline reported in
+  the news ("out at least three weeks", "out for the season") keeps him out until his team's game that many weeks after
+  the story (labeled "expected from news reports"); a headline about a return is never read as a new absence. The page
+  also lays ESPN's newest list over the data between runs.
 - **Starting quarterbacks:** only a team's expected starter is projected (the best quarterback on the depth chart who
   is not out). Backups are projected 0; when the starter is out, the fill-in gets that game and, later, the chance the
   starter is still out.
@@ -158,18 +167,29 @@ label, lead story while fresh, their own panel, a Home card, and on each mention
 full-screen reader with linked players, a byline, the time, update notes and sources, and has its own link
 (`#news/a/<id>`).
 
-| Article | When it publishes |
-|---|---|
-| **Sunday preview** (every Sunday game: line, total, players to start and sit, matchups, injuries, best prop picks) | Saturday from 8 AM Eastern |
-| **Game previews** for Thursday, Monday and any other day (Friday, Saturday, holidays, international games) | 10 hours before that day's first kickoff |
-| **Recaps** (finals, top fantasy performers against their projections, surprises, usage, waiver watch) | as soon as every game that day is final |
-| **Breaking news** (a relevant player ruled out, doubtful, placed on IR, traded or released: who benefits, waiver priority, what to do) | on the next run after the report reaches BFF (every 10 minutes for headlines, every 3 hours for the official injury report) |
+Written like a newsletter: a lede, how the game went, what it means for fantasy managers, with the numbers woven into
+sentences (no stat dumps), a scoreboard that opens the game center, and linked players.
 
-- **Updated as news breaks:** previews are rewritten when their facts change (injuries, lines, projections) until
-  kickoff, with an "Updated:" note saying what changed. Recaps and breaking stories are written once.
-- **Rules:** news counts only if it is under 48 hours old and first seen in the last 6 hours (so a first run never
-  floods the page); at most 3 breaking stories per run and 12 a day; each story once; articles older than 21 days are
-  cleared. A failure here never stops scores, news or the page from saving.
+| Article (Eastern time) | When it publishes |
+|---|---|
+| **Thursday outlook** (records and form, Vegas line, each team's fantasy outlook, injuries, start 'em / sit 'em, best bets, BFF's pick) | Thursday 8 AM, updated until kickoff |
+| **Thursday recap** (scoreboard, how it happened, a fantasy breakdown for each team, stock up and down, waiver wire, looking ahead) | Friday 7 AM |
+| **Injury report** (ruled out or doubtful and who moves up, still on injured reserve, questionables with kickoff times, quarterback situations) | Friday 5 PM, until the first Sunday kickoff |
+| **Sunday outlook** (things to know, start 'em / sit 'em, game-by-game capsules, best bets of the day) | Saturday 8 AM, updated until kickoff |
+| **Sunday recap** (every score, the top performances, game by game, stock, injuries to watch, early waiver look, what is still to come) | once the afternoon games are final, before the night game |
+| **Sunday night recap** | after the night game is final |
+| **Monday outlook** and **Monday recap** | Monday 8 AM (updated until kickoff), and after the Monday game is final |
+| **Fantasy landscape** (the week's MVPs, risers, fallers, injury fallout, waiver priorities, buy low / sell high, byes and best matchups ahead, BFF's calls scorecard) | Tuesday 10 AM, once the week is complete |
+| **Other game days** (Saturday games late in the season, holidays, international games) | outlook by 8 AM that day (or 10 hours before the first kickoff, if that is earlier), recap 7 AM the next day |
+| **Breaking news** (a relevant player ruled out or doubtful for his next game, placed on or activated from injured reserve, traded or released) | on the next run after the news reaches BFF (every 10 minutes for headlines, every 3 hours for the official data) |
+
+- **Updated as news breaks:** outlooks and the injury report are rewritten when their facts change (injuries, lines,
+  projections) until kickoff, with an "Updated:" note saying what changed. Recaps and breaking stories are written once.
+- **Rules:** news counts only if it is under 48 hours old and first seen in the last 6 hours (a first run, or the
+  first run after this update, only learns what is already known); an injury report counts only for the player's next
+  game and not once that game has started; "ruled out for the rest of the game" headlines wait for the next official
+  status; at most 3 breaking stories per run and 12 a day; each story once; articles older than 21 days are cleared. A
+  failure here never stops scores, news or the page from saving.
 - **Who writes them:** without any key, BFF writes them from its own data (credited "BFF Data Desk"); every number
   comes from the site's projections, lines, injury reports and box scores. **Optional, written by Claude:** add a
   repository **secret** named `ANTHROPIC_API_KEY` (an API key from [console.anthropic.com](https://console.anthropic.com),
@@ -209,7 +229,10 @@ full-screen reader with linked players, a byline, the time, update notes and sou
   A player without an ESPN photo gets his jersey in team colors. Pages on claude.ai cannot load outside pictures, so
   that copy shows the tab artwork, jerseys and team colors.
 - **Game photos:** every Live game card opens with a photo band and both team logos: the home stadium before kickoff,
-  a photo from ESPN's coverage once it starts, the recap photo after the final. The game center puts that photo behind
+  during the game a photo from ESPN's coverage of that game only (stories tagged with the game, and highlights posted
+  after kickoff that name one of its teams; ESPN's league-wide top story and talk-show clips, which ESPN attaches to
+  every game, are never used), the recap photo after the final. A picture that turns up for two games (in any size)
+  is used for neither, so one headline photo can never fill every game. The game center puts that photo behind
   the score (no separate photo section). `live_update.py` saves each game's photo links and stadium ids in `live.json`
   (links only), so the photos show even when the page can't reach ESPN directly. The camera button turns outside
   pictures off.
@@ -255,7 +278,13 @@ allows.
 - **Safe by default:** tested library versions are pinned in `requirements.txt` (the newest versions install if those
   ever stop installing); each run checks the page before saving and keeps the last good version if anything fails;
   missing or late data files are skipped and picked up on the next run; GitHub emails you if a run fails.
-- Feature tables for past seasons are cached between runs (`.cache`), so a run takes a few minutes.
+- **Efficient runs:** feature tables for past seasons are cached between runs (`.cache`); the completed seasons'
+  data files (about 100 MB that never changes) are kept for a week in a GitHub cache instead of downloaded every 3
+  hours, and the Python libraries come from pip's cache. The 10-minute job reads ESPN's game pages only when they can
+  have changed: live games every run, games not yet started every run in the last 4 hours before kickoff (inactives),
+  every half hour within two days (practice reports) and every 2 hours before that.
+- **Prop lines close at kickoff:** a game's lines leave the picks, parlays and Ask BFF the moment it kicks off, even
+  if the live feed is a few minutes behind; a week's late games (Monday night) keep their lines until then.
 
 ## Predicted prop lines (`ff_lines.py`)
 - Built the way books build them, from **opportunity**: expected targets, carries or pass attempts (recent full
@@ -274,12 +303,13 @@ allows.
 - For entertainment, 21+ where legal. Gambling problem? Call or text 1-800-GAMBLER.
 
 ## Updating an existing site to this version
-Upload (replace) these files: `template.html`, `app.css`, `index.html`, `articles.py` (new), `articles.json` (new),
+Upload (replace) these files: `template.html`, `app.css`, `index.html`, `articles.py`,
 `ff_build2.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`, `parlay_update.py`,
 `calls_update.py`, `calls_backfill.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `sync_sleeper.py`,
 `health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `README.md`, and both workflow files in
-`.github/workflows/` (`update.yml`, `scores.yml`). Leave your `*_history.json`, `lines.json`, `parlays.json` and
-`bet_inputs.json` alone; your workflows keep those up to date. `DTR.parquet` and `D25.parquet` are no longer used and
+`.github/workflows/` (`update.yml`, `scores.yml`). Leave your `*_history.json`, `lines.json`, `parlays.json`,
+`bet_inputs.json`, `articles.json`, `news.json` and `live.json` alone; your workflows keep those up to date (the first
+run after the update learns the current news without re-publishing it). `DTR.parquet` and `D25.parquet` are no longer used and
 can be deleted. Then run **Update Gridiron Fantasy** once (the first run builds the feature tables, about 5 extra minutes).
 Optional: add the `ANTHROPIC_API_KEY` secret for Claude-written articles (see **BFF Originals**).
 

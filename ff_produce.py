@@ -273,6 +273,31 @@ for tm_,G_ in (injfull.groupby('team') if len(injfull) else []):
     elif wr_<nx_:
         for x_ in cw_[cw_.report_status.isin(['Out','Doubtful'])].itertuples():
             STATUS[x_.gsis_id]={'s':'Questionable','src':'expected','k':nx_-wr_,'d':x_.report_primary_injury if isinstance(x_.report_primary_injury,str) else None,'n':f'Missed week {wr_}; no injury report for week {nx_} yet'}
+# 3. timelines reported in the news ("out at least three weeks", "out for the season") for a player whose next game has
+#    no ESPN or official status yet: out until his team's week (next game after the story) + N weeks
+import re as _re
+_NUMW={'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10}
+_TLW=_re.compile(r"\b(?:out|miss|sidelined|shelved)\b(?:\s+(?:for|at least|a minimum of|minimum of|roughly|about|approximately|around|another|an additional)){0,2}\s+(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s*(?:-|–|to|or)\s*(?:\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten))?\s+(?:more\s+)?weeks?\b",_re.I)
+_TLS=_re.compile(r"\b(out for (the )?(rest of the )?(season|year)|season[- ]ending|miss (the )?(rest of the )?season)\b",_re.I)
+_TLX=_re.compile(r"\b(return|returns|returning|back|activated|cleared|after missing|after being|designated to return)\b",_re.I)
+NEWS_TL=0
+try:
+    _nj=json.load(open('news.json')) if os.path.exists('news.json') else {}
+    _now=pd.Timestamp.now(tz='UTC'); _TL={}
+    for it_ in sorted(_nj.get('items') or [],key=lambda x:str(x.get('d') or '')):
+        h_=str(it_.get('h') or ''); d_=pd.to_datetime(it_.get('d'),utc=True,errors='coerce'); P_=it_.get('p') or []
+        if len(P_)!=1 or pd.isna(d_) or (_now-d_).days>35 or it_.get('st')=='ok' or _TLX.search(h_): continue
+        m_=_TLW.search(h_); se_=_TLS.search(h_)
+        if m_ or se_: _TL[P_[0]]=(99 if se_ else int(m_.group(1)) if m_.group(1).isdigit() else _NUMW[m_.group(1).lower()],d_,it_.get('s') or 'news')
+    for pid_,(n_,d_,s_) in _TL.items():
+        if pid_ not in cur.index or (STATUS.get(pid_) or {}).get('src') in ('ESPN','report'): continue
+        tm_=IDT.get(cur.at[pid_,'team'],cur.at[pid_,'team'])
+        if tm_ not in NXW: continue
+        w0_=_ret_week(tm_,(d_+pd.Timedelta(days=1)).strftime('%Y-%m-%d')); rw_=99 if n_>=99 else (w0_ or 99)+n_
+        if rw_<=NXW[tm_]: continue
+        STATUS[pid_]={'s':'Out','src':'news','d':(STATUS.get(pid_) or {}).get('d'),'rw':rw_,'n':f"Reported out {'for the season' if n_>=99 else f'{n_} week'+('s' if n_>1 else '')} ({s_}, {d_.strftime('%b')} {d_.day})"}; NEWS_TL+=1
+    if NEWS_TL: print('injuries: timelines from the news for',NEWS_TL,'players')
+except Exception as _e: print('news timelines unavailable:',_e)
 print('injury status:',sum(v['s']=='Out' for v in STATUS.values()),'out,',sum(v['s']=='Doubtful' for v in STATUS.values()),'doubtful,',sum(v['s']=='Questionable' for v in STATUS.values()),'questionable,',sum(v['src']=='expected' for v in STATUS.values()),'of them expected from the report')
 # ---- teammates expected to miss games: Out/Doubtful for the next game; injured reserve for every remaining week
 OUTN={pid_ for pid_,v in STATUS.items() if v['s'] in ('Out','Doubtful')}

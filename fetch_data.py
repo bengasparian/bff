@@ -12,8 +12,12 @@ projections only.
   python fetch_data.py                 download everything and write season.json
   python fetch_data.py --season-only   only work out the season from the saved schedule (no downloads)
   (testing: BFF_AS_OF=YYYY-MM-DD pretends it is that day; BFF_HIDE_SCHED=2027 pretends a schedule is not out yet)
+
+Files of completed seasons do not change, so a copy younger than a week (BFF_KEEP_DAYS) is kept instead of downloaded
+again; the update job keeps them between runs with a weekly cache. The current season, rosters, depth charts and
+rankings are downloaded every run.
 """
-import os, sys, csv, json, datetime, urllib.request
+import os, sys, csv, json, time, datetime, urllib.request
 
 B = "https://github.com/nflverse/nflverse-data/releases/download/"
 DP = "https://raw.githubusercontent.com/dynastyprocess/data/master/files/"
@@ -89,9 +93,16 @@ opt.update({
     "fp_latest_weekly.csv": DP + "fp_latest_weekly.csv",        # FantasyPros consensus rankings, this week
 })
 skip = {f for f in os.environ.get("BFF_SKIP", "").split(",") if f}   # testing only: files to leave out
+KEEP = float(os.environ.get("BFF_KEEP_DAYS", "7")) * 86400
+DONE = {f"{k}_{y}.parquet" for y in range(SEASON - 5, SEASON) for k in ("pbp", "stats_player_week", "snap_counts", "roster_weekly", "injuries")}
+def kept(name):
+    """a completed season's file downloaded within the last week"""
+    return name in DONE and os.path.exists(name) and os.path.getsize(name) > 1000 and time.time() - os.path.getmtime(name) < KEEP
+K = [n for n in list(need) + list(opt) if n not in skip and kept(n)]
+if K: print(f"kept {len(K)} completed-season files from the last week (they do not change):", ", ".join(sorted(K)), flush=True)
 for name, url in need.items():
-    if name not in skip: get(name, url)
+    if name not in skip and name not in K: get(name, url)
 for name, url in opt.items():
-    if name in skip: continue
+    if name in skip or name in K: continue
     try: get(name, url, tries=2)
     except Exception as e: print(f"not available yet: {name} ({e}); continuing without it")

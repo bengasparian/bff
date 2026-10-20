@@ -1,7 +1,8 @@
 """Refresh live.json with ESPN's public scoreboard and box scores (run every few minutes on game days), and ESPN's injury
-list for every game not yet started (the data build and the page use it for each player's status).
+list for every game not yet started, re-read more often as kickoff nears (the data build and the page use it for each
+player's status).
 The page loads ESPN directly every 30 seconds when it can; live.json is the backup copy it falls back to."""
-import json, os, time, urllib.request, datetime
+import json, os, re, time, urllib.request, datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 EMAP = {"WSH": "WAS", "LAR": "LA"}
 BASE = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/"
@@ -11,6 +12,10 @@ def get(url):
     with urllib.request.urlopen(req, timeout=12) as r: return json.load(r)
 
 def ab(c): k = ((c.get("team") or {}).get("abbreviation")) or "?"; return EMAP.get(k, k)
+
+def _num(v):
+    try: return int(float(v))
+    except (TypeError, ValueError): return 0
 
 def games(sb):
     out = []
@@ -29,7 +34,8 @@ def games(sb):
                     "vid": (c.get("venue") or {}).get("id"), "neutral": bool(c.get("neutralSite")),
                     "rimg": ((((c.get("headlines") or [{}])[0]).get("video") or [{}])[0]).get("thumbnail"), "rhl": ((c.get("headlines") or [{}])[0]).get("shortLinkText"),
                     "tv": (((c.get("broadcasts") or [{}])[0]).get("names") or [None])[0], "odds": o.get("details"), "ou": o.get("overUnder"),
-                    "last": (sit.get("lastPlay") or {}).get("text")})
+                    "last": (sit.get("lastPlay") or {}).get("text"),
+                    "ls": [[_num(x.get("value")) for x in (a.get("linescores") or [])], [_num(x.get("value")) for x in (h.get("linescores") or [])]] if not pre else None})
     return out
 
 def box(sm):
@@ -59,7 +65,15 @@ def box(sm):
     for tt in ((sm.get("boxscore") or {}).get("teams") or []):
         tm = EMAP.get((tt.get("team") or {}).get("abbreviation"), (tt.get("team") or {}).get("abbreviation"))
         ts[tm] = [[s.get("label") or s.get("name"), s.get("displayValue")] for s in (tt.get("statistics") or []) if s.get("displayValue") is not None]
-    return {"players": list(players.values()), "cats": cats, "ts": ts}
+    # scoring plays, for the game story in recaps: [quarter, clock, team, type, text, away score, home score]
+    sp = []
+    for x in sm.get("scoringPlays") or []:
+        try:
+            tm = EMAP.get((x.get("team") or {}).get("abbreviation"), (x.get("team") or {}).get("abbreviation"))
+            sp.append([(x.get("period") or {}).get("number"), (x.get("clock") or {}).get("displayValue"), tm, ((x.get("scoringType") or {}).get("abbreviation") or (x.get("type") or {}).get("abbreviation") or ""),
+                       str(x.get("text") or "")[:160], x.get("awayScore"), x.get("homeScore")])
+        except Exception: continue
+    return {"players": list(players.values()), "cats": cats, "ts": ts, "sp": sp}
 
 FPOS = {"QB", "RB", "WR", "TE", "FB"}
 def injuries(sm):
@@ -83,20 +97,63 @@ def recent(g, hours=36):
     try: return (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(str(g.get("kick")).replace("Z", "+00:00"))).total_seconds() < hours * 3600
     except Exception: return False
 
+def _pkey(u):
+    """the same picture in another size or with a query string counts as the same picture"""
+    return re.sub(r"_\d{2,4}x\d{2,4}(_[\d-]+)?(?=\.\w+$)", "", str(u or "").split("?")[0].split("#")[0]).lower()
+
+def _when(s):
+    try: return datetime.datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+    except Exception: return None
+
 def media(sm):
-    """Pictures for a game, as ESPN publishes them with its coverage: the recap photo, story photos, video thumbnails,
-    and the stadium photo. Only links are kept; the pictures stay on ESPN's servers."""
+    """Pictures that belong to this game, as ESPN publishes them: the recap photo (final games), stories ESPN tags with
+    this game (or with one of its teams, naming a team and published after kickoff), highlight videos naming a team and
+    published after kickoff, and the stadium photo. The summary also carries league-wide news, which is left out.
+    Only links are kept; the pictures stay on ESPN's servers."""
     out, seen = [], set()
     def add(u, h, l, k):
-        if u and str(u).startswith("https://") and u not in seen: seen.add(u); out.append({"u": u, "h": h or "", "l": l or "", "k": k})
+        if u and str(u).startswith("https://") and _pkey(u) not in seen: seen.add(_pkey(u)); out.append({"u": u, "h": h or "", "l": l or "", "k": k})
+    comp = ((sm.get("header") or {}).get("competitions") or [{}])[0]
+    ev = str((sm.get("header") or {}).get("id") or comp.get("id") or ""); kick = _when(comp.get("date"))
+    teams = [str((c.get("team") or {}).get("id") or c.get("id") or "") for c in comp.get("competitors") or []]
+    words = set()
+    for c in comp.get("competitors") or []:
+        t = c.get("team") or {}
+        for w in (t.get("displayName"), t.get("name"), t.get("shortDisplayName"), t.get("location"), t.get("nickname")):
+            if w and len(str(w)) >= 4: words.add(str(w).lower())
+    names = lambda txt: any(w in str(txt or "").lower() for w in words)
+    after = lambda a: bool(kick and _when(a.get("published") or a.get("originalPublishDate") or a.get("lastModified")) and _when(a.get("published") or a.get("originalPublishDate") or a.get("lastModified")) >= kick)
+    def own(a):
+        C = a.get("categories") or []
+        if ev and any(str(c.get("eventId") or "") == ev or (c.get("type") == "event" and str(c.get("id") or "") == ev) for c in C if isinstance(c, dict)): return True
+        tagged = any(c.get("type") == "team" and str(c.get("teamId") or (c.get("team") or {}).get("id") or "") in teams for c in C if isinstance(c, dict))
+        return tagged and names(a.get("headline")) and after(a)
+    state = ((comp.get("status") or {}).get("type") or {}).get("state")
     art = sm.get("article") or {}
-    add(next((i.get("url") for i in art.get("images") or [] if i.get("url")), None), art.get("headline"), ((art.get("links") or {}).get("web") or {}).get("href"), "Recap")
-    for a in (sm.get("news") or {}).get("articles") or []:
-        add(next((i.get("url") for i in a.get("images") or [] if i.get("url")), None), a.get("headline"), ((a.get("links") or {}).get("web") or {}).get("href"), "Story")
-    for v in sm.get("videos") or []: add(v.get("thumbnail"), v.get("headline"), (((v.get("links") or {}).get("web")) or {}).get("href"), "Video")
+    if state == "post" and (own(art) or names(art.get("headline"))):
+        add(next((i.get("url") for i in art.get("images") or [] if i.get("url")), None), art.get("headline"), ((art.get("links") or {}).get("web") or {}).get("href"), "Recap")
+    for a in ((sm.get("news") or {}).get("articles") or []) if state != "pre" else []:
+        if own(a): add(next((i.get("url") for i in a.get("images") or [] if i.get("url")), None), a.get("headline"), ((a.get("links") or {}).get("web") or {}).get("href"), "Story")
+    for v in (sm.get("videos") or []) if state != "pre" else []:
+        if names(v.get("headline")) and after(v): add(v.get("thumbnail"), v.get("headline"), (((v.get("links") or {}).get("web")) or {}).get("href"), "Video")
     vi = [i for i in (((sm.get("gameInfo") or {}).get("venue") or {}).get("images") or []) if i.get("href")]
     day = next((i for i in vi if "interior" not in i["href"]), vi[0] if vi else None)
     return {"ph": out[:8], "venue": day["href"] if day else None}
+
+def pre_due(g, M, I, now=None):
+    """a game not yet started: is its summary (injury list, preview pictures) due for a re-read this run?"""
+    if g["id"] not in M or g["id"] not in I: return True
+    now = now or time.time(); slot = int(now // 600)          # this run's 10-minute slot
+    try: h = (datetime.datetime.fromisoformat(str(g["kick"]).replace("Z", "+00:00")).timestamp() - now) / 3600
+    except (TypeError, ValueError): return True
+    return h <= 4 or (h <= 48 and slot % 3 == 0) or slot % 12 == 0
+
+def drop_shared(M):
+    """a picture that turns up for two games is not either game's picture"""
+    cnt = {}
+    for m in M.values():
+        for k in {_pkey(p["u"]) for p in m.get("ph") or []}: cnt[k] = cnt.get(k, 0) + 1
+    return {g: dict(m, ph=[p for p in m.get("ph") or [] if cnt.get(_pkey(p["u"]), 0) < 2]) for g, m in M.items()}
 
 if __name__ == "__main__":
     old = json.load(open("live.json")) if os.path.exists("live.json") else {}
@@ -106,9 +163,12 @@ if __name__ == "__main__":
         I = {k: v for k, v in (old.get("inj") or {}).items() if isinstance(v, dict)}
         for g in G:
             if g.get("vid") and not g.get("neutral"): V[g["home"]] = str(g["vid"])
-        # every game not yet started is re-read each run for its injury list (the official report and ESPN's updates)
-        need = [g for g in G if g["state"] in ("in", "pre") or (g["state"] == "post" and not B.get(g["id"])) or g["id"] not in M
-                or (g["state"] == "post" and recent(g) and not any(p.get("k") in ("Recap", "Story") for p in M[g["id"]].get("ph") or []))]
+        # games not yet started are re-read for their injury lists on a schedule that tightens toward kickoff: every run in
+        # the last 4 hours (inactives, late scratches), every half hour within two days (practice reports), every two
+        # hours before that. Live games and finals still missing a box score or recap are read every run.
+        need = [g for g in G if g["state"] == "in" or (g["state"] == "pre" and pre_due(g, M, I)) or (g["state"] == "post" and not B.get(g["id"]))
+                or g["id"] not in M or (g["state"] == "post" and recent(g) and not any(p.get("k") in ("Recap", "Story") for p in M[g["id"]].get("ph") or []))]
+        print(f"reading {len(need)} of {len(G)} game summaries")
         t0 = time.time()
         with ThreadPoolExecutor(max_workers=4) as ex:   # box scores 4 at a time, and never more than ~2 minutes in total
             futs = {ex.submit(get, BASE + "summary?event=" + str(g["id"])): g["id"] for g in need}
@@ -124,7 +184,11 @@ if __name__ == "__main__":
                 except Exception as e: print("box score unavailable for", futs[f], e)
                 if time.time() - t0 > 140: print("time budget reached; keeping earlier box scores for the rest"); break
         cur = lambda d: {k: v for k, v in d.items() if any(str(x["id"]) == str(k) for x in G)}
-        new = {"src": "ESPN, refreshed every few minutes", "week": (sb.get("week") or {}).get("number"), "games": G, "box": cur(B), "media": cur(M), "venues": V, "inj": cur(I)}
+        cnt = {}
+        for v in cur(M).values():
+            for u in {p["u"] for p in v.get("ph") or []}: cnt[u] = cnt.get(u, 0) + 1
+        for v in M.values(): v["ph"] = [p for p in v.get("ph") or [] if cnt.get(p["u"], 0) <= 1]
+        new = {"src": "ESPN, refreshed every few minutes", "week": (sb.get("week") or {}).get("number"), "games": G, "box": cur(B), "media": drop_shared(cur(M)), "venues": V, "inj": cur(I)}
         if {k: old.get(k) for k in ("games", "box", "media", "venues", "inj")} != {k: new[k] for k in ("games", "box", "media", "venues", "inj")}:
             new["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
             json.dump(new, open("live.json", "w"), separators=(",", ":")); print("live.json updated:", sum(g["state"] == "in" for g in G), "games live")

@@ -33,6 +33,7 @@ WKS = lambda: [k for k in H if not k.startswith('_')]
 def suggest():
     legs = []
     for x in LN.get('lines') or []:
+        if x.get('wk', LN.get('wk')) != LN.get('wk'): continue   # parlays are for the coming week only
         p = PI.get(x['pid'])
         if not p or not x.get('pick') or x.get('q') or p.get('inj') in ('Out', 'IR', 'Doubtful'): continue
         if x.get('kick') and datetime.datetime.fromisoformat(x['kick']) <= NOW: continue

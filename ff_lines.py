@@ -101,12 +101,12 @@ def build_inputs():
     return I, D
 
 # ------------------------------------------------------------------ Vegas: ESPN's current odds when posted, else the schedule's
-def espn_totals(I):
+def espn_totals(I, wk=None):
     """Implied team totals from ESPN's current odds (live.json, refreshed every 10 minutes): over/under and spread."""
     out = {}
     try: L = json.load(open('live.json'))
     except Exception: return out
-    if int(L.get('week') or 0) != I['fw']: return out
+    if int(L.get('week') or 0) != (wk or I['fw']): return out
     for g in L.get('games') or []:
         ou, det = g.get('ou'), g.get('odds') or ''
         if g.get('state') != 'pre' or not ou: continue
@@ -142,13 +142,15 @@ def news_status(I):
             if (it.get('d') or '') >= since: st[pid] = (it['st'], it['h'], it.get('s'))
     return {pid: v for pid, v in st.items() if v[0] == 'out'}
 
-def build_lines(I):
-    FW, SCHED, DVP, MU = I['fw'], I['sched'], I['dvp'], I['mu']
-    QS = json.load(open('prop_qs.json')); ESPN = espn_totals(I); global PULLED; PULLED = news_status(I)
+def build_lines(I, wk=None, teams=None):
+    """lines for week wk (default: the coming fantasy week); teams limits them to some teams (this week's late games)"""
+    FW, SCHED, DVP, MU = wk or I['fw'], I['sched'], I['dvp'], I['mu']
+    QS = json.load(open('prop_qs.json')); ESPN = espn_totals(I, FW); global PULLED; PULLED = news_status(I)
     sch = lambda tm: next((x for x in SCHED.get(tm, []) if x[0] == FW), None)
     rows = []
     for p in I['players']:
         pos = p['p']; e = sch(p['t']); wp = wkproj(p, FW)
+        if teams is not None and p['t'] not in teams: continue
         if not e or not e[1] or p['nw'] > FW or wp < (10 if pos == 'QB' else 4): continue   # Monday-night teams still get next week's lines
         if p['id'] in PULLED: continue                                                              # news says he will miss the game
         G = [r for r in (p.get('gl') or []) if r[0] < FW]
@@ -225,7 +227,7 @@ def build_lines(I):
             else: pm = 1 - cdf(QS[QK(pos, k)], (line + 1e-4) / max(mm, .05))
             po = min(.62, max(.38, .5 * pm + .25))
             kk = 'ry' if k == 'ryq' else k
-            lines.append({'pid': p['id'], 't': p['t'], 'opp': r['opp'], 'k': kk, 'line': line, 'mm': round(float(mm), 2), 'po': round(float(po), 3),
+            lines.append({'pid': p['id'], 'wk': FW, 't': p['t'], 'opp': r['opp'], 'k': kk, 'line': line, 'mm': round(float(mm), 2), 'po': round(float(po), 3),
                           'pick': bool(k in PICKS and max(po, 1 - po) >= PICK_MIN), 'kick': r['kick'], 'q': bool(p.get('inj') == 'Questionable'),
                           'vol': round(float(vol), 1), 'eff': round(float(eff), 3), 'it': round(float(r['it']), 1), 'its': r['it_src'], 'bmp': round(float(r['bmp']), 1), 'pp': bool(r['last_part'])})
     return lines
@@ -239,16 +241,22 @@ def why(old, new):
     if abs((old.get('vol') or 0) - (new.get('vol') or 0)) >= .3 and not R: R.append('new game data')
     return '; '.join(R) or 'updated projections'
 
+def _dt(s):
+    try:
+        d = datetime.datetime.fromisoformat(str(s).replace('Z', '+00:00')); return d if d.tzinfo else d.replace(tzinfo=datetime.timezone.utc)
+    except Exception: return None
+
 def merge_history(new_lines, fw):
     old = {}
     try:
         O = json.load(open('lines.json'))
         if O.get('wk') == fw: old = O
     except Exception: pass
-    prev = {(l['pid'], l['k']): l for l in old.get('lines') or []}
+    key = lambda l: (l['pid'], l['k'], l.get('wk', fw))
+    prev = {key(l): l for l in old.get('lines') or []}
     moves = list(old.get('moves') or [])
     for l in new_lines:
-        o = prev.get((l['pid'], l['k']))
+        o = prev.get(key(l))
         if not o:
             l['open'] = l['line']; l['opened'] = STAMP; l['mv'] = []
             continue
@@ -256,10 +264,12 @@ def merge_history(new_lines, fw):
         if l['line'] != o['line']:
             w = why(o, l); l['mv'].append([STAMP, o['line'], l['line'], w])
             moves.append({'pid': l['pid'], 'k': l['k'], 'from': o['line'], 'to': l['line'], 'at': STAMP, 'why': w})
-    gone = [k for k in prev if k not in {(l['pid'], l['k']) for l in new_lines}]
-    for pid, k in gone:
+    now_keys = {key(l) for l in new_lines}
+    for kk_ in [k_ for k_ in prev if k_ not in now_keys]:
+        pid, k, wk_ = kk_; o_ = prev[kk_]
+        if o_.get('kick') and _dt(o_['kick']) and _dt(o_['kick']) <= NOW: continue   # the game started: not a pulled line
         n_ = PULLED.get(pid); w_ = f"pulled: {n_[1]} ({n_[2]})" if n_ else 'line pulled (injury report or role change)'
-        moves.append({'pid': pid, 'k': k, 'from': prev[(pid, k)]['line'], 'to': None, 'at': STAMP, 'why': w_})
+        moves.append({'pid': pid, 'k': k, 'from': o_['line'], 'to': None, 'at': STAMP, 'why': w_})
     sig = lambda L: sorted((l['pid'], l['k'], l['line'], round(l['po'], 2), l['q']) for l in L)
     changed = (not old) or sig(new_lines) != sig(old.get('lines') or [])
     out = {'wk': fw, 'at': STAMP if changed else old.get('at', STAMP), 'odds_from': None, 'bt': BT, 'lines': new_lines, 'moves': moves[-60:],
@@ -278,6 +288,10 @@ if __name__ == '__main__':
     else:
         try:
             L = build_lines(I)
+            # this week's games still to play (a Monday-night game while next week's lines are already up)
+            if I.get('nw') and I['nw'] != I['fw']:
+                late = {tm for tm, S in I['sched'].items() for x in S if x[0] == I['nw'] and x[1] and x[4] is None and len(x) > 5 and _dt(x[5]) and _dt(x[5]) > NOW}
+                if late: L = build_lines(I, I['nw'], late) + L
         except Exception as ex:   # never break the job: keep the previous lines
             print('could not rebuild lines, keeping the previous ones:', ex); sys.exit(0)
     out, changed = merge_history(L, I['fw'])
@@ -287,5 +301,5 @@ if __name__ == '__main__':
     if D is not None:
         D['lines'] = out; json.dump(D, open('ff_data.json', 'w'), separators=(',', ':'))
     mv = sum(1 for m in out['moves'] if m['at'] == STAMP)
-    print(f"lines: {len(L)} for week {I['fw']} ({sum(l['pick'] for l in L)} picks at {int(PICK_MIN*100)}%+), {mv} moved this run, odds from {out['odds_from']}"
+    print(f"lines: {len(L)} for week {I['fw']}{' and this week' + chr(39) + 's late games' if any(l.get('wk') != I['fw'] for l in L) else ''} ({sum(l['pick'] for l in L)} picks at {int(PICK_MIN*100)}%+), {mv} moved this run, odds from {out['odds_from']}"
           + ('' if changed else ' (no change)'))
