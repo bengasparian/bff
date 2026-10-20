@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+          cache: pip                # reuses the downloaded libraries between runs instead of downloading them again
       - name: Install libraries (tested versions; the newest ones if those ever stop installing)
         run: pip install -r requirements.txt || pip install pandas pyarrow scikit-learn scipy
       - name: Reuse the model's feature tables from earlier runs
@@ -32,6 +33,19 @@ jobs:
           path: .cache
           key: bff-features-${{ hashFiles('ff_build2.py') }}-${{ github.run_id }}
           restore-keys: bff-features-${{ hashFiles('ff_build2.py') }}-
+      - name: This week's cache name
+        id: wk
+        run: echo "k=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+      - name: Reuse this week's downloads of completed seasons (about 100 MB that does not change; refreshed weekly)
+        uses: actions/cache@v5
+        with:
+          path: |
+            pbp_20*.parquet
+            stats_player_week_20*.parquet
+            snap_counts_20*.parquet
+            roster_weekly_20*.parquet
+            injuries_20*.parquet
+          key: bff-seasons-${{ steps.wk.outputs.k }}
       - name: Download data (works out the season on its own)
         id: fetch
         run: python fetch_data.py
