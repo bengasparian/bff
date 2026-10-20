@@ -172,14 +172,14 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-20T21:37+00:00",
+  "made": "2026-10-20T21:54+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-20T20:12+00:00",
+  "lines_at": "2026-10-20T21:54+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
     "type": "safe",
-    "prob": 0.3813,
+    "prob": 0.3794,
     "legs": [
      {
       "pid": "00-0040676",
@@ -201,7 +201,7 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.615,
+      "pr": 0.612,
       "book": "bff",
       "n": "Daniel Jones",
       "pos": "QB",
@@ -212,7 +212,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2307,
+    "prob": 0.2311,
     "legs": [
      {
       "pid": "00-0040676",
@@ -234,7 +234,7 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.615,
+      "pr": 0.612,
       "book": "bff",
       "n": "Daniel Jones",
       "pos": "QB",
@@ -247,7 +247,7 @@
       "k": "py",
       "line": 209.5,
       "lean": "Over",
-      "pr": 0.605,
+      "pr": 0.609,
       "book": "bff",
       "n": "Bo Nix",
       "pos": "QB",
@@ -258,7 +258,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0821,
+    "prob": 0.0824,
     "legs": [
      {
       "pid": "00-0040676",
@@ -280,7 +280,7 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.615,
+      "pr": 0.612,
       "book": "bff",
       "n": "Daniel Jones",
       "pos": "QB",
@@ -293,7 +293,7 @@
       "k": "py",
       "line": 209.5,
       "lean": "Over",
-      "pr": 0.605,
+      "pr": 0.609,
       "book": "bff",
       "n": "Bo Nix",
       "pos": "QB",
@@ -313,16 +313,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039793",
-      "t": "SEA",
-      "opp": "KC",
-      "k": "rec",
-      "line": 2.5,
+      "pid": "00-0030565",
+      "t": "NYJ",
+      "opp": "MIA",
+      "k": "py",
+      "line": 208.5,
       "lean": "Over",
-      "pr": 0.591,
+      "pr": 0.592,
       "book": "bff",
-      "n": "AJ Barner",
-      "pos": "TE",
+      "n": "Geno Smith",
+      "pos": "QB",
       "res": "pending"
      }
     ],
