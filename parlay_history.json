@@ -172,9 +172,9 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-21T00:45+00:00",
+  "made": "2026-10-21T01:08+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-20T21:54+00:00",
+  "lines_at": "2026-10-21T01:08+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -212,7 +212,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2311,
+    "prob": 0.2292,
     "legs": [
      {
       "pid": "00-0040676",
@@ -247,7 +247,7 @@
       "k": "py",
       "line": 209.5,
       "lean": "Over",
-      "pr": 0.609,
+      "pr": 0.604,
       "book": "bff",
       "n": "Bo Nix",
       "pos": "QB",
@@ -258,7 +258,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0824,
+    "prob": 0.0815,
     "legs": [
      {
       "pid": "00-0040676",
@@ -293,7 +293,7 @@
       "k": "py",
       "line": 209.5,
       "lean": "Over",
-      "pr": 0.609,
+      "pr": 0.604,
       "book": "bff",
       "n": "Bo Nix",
       "pos": "QB",
@@ -313,16 +313,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0030565",
-      "t": "NYJ",
-      "opp": "MIA",
-      "k": "py",
-      "line": 208.5,
+      "pid": "00-0039793",
+      "t": "SEA",
+      "opp": "KC",
+      "k": "rec",
+      "line": 2.5,
       "lean": "Over",
-      "pr": 0.592,
+      "pr": 0.591,
       "book": "bff",
-      "n": "Geno Smith",
-      "pos": "QB",
+      "n": "AJ Barner",
+      "pos": "TE",
       "res": "pending"
      }
     ],
