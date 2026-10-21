@@ -172,14 +172,14 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-21T03:24+00:00",
+  "made": "2026-10-21T03:57+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-21T01:08+00:00",
+  "lines_at": "2026-10-21T03:57+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
     "type": "safe",
-    "prob": 0.3794,
+    "prob": 0.3807,
     "legs": [
      {
       "pid": "00-0040676",
@@ -201,7 +201,7 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.612,
+      "pr": 0.614,
       "book": "bff",
       "n": "Daniel Jones",
       "pos": "QB",
@@ -212,7 +212,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2292,
+    "prob": 0.2303,
     "legs": [
      {
       "pid": "00-0040676",
@@ -234,7 +234,7 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.612,
+      "pr": 0.614,
       "book": "bff",
       "n": "Daniel Jones",
       "pos": "QB",
@@ -247,7 +247,7 @@
       "k": "py",
       "line": 209.5,
       "lean": "Over",
-      "pr": 0.604,
+      "pr": 0.605,
       "book": "bff",
       "n": "Bo Nix",
       "pos": "QB",
@@ -258,7 +258,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0815,
+    "prob": 0.0819,
     "legs": [
      {
       "pid": "00-0040676",
@@ -280,7 +280,7 @@
       "k": "ptd",
       "line": 1.5,
       "lean": "Under",
-      "pr": 0.612,
+      "pr": 0.614,
       "book": "bff",
       "n": "Daniel Jones",
       "pos": "QB",
@@ -293,7 +293,7 @@
       "k": "py",
       "line": 209.5,
       "lean": "Over",
-      "pr": 0.604,
+      "pr": 0.605,
       "book": "bff",
       "n": "Bo Nix",
       "pos": "QB",
