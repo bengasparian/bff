@@ -172,14 +172,14 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-22T18:44+00:00",
+  "made": "2026-10-22T19:05+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-22T17:17+00:00",
+  "lines_at": "2026-10-22T19:05+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
     "type": "safe",
-    "prob": 0.3788,
+    "prob": 0.3844,
     "legs": [
      {
       "pid": "00-0040676",
@@ -195,15 +195,15 @@
       "res": "pending"
      },
      {
-      "pid": "00-0039732",
-      "t": "DEN",
-      "opp": "ARI",
-      "k": "py",
-      "line": 209.5,
-      "lean": "Over",
-      "pr": 0.611,
+      "pid": "00-0039923",
+      "t": "NYG",
+      "opp": "HOU",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
       "book": "bff",
-      "n": "Bo Nix",
+      "n": "J.J. McCarthy",
       "pos": "QB",
       "res": "pending"
      }
@@ -212,7 +212,7 @@
    },
    {
     "type": "bal",
-    "prob": 0.2315,
+    "prob": 0.2349,
     "legs": [
      {
       "pid": "00-0040676",
@@ -228,6 +228,19 @@
       "res": "pending"
      },
      {
+      "pid": "00-0039923",
+      "t": "NYG",
+      "opp": "HOU",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "J.J. McCarthy",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
       "pid": "00-0039732",
       "t": "DEN",
       "opp": "ARI",
@@ -237,19 +250,6 @@
       "pr": 0.611,
       "book": "bff",
       "n": "Bo Nix",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0035710",
-      "t": "IND",
-      "opp": "MIN",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Under",
-      "pr": 0.611,
-      "book": "bff",
-      "n": "Daniel Jones",
       "pos": "QB",
       "res": "pending"
      }
@@ -258,7 +258,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0818,
+    "prob": 0.0851,
     "legs": [
      {
       "pid": "00-0040676",
@@ -270,6 +270,19 @@
       "pr": 0.62,
       "book": "bff",
       "n": "Cam Ward",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039923",
+      "t": "NYG",
+      "opp": "HOU",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "J.J. McCarthy",
       "pos": "QB",
       "res": "pending"
      },
@@ -287,29 +300,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0035710",
-      "t": "IND",
-      "opp": "MIN",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Under",
-      "pr": 0.611,
-      "book": "bff",
-      "n": "Daniel Jones",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0036309",
-      "t": "NYG",
-      "opp": "HOU",
-      "k": "rec",
-      "line": 1.5,
+      "pid": "00-0035228",
+      "t": "MIN",
+      "opp": "IND",
+      "k": "py",
+      "line": 211.5,
       "lean": "Over",
-      "pr": 0.596,
+      "pr": 0.61,
       "book": "bff",
-      "n": "Darnell Mooney",
-      "pos": "WR",
+      "n": "Kyler Murray",
+      "pos": "QB",
       "res": "pending"
      },
      {
@@ -319,7 +319,7 @@
       "k": "rec",
       "line": 2.5,
       "lean": "Over",
-      "pr": 0.593,
+      "pr": 0.594,
       "book": "bff",
       "n": "AJ Barner",
       "pos": "TE",
