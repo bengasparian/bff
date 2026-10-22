@@ -172,9 +172,9 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-22T12:46+00:00",
+  "made": "2026-10-22T13:10+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-22T12:46+00:00",
+  "lines_at": "2026-10-22T13:10+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -313,16 +313,16 @@
       "res": "pending"
      },
      {
-      "pid": "00-0030565",
-      "t": "NYJ",
-      "opp": "MIA",
-      "k": "py",
-      "line": 208.5,
+      "pid": "00-0039793",
+      "t": "SEA",
+      "opp": "KC",
+      "k": "rec",
+      "line": 2.5,
       "lean": "Over",
       "pr": 0.594,
       "book": "bff",
-      "n": "Geno Smith",
-      "pos": "QB",
+      "n": "AJ Barner",
+      "pos": "TE",
       "res": "pending"
      }
     ],
