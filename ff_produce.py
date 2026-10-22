@@ -60,7 +60,11 @@ for pos in POS:
     LL,FF=FEAT(pos); pl=mk_lin().fit(a[LL],a.y).predict(t[LL]); pt=mk_tree().fit(a[FF],a.y).predict(t[FF]); pe=(pl+pt)/2
     def sp(pred): return float(np.nanmean([spearmanr(x.pp,x.y).correlation for w,x in t.assign(pp=pred).groupby('week') if len(x)>8]))
     cand={'blend':t.b.values,'linear':pl,'tree':pt,'ensemble':pe}; sc={k:(float(np.mean(np.abs(v-t.y))),sp(v)) for k,v in cand.items()}
-    best=min(['linear','tree','ensemble'],key=lambda k:sc[k][0]-2*sc[k][1])   # favor ranking accuracy (start/sit) as well as error
+    # the average of both models at every position: on 2023, 2024 and 2025, each predicted by models trained only on earlier
+    # seasons (13,000+ player-games a season), it ranked players best at all four positions and missed by the least or within
+    # 0.02 points. The old rule picked per position from the latest season alone, which is noisy (it chose trees only for
+    # quarterbacks and the linear model only for tight ends; over three seasons both did worse than the average).
+    best='ensemble'
     CH[pos]=best; res[pos]={'n':int(len(t)),'mae_base':r(sc['blend'][0]),'rank_base':r(sc['blend'][1],3),'mae':r(sc[best][0]),'rank':r(sc[best][1],3),'model':best}
     q=t.assign(pp=cand[best]); q=q[q.pp>=5]; ratio=q.y/q.pp; RNG[pos]=[r(ratio.quantile(.1)),r(ratio.quantile(.9))]
     # full outcome spread (5th..95th percentile of actual / projected), by projection level, for boom and bust chances
@@ -116,7 +120,7 @@ PRAC={r_.gsis_id:short_prac(r_.practice_status) for r_ in injall.itertuples() if
 _pf=f'pbp_{SEASON}.parquet' if os.path.exists(f'pbp_{SEASON}.parquet') else f'pbp_{SEASON-1}.parquet'   # team pace: last season's until this one starts
 P26=pd.read_parquet(_pf,columns=['week','posteam','play_type','qb_kneel','qb_spike','epa']); P26=P26[P26.play_type.isin(['pass','run'])&(P26.qb_kneel!=1)&(P26.qb_spike!=1)]
 TV=P26.groupby(['posteam','week']).agg(pl=('epa','size'),pr=('play_type',lambda x:(x=='pass').mean())).groupby('posteam').mean()
-RMAP={'QB':'QB','RB':'RB','HB':'RB','FB':'RB','WR':'WR','LWR':'WR','RWR':'WR','SWR':'WR','TE':'TE'}
+RMAP={'QB':'QB','RB':'RB','HB':'RB','WR':'WR','LWR':'WR','RWR':'WR','SWR':'WR','TE':'TE'}   # fullbacks (FB) are not ranked as running backs
 dc2=dc[dc.pos_abb.isin(RMAP)].copy(); dc2['pg']=dc2.pos_abb.map(RMAP); role=dc2.sort_values('pos_rank').drop_duplicates('gsis_id').set_index('gsis_id')
 # pool: anyone with fantasy activity this season at QB/RB/WR/TE, plus depth-chart starters/backups (and, below, injured stars and the consensus top 300)
 pool={x for x in set(S26.player_id)|set(dc2[dc2.pos_rank<=(3)].gsis_id) if isinstance(x,str) and x}
@@ -143,8 +147,11 @@ try:
         print('consensus rankings are more than two weeks old; not using them'); ECR={}; ECR_DATE=None
 except Exception as _e: print('consensus rankings unavailable (trade values fall back to projections only):',_e)
 # ---- FantasyPros WEEKLY expert consensus for the coming week (PPR ranks by position). Blended into next week's projection:
-# 2023-25 backtest on every week (out of sample): rank accuracy 0.419 -> 0.467, average miss 5.56 -> 5.43 points with a 65% consensus weight.
-WK={}; WK_W=0.65
+# 2023-25 backtest, 46 weeks, 13,120 player-games, every season predicted by models trained only on earlier seasons:
+# rank accuracy (mean weekly Spearman by position) model alone 0.594, experts alone 0.631, blend at 85% experts 0.632;
+# average miss model alone 4.63, blend 4.49 points. The weight chosen leaving one season out each time was 0.85-1.0
+# (the old 65% ranked a little worse than the experts alone: 0.630).
+WK={}; WK_W=0.85
 try:
     _W=pd.read_csv('fp_latest_weekly.csv',low_memory=False); _W=_W[_W.page.isin(['qb','ppr-rb','ppr-wr','ppr-te'])]
     if not len(SC[(SC.season==SEASON)&SC.pts.isna()]): raise ValueError('no schedule yet')
@@ -176,7 +183,21 @@ pool|=_extra
 # the consensus top 300 too (in the offseason that brings in rookies and players who changed teams)
 _fp2g={str(int(f)):g for g,f in idx['fantasypros_id'].items() if f==f} if 'fantasypros_id' in idx.columns else {}
 _ecrp={_fp2g[k] for k,v in ECR.items() if v.get('o',999)<=300 and k in _fp2g}-pool; pool|=_ecrp
-print(f'player pool: {len(pool)} ({len(_extra)} injured or reserve players added back, {len(_ecrp)} from the consensus top 300)')
+# players on no NFL roster now (released, retired, never signed) have no games to project: in season, a player counts
+# only if the latest weekly roster has him with a team (active, reserve, inactive, practice squad or exempt list), or, when
+# that week does not list him, the season roster does; the depth chart decides only for players neither roster has.
+ONTEAM=('ACT','RES','INA','DEV','EXE')
+FREE=set()
+if PHASE=='season' and 'week' in wr.columns and len(wr) and int(wr.week.max())>0:
+    _MW=int(wr.week.max()); _R26=local_or(f'roster_{SEASON}.parquet',f'rosters/roster_{SEASON}.parquet')
+    _R26=_R26.dropna(subset=['gsis_id']).sort_values('week' if 'week' in _R26.columns else 'gsis_id').groupby('gsis_id').tail(1).set_index('gsis_id') if _R26 is not None and len(_R26) and 'gsis_id' in _R26.columns else None
+    for pid_ in list(pool):
+        if pid_ in cur.index and int(cur.at[pid_,'week'])==_MW: ok_=cur.at[pid_,'status'] in ONTEAM
+        elif _R26 is not None and pid_ in _R26.index: ok_=_R26.at[pid_,'status'] in ONTEAM
+        else: ok_=pid_ in set(dc2.gsis_id)
+        if not ok_: FREE.add(pid_)
+    pool-=FREE
+print(f'player pool: {len(pool)} ({len(_extra)} injured or reserve players added back, {len(_ecrp)} from the consensus top 300, {len(FREE)} on no NFL roster left out)')
 SC26=SC[SC.season==SEASON]; SCHED_KNOWN=len(SC26)>0
 if not SCHED_KNOWN:   # offseason before the schedule is out: 17 games against opponents still to be announced
     _tm=sorted(SC[SC.season==SEASON-1].team.unique())
@@ -193,12 +214,12 @@ for pid_,G_ in wr[wr.gsis_id.isin(set(cur[cur.status=='RES'].index))].groupby('g
 RSV={pid_:('PUP' if str(x).startswith('P') else 'NFI' if str(x).startswith('N') else 'Suspended' if str(x).startswith('S') else 'IR') for pid_,x in cur[cur.status=='RES'].get('status_description_abbr',pd.Series(dtype=str)).items()}
 IDT={'GBP':'GB','JAC':'JAX','KCC':'KC','LVR':'LV','NEP':'NE','NOS':'NO','SFO':'SF','TBB':'TB','LAR':'LA','RAM':'LA','WSH':'WAS'}
 def team_of(pid):
-    if pid in cur.index and cur.loc[pid,'status'] in ('ACT','RES','INA','DEV'): return cur.loc[pid,'team'],cur.loc[pid,'status']
+    if pid in cur.index and cur.loc[pid,'status'] in ('ACT','RES','INA','DEV','EXE'): return cur.loc[pid,'team'],cur.loc[pid,'status']
     if pid in role.index: return role.loc[pid,'team'],'ACT'
     if pid in info.index and (info.loc[pid,'season']==SEASON or pid not in idx.index): return info.loc[pid,'team'],None
     if pid in idx.index and isinstance(idx.loc[pid,'team'],str) and idx.loc[pid,'team'] not in ('FA','FA*'): return IDT.get(idx.loc[pid,'team'],idx.loc[pid,'team']),None
     return (info.loc[pid,'team'] if pid in info.index else None),None
-players=[]; prev_pg=prev; GDAY=dict(zip(gm.game_id,gm.gameday)); AVL={}
+players=[]; prev_pg=prev; GDAY=dict(zip(gm.game_id,gm.gameday)); AVL={}; NOUSE={'RB':1.2,'WR':1.1,'TE':0.6}; NOU={}
 # per-game stat mix for custom scoring: this season's games plus three games' worth of last season (or of his position's
 # typical mix when he has no last season). Order: pass yd, pass TD, INT, pass 2pt, carries, rush yd, rush TD, receptions,
 # rec yd, rec TD, rush/rec 2pt, passing first downs, rushing + receiving first downs, fumbles lost.
@@ -226,6 +247,9 @@ GL={pid:[[int(x['week'])]+[int(round(float(x[c] or 0))) for c in _GLC]+[int(x['_
 # are set) 1.3%, limited 40%, full 74%. After an Out (not injured reserve), availability relative to healthy players was
 # 39% the next week, 69% after two weeks, 85% after three and about 90% later (OUTA).
 OUTA=[.39,.69,.85,.9]
+# Questionable and then inactive (2021-25, n=558): 52.5% played the team's next game and 62.5% the one after, against 29%
+# and 46% after an Out, so relative to healthy players about 0.7 and 0.9 (QINA)
+QINA=[.7,.9,.9,.9]
 NXW={t_:int(G_[G_.pts.isna()].week.min()) for t_,G_ in SC26.groupby('team') if G_.pts.isna().any()}
 KD={}
 for _g in gm[gm.season==SEASON].itertuples():
@@ -271,31 +295,49 @@ for tm_,G_ in (injfull.groupby('team') if len(injfull) else []):
                 if pr_=='DNP': STATUS[x_.gsis_id]={'s':'Out','src':'expected','d':d_,'n':f'Expected out: missed week {wr_-1} and not practicing'}
                 elif pr_=='Limited': STATUS[x_.gsis_id]={'s':'Questionable','src':'expected','d':d_,'n':f'Missed week {wr_-1}; limited in practice'}
     elif wr_<nx_:
-        for x_ in cw_[cw_.report_status.isin(['Out','Doubtful'])].itertuples():
-            STATUS[x_.gsis_id]={'s':'Questionable','src':'expected','k':nx_-wr_,'d':x_.report_primary_injury if isinstance(x_.report_primary_injury,str) else None,'n':f'Missed week {wr_}; no injury report for week {nx_} yet'}
+        # missed the reported game: listed Out or Doubtful, or Questionable and then inactive for it (weekly roster)
+        _ina=set(wr[(wr.week==wr_)&(wr.status=='INA')].gsis_id)
+        _miss=cw_.report_status.isin(['Out','Doubtful'])|((cw_.report_status=='Questionable')&cw_.gsis_id.isin(_ina))
+        for x_ in cw_[_miss].itertuples():
+            q_=x_.report_status=='Questionable'
+            STATUS[x_.gsis_id]={'s':'Questionable','src':'expected','k':nx_-wr_,'cv':'q' if q_ else None,'d':x_.report_primary_injury if isinstance(x_.report_primary_injury,str) else None,'n':(f'Questionable for week {wr_} and did not play' if q_ else f'Missed week {wr_}')+f'; no injury report for week {nx_} yet'}
+# 2b. the commissioner's exempt list (not allowed to play, like a suspension): out until the roster or the news says otherwise
+EXEMPT={pid_ for pid_,x_ in cur.iterrows() if x_.get('status')=='EXE' and x_.get('position') in POS}
+for pid_ in EXEMPT: STATUS[pid_]={'s':'Out','src':'roster','d':None,'n':"On the commissioner's exempt list (not allowed to play)"}
 # 3. timelines reported in the news ("out at least three weeks", "out for the season") for a player whose next game has
 #    no ESPN or official status yet: out until his team's week (next game after the story) + N weeks
 import re as _re
 _NUMW={'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10}
-_TLW=_re.compile(r"\b(?:out|miss|sidelined|shelved)\b(?:\s+(?:for|at least|a minimum of|minimum of|roughly|about|approximately|around|another|an additional)){0,2}\s+(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s*(?:-|–|to|or)\s*(?:\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten))?\s+(?:more\s+)?weeks?\b",_re.I)
-_TLS=_re.compile(r"\b(out for (the )?(rest of the )?(season|year)|season[- ]ending|miss (the )?(rest of the )?season)\b",_re.I)
+_TLW=_re.compile(r"\b(?:out|miss|sidelined|shelved)\b(?:\s+(?:for|at least|a minimum of|minimum of|roughly|about|approximately|around|another|an additional)){0,2}\s+(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s*(?:-|–|to|or)\s*(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten))?\s+(?:more\s+)?weeks?\b",_re.I)
+_TLS=_re.compile(r"\b(out for (the )?((rest|remainder) of (the )?)?(season|year)|season[- ]ending|(miss|misses|missing|sit out) (the )?((rest|remainder) of (the )?)?(season|year)(?!\s*(opener|finale|debut|'s first))|done for the (season|year))\b",_re.I)
 _TLX=_re.compile(r"\b(return|returns|returning|back|activated|cleared|after missing|after being|designated to return)\b",_re.I)
+_REIN=_re.compile(r"\b(reinstat\w*|removed? from (the )?(commissioner'?s )?exempt list|off (the )?(commissioner'?s )?exempt list|can play again|eligible to (play|return)|cleared to play)\b",_re.I)
+_RI={}
 NEWS_TL=0
 try:
     _nj=json.load(open('news.json')) if os.path.exists('news.json') else {}
     _now=pd.Timestamp.now(tz='UTC'); _TL={}
     for it_ in sorted(_nj.get('items') or [],key=lambda x:str(x.get('d') or '')):
         h_=str(it_.get('h') or ''); d_=pd.to_datetime(it_.get('d'),utc=True,errors='coerce'); P_=it_.get('p') or []
-        if len(P_)!=1 or pd.isna(d_) or (_now-d_).days>35 or it_.get('st')=='ok' or _TLX.search(h_): continue
+        if len(P_)!=1 or pd.isna(d_) or (_now-d_).days>35: continue
+        if P_[0] in EXEMPT and _REIN.search(h_): _RI[P_[0]]=(d_,it_.get('s') or 'news'); continue
+        if it_.get('st')=='ok' or _TLX.search(h_): continue
         m_=_TLW.search(h_); se_=_TLS.search(h_)
-        if m_ or se_: _TL[P_[0]]=(99 if se_ else int(m_.group(1)) if m_.group(1).isdigit() else _NUMW[m_.group(1).lower()],d_,it_.get('s') or 'news')
-    for pid_,(n_,d_,s_) in _TL.items():
+        _wn=lambda g_: (int(g_) if g_.isdigit() else _NUMW[g_.lower()]) if g_ else None
+        if m_ or se_: _TL[P_[0]]=(99 if se_ else _wn(m_.group(1)),d_,it_.get('s') or 'news',None if se_ else _wn(m_.group(2)))
+    for pid_,(n_,d_,s_,hi_) in _TL.items():
         if pid_ not in cur.index or (STATUS.get(pid_) or {}).get('src') in ('ESPN','report'): continue
         tm_=IDT.get(cur.at[pid_,'team'],cur.at[pid_,'team'])
         if tm_ not in NXW: continue
         w0_=_ret_week(tm_,(d_+pd.Timedelta(days=1)).strftime('%Y-%m-%d')); rw_=99 if n_>=99 else (w0_ or 99)+n_
         if rw_<=NXW[tm_]: continue
-        STATUS[pid_]={'s':'Out','src':'news','d':(STATUS.get(pid_) or {}).get('d'),'rw':rw_,'n':f"Reported out {'for the season' if n_>=99 else f'{n_} week'+('s' if n_>1 else '')} ({s_}, {d_.strftime('%b')} {d_.day})"}; NEWS_TL+=1
+        # injured reserve: a reported timeline later than the 4-game minimum moves his estimated return (example: the Rams
+        # said Davante Adams would miss 6-10 weeks, so not before week 13 instead of the minimum's week 11)
+        if pid_ in RET: RET[pid_]=max(RET[pid_],rw_)
+        _span=f'{n_}-{hi_} weeks' if hi_ and hi_>n_ else f'{n_} week'+('s' if n_>1 else '')
+        STATUS[pid_]={'s':'Out','src':'news','d':(STATUS.get(pid_) or {}).get('d'),'rw':rw_,'n':f"Reported out {'for the season' if n_>=99 else _span} ({s_}, {d_.strftime('%b')} {d_.day})"}; NEWS_TL+=1
+    for pid_,(d_,s_) in _RI.items():   # reinstated: available again (tagged until the roster catches up)
+        STATUS[pid_]={'s':'Questionable','src':'news','d':None,'n':f"Reinstated from the exempt list ({s_}, {d_.strftime('%b')} {d_.day})"}; NEWS_TL+=1
     if NEWS_TL: print('injuries: timelines from the news for',NEWS_TL,'players')
 except Exception as _e: print('news timelines unavailable:',_e)
 print('injury status:',sum(v['s']=='Out' for v in STATUS.values()),'out,',sum(v['s']=='Doubtful' for v in STATUS.values()),'doubtful,',sum(v['s']=='Questionable' for v in STATUS.values()),'questionable,',sum(v['src']=='expected' for v in STATUS.values()),'of them expected from the report')
@@ -360,7 +402,7 @@ for pid in pool:
             if k_<=0: return 0.0
             if rw_: return 0.0 if w_<rw_ else OUTA[min(3,1+w_-rw_)]
             return OUTA[min(3,k_-1)]
-        if S_.get('k'): return OUTA[min(3,S_['k']-1+w_-nw_)]
+        if S_.get('k'): return (QINA if S_.get('cv')=='q' else OUTA)[min(3,S_['k']-1+w_-nw_)]
         return 1.0
     if out in ('Out','Doubtful') or ir: proj_next=0.0
     elif S_.get('k'): proj_next*=_avail(nw_)
@@ -373,6 +415,13 @@ for pid in pool:
     ros=[[int(w[0]),w[1],r(_av[i]*_raw[i],1)] for i,w in enumerate(wk_rows) if w[0]<=17]
     AVL[pid]=(_av,_raw)
     rl=role.loc[pid] if pid in role.index else None
+    # no usage: on this team for 3+ weeks this season (active, inactive or practice squad, never on a reserve list) and
+    # not one fantasy stat. Measured on 2021-25 (n=1,160 RB/WR/TE), such players scored about 1 PPR point the next week
+    # (RB 1.23, WR 1.08, TE 0.58; 8% scored 5+), so the projection is capped there until he gets touches. Depth-chart
+    # starters keep the model's number; quarterbacks follow the starter rule below.
+    if pos in NOUSE and not len(rows) and not ir and status!='EXE' and not (rl is not None and rl['team']==tm and int(rl['pos_rank'])<=(3 if pos=='WR' else 1)):
+        _h=wr[(wr.gsis_id==pid)&(wr.week>=1)]
+        if not (_h.status=='RES').any() and ((_h.team==tm)&_h.status.isin(['ACT','INA','DEV'])).sum()>=3: NOU[pid]=NOUSE[pos]
     players.append({'id':pid,'n':name,'p':pos,'t':tm,'age':r(idx.loc[pid,'age'],1) if pid in idx.index and 'age' in idx.columns else None,
       'role':f"{rl['pg']}{int(rl['pos_rank'])}" if rl is not None and rl['team']==tm else None,'inj':('IR' if ir else out),'ret':ret_,'bmp':[[int(w[0]),r(w[4]['bump'],2)] for w in wk_rows[:2]],'rsv':(RSV.get(pid,'IR') if ir else None),
       'num':int(cur.loc[pid,'jersey_number']) if pid in cur.index and pd.notna(cur.loc[pid,'jersey_number']) else None,'g':int(len(rows)),'fp':r(rows.fp.sum(),1),'fpg':r(rows.fp.mean(),1) if len(rows) else None,'xfpg':r(rows.xfp.mean(),1) if len(rows) else None,
@@ -383,7 +432,7 @@ for pid in pool:
       'gl':GL.get(pid,[]),
       'wk':[[int(x.week),r(x.fp,1),r(x.xfp,1),r(x.offense_pct,2),int(x.targets),int(x.carries),x.opponent_team] for x in rows.itertuples()],
       'proj':r(proj_next,1),'nw':int(nxt[0]),'opp':nxt[1],'home':int(nxt[2]) if nxt[2]==nxt[2] else 0,'it':r(nxt[3],1),'rl':r(Pr[0],1),'frm':r(base.get('efp'),1),'dc':dc_,
-      'dvp':r(nxt[4]['dvp'],3),'adjm':r(P[0]-Pm,1),'adjv':r(P[0]-Pv,1),'adjt':(0.0 if (out in ('Out','Doubtful') or ir) else r(P[0]-Pt,1)),'injd':S_.get('d'),'injn':S_.get('n'),'injs':S_.get('src'),'pj0':r(float(P[0]),1) if out in ('Out','Doubtful') and not ir else None,'tmo':[n for n in (SIT.get(tm,{}).get('next',{}).get('names') or []) if n!=name][:4],'qbo':(lambda q:q if q and q!=name else None)(SIT.get(tm,{}).get('next',{}).get('qbname')),'prac':PRAC.get(pid),'tpl':r(TV.pl.get(tm,np.nan),1),'tpr':r(TV.pr.get(tm,np.nan),3),'ros':ros,'bye':(byes.get(tm) or [None])[0],
+      'dvp':r(nxt[4]['dvp'],3),'adjm':r(P[0]-Pm,1),'adjv':r(P[0]-Pv,1),'adjt':(0.0 if (out in ('Out','Doubtful') or ir) else r(P[0]-Pt,1)),'injd':S_.get('d'),'injn':None if ir and S_.get('src')=='expected' else S_.get('n'),'injs':None if ir and S_.get('src')=='expected' else S_.get('src'),'pj0':r(float(P[0]),1) if (out in ('Out','Doubtful') or S_.get('k')) and not ir else None,'tmo':[n for n in (SIT.get(tm,{}).get('next',{}).get('names') or []) if n!=name][:4],'qbo':(lambda q:q if q and q!=name else None)(SIT.get(tm,{}).get('next',{}).get('qbname')),'prac':PRAC.get(pid),'tpl':r(TV.pl.get(tm,np.nan),1),'tpr':r(TV.pr.get(tm,np.nan),3),'ros':ros,'bye':(byes.get(tm) or [None])[0],
       'sid':str(int(idx.loc[pid,'sleeper_id'])) if pid in idx.index and pd.notna(idx.loc[pid,'sleeper_id']) else None,
       'eid':str(int(idx.loc[pid,'espn_id'])) if pid in idx.index and pd.notna(idx.loc[pid,'espn_id']) else None,
       'yid':str(int(idx.loc[pid,'yahoo_id'])) if pid in idx.index and pd.notna(idx.loc[pid,'yahoo_id']) else None,
@@ -408,6 +457,17 @@ for tm_ in sorted({p['t'] for p in players if p['p']=='QB'}):
             a_,_=AVL.get(sor['id'],([1.0]*len(ns['ros']),None)); _,raw_=AVL.get(ns['id'],(None,[row[2] for row in ns['ros']]))
             for j_,row in enumerate(ns['ros']):
                 if row[0]!=ns['nw'] and j_<len(a_) and j_<len(raw_): row[2]=r(raw_[j_]*(1-a_[j_]),1)
+        # the starter missed his last game and his team has no injury report for the next one yet: he plays with the
+        # measured chance (see _avail) and the next quarterback gets the rest, so the team's QB total stays whole
+        # (e.g. Baker Mayfield after missing week 6: about 39% his projection, Jalon Daniels about 61% of his)
+        if (STATUS.get(ns['id']) or {}).get('k') and ns.get('inj')!='IR':
+            a_s,_=AVL.get(ns["id"],(None,None)); bq_=next((p for p in Q_ if p is not ns and p.get('inj') not in ('Out','Doubtful','IR')),None)
+            raw_b=AVL.get(bq_['id'],(None,None))[1] if bq_ is not None else None
+            if a_s and raw_b:
+                for j_,row in enumerate(bq_['ros']):
+                    if j_<len(a_s) and j_<len(raw_b): row[2]=r(raw_b[j_]*(1-a_s[j_]),1)
+                bq_['proj']=bq_['ros'][0][2] if bq_['ros'] and bq_['ros'][0][0]==bq_['nw'] else 0.0
+                bq_['qbb']=0; bq_['qbf']=1; bq_['pj0']=r(raw_b[0],1)
 print('quarterbacks: expected starters', sum(1 for p in players if p.get('qbs')), '| backups set to 0:', sum(1 for p in players if p.get('qbb')))
 # blend next week's projection with the weekly consensus: the k-th ranked player at a position gets our k-th best projection (so the scale stays ours)
 for _pos in POS:
@@ -418,6 +478,12 @@ for _pos in POS:
     for p in _L:
         _mv=_m.get(p['id'],min(p['proj'],_fl)); _b=r((1-WK_W)*p['proj']+WK_W*_mv,1); p['adjc']=r(_b-p['proj'],1); p['proj']=_b
         if p['ros'] and p['ros'][0][0]==NEXT: p['ros'][0][2]=_b
+for p in players:   # the no-usage cap (above), after the consensus blend so it holds
+    c_=NOU.get(p['id'])
+    if c_ is None: continue
+    p['nou']=1; p['proj']=min(p['proj'] or 0,c_); p['rl']=min(p.get('rl') or 0,c_)
+    for row in p['ros']: row[2]=min(row[2],c_)
+if NOU: print('no usage this season (projection capped at about 1 point):',', '.join(sorted(p['n'] for p in players if p.get('nou'))))
 players.sort(key=lambda p:-(p['proj'] or 0))
 # defense vs position, this season to date (PPR points allowed per game) with ranks (1 = allows the fewest)
 a26,lg26=dvp_table(SEASON,99); DVP={}

@@ -1593,3 +1593,109 @@ button.artsr:hover{border-color:var(--acc)}
  .btabs svg{width:21px;height:21px}
  .btabs button{gap:2px}
 }
+/* ===== v34a: live game tracker */
+.gcast{column-count:2;column-gap:12px}
+.gcast>.panel{margin:0 0 12px;break-inside:avoid}
+.gcast>.gcnow{column-span:all}
+@media (max-width:900px){.gcast{column-count:1}}
+.gcposs{margin-left:auto;font:700 .78rem Inter,sans-serif;letter-spacing:0;text-transform:none;color:var(--mute);display:inline-flex;align-items:center;gap:6px}
+.gcdd{font:800 1.5rem/1.1 var(--cond);letter-spacing:.02em;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.gcdd b{color:var(--acc)}
+.gcdrv{margin:6px 0 0}
+.gclast{margin-top:10px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--acc2) 8%,transparent);border-left:3px solid var(--acc2);display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.gclast p{margin:0;flex-basis:100%;font-size:.95rem;line-height:1.45}
+.gcty{font:800 .7rem Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acc2)}
+.gcplays{list-style:none;margin:0;padding:0}
+.gcplays li{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:10px;align-items:start;padding:8px 0;border-top:1px solid var(--line);font-size:.86rem;line-height:1.4}
+.gcplays li:first-child{border-top:0}
+.gcplays li b{display:block;font:800 .74rem Inter,sans-serif;color:var(--mute);letter-spacing:.02em}
+.gcplays li.sc{background:color-mix(in srgb,var(--acc) 9%,transparent);border-radius:8px;padding:8px 6px}
+.gcpc{font:700 .74rem Inter,sans-serif;color:var(--mute);white-space:nowrap}
+.gcy{font:800 .8rem var(--cond);font-style:normal;padding:2px 7px;border-radius:99px;white-space:nowrap}
+.gcy.up{color:#15803d;background:color-mix(in srgb,#22c55e 16%,transparent)}
+.gcy.dn{color:#b91c1c;background:color-mix(in srgb,#ef4444 14%,transparent)}
+.gpwp.big{margin:4px 0 10px}
+.gpwp.big span{font-weight:800}
+.wpwrap{position:relative;padding-left:34px}
+.wpt,.wpb{position:absolute;left:0;font:800 .72rem var(--cond);color:var(--mute)}
+.wpt{top:0}.wpb{bottom:0}
+.wpc{display:block;width:100%;height:120px;border-radius:8px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.wpc .wp50{stroke:var(--line2);stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke}
+.wpc .wpl{fill:none;stroke:var(--ink);stroke-width:2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.gcls{width:100%;min-width:0}
+.gcls td,.gcls th{text-align:center;padding:6px 4px}
+.gcls td:first-child{text-align:left}
+.gcsp{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:start;padding:8px 0;border-top:1px solid var(--line);font-size:.86rem}
+.gcsp p{margin:2px 0 0;line-height:1.4}
+.gcsp img.lg,.gcdv img.lg{width:24px;height:24px}
+.gcss{font:800 1rem var(--cond);white-space:nowrap}
+.gcdv{display:grid;grid-template-columns:28px 92px minmax(0,1fr);gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:.84rem}
+.gcres{font:800 .72rem Inter,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mute)}
+.gcres.sc{color:var(--acc)}
+.gcres.to{color:#dc2626}
+.gto{display:inline-flex;gap:3px;margin-top:4px}
+.gto i{width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor;opacity:.55}
+.gto i.on{background:currentColor;opacity:1}
+.gpball{font:800 .66rem Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#422006;background:#facc15;padding:1px 7px;border-radius:99px;margin-top:3px}
+.field .drv{position:absolute;top:36%;bottom:36%;background:color-mix(in srgb,var(--dc) 80%,#fff 20%);border-radius:99px;box-shadow:0 0 0 1px rgba(255,255,255,.5)}
+.field .dst{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:rgba(255,255,255,.9)}
+.gwin{margin-top:6px}
+.gwpl{display:block;font:600 .7rem Inter,sans-serif;color:var(--mute);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gwpl b{color:var(--ink);font-weight:800}
+.gwpb{display:block;height:5px;border-radius:99px;background:linear-gradient(90deg,var(--ca) 0 calc(100% - var(--p)),var(--ch) calc(100% - var(--p)) 100%)}
+.glast{margin-top:6px;font-size:.76rem;line-height:1.35;color:var(--mute);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+@media (max-width:700px){
+ .gcdd{font-size:1.2rem}
+ .gcplays li{grid-template-columns:52px minmax(0,1fr) auto;gap:8px;font-size:.82rem}
+ .gcdv{grid-template-columns:24px 78px minmax(0,1fr)}
+ .wpc{height:96px}
+ .gwpl{font-size:.62rem}
+ .glast{font-size:.68rem}
+}
+/* ===== v34d: glitch fixes */
+/* lineup rows: a player's name stays on one line */
+.lun{white-space:nowrap}
+/* the game's fantasy points: a list (name, team, stat line; points and projection on the right) */
+.gfl .mrow{cursor:pointer}
+.gflv{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.gflv .fpt{font-size:1.15rem}
+.gfl .mrow img.lg{width:18px;height:18px}
+@media (max-width:760px){
+ /* phones zoom into any text box under 16px when it is tapped (and stay zoomed): every field is 16px */
+ input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px}
+}
+@media (max-width:700px){
+ /* list rows: names do not break in the middle, the number and its tag stay together on the right */
+ .mrow>span:first-child{min-width:0}
+ .mrow>span:first-child a[data-pl],.mrow>span:first-child>b{white-space:nowrap;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+ .mrow>span:last-child{white-space:nowrap;flex:none}
+ /* draft guide: one pick per block instead of a table wider than the screen */
+ table.bx.dgt,.dgt tbody{display:block;width:100%;min-width:0}
+ table.bx.gcls{min-width:0}
+ .gdetail table.bx td:first-child{white-space:nowrap}
+ .dgt tr:first-child{display:none}
+ .dgt tr{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;padding:10px 0;border-top:1px solid var(--line)}
+ .dgt td{padding:0;border:0}
+ .dgt td:nth-child(1)::before{content:'Round ';font-weight:600;color:var(--mute)}
+ .dgt td:nth-child(2)::before{content:'Pick ';font-weight:600;color:var(--mute)}
+ .dgt td:nth-child(1),.dgt td:nth-child(2){font-weight:800;white-space:nowrap}
+ .dgt td:nth-child(n+3){grid-column:1/-1;white-space:normal}
+ .dgt .dgp{display:inline-flex;align-items:center;margin:2px 12px 2px 0;white-space:nowrap}
+ /* prop lines: one card per line (player and chance, the prop and the pick, how it is built, our projection) */
+ table.bx.btab,#bt_leans table.btab,.btab tbody{display:block;width:100%;min-width:0}
+ .btab td.lmath{min-width:0;max-width:none}
+ .btab tr:first-child{display:none}
+ .btab tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"pl pl ch" "pr ln pk" "mt mt mt" "pj pj ad";gap:3px 10px;padding:10px 2px;border-top:1px solid var(--line);align-items:center}
+ .btab td{padding:0;border:0;white-space:normal}
+ .btab td[colspan]{grid-column:1/-1}
+ .btab td:nth-child(1){grid-area:pl}
+ .btab td:nth-child(2){grid-area:pr;font-weight:700}
+ .btab td:nth-child(3){grid-area:ln}
+ .btab td:nth-child(4){grid-area:mt}
+ .btab td:nth-child(5){grid-area:pj;font-size:.8rem;color:var(--mute)}
+ .btab td:nth-child(5)::before{content:'We project '}
+ .btab td:nth-child(6){grid-area:pk;text-align:right}
+ .btab td:nth-child(7){grid-area:ch;text-align:right;font-weight:800}
+ .btab td:nth-child(8){grid-area:ad;text-align:right}
+}
+.sub b.plink{text-decoration:underline dotted;text-underline-offset:3px;border-radius:4px}

@@ -34,9 +34,42 @@ def games(sb):
                     "vid": (c.get("venue") or {}).get("id"), "neutral": bool(c.get("neutralSite")),
                     "rimg": ((((c.get("headlines") or [{}])[0]).get("video") or [{}])[0]).get("thumbnail"), "rhl": ((c.get("headlines") or [{}])[0]).get("shortLinkText"),
                     "tv": (((c.get("broadcasts") or [{}])[0]).get("names") or [None])[0], "odds": o.get("details"), "ou": o.get("overUnder"),
-                    "last": (sit.get("lastPlay") or {}).get("text"),
+                    "last": (sit.get("lastPlay") or {}).get("text"), **extra(sit, h, a, pre, t.get("state")),
                     "ls": [[_num(x.get("value")) for x in (a.get("linescores") or [])], [_num(x.get("value")) for x in (h.get("linescores") or [])]] if not pre else None})
     return out
+
+def extra(sit, h, a, pre, state):
+    """what ESPN's scoreboard says about a game in progress: timeouts left, its win probability after the last play, the
+    drive so far and where it started, and the last play's type and team (the page's live game tracker)"""
+    if pre: return {}
+    lp = sit.get("lastPlay") or {}; pr = lp.get("probability") or {}; dv = lp.get("drive") or {}; lt = (lp.get("team") or {}).get("id")
+    num = lambda v: v if isinstance(v, (int, float)) and not isinstance(v, bool) else None
+    live = state == "in"; w = num(pr.get("homeWinPercentage"))
+    return {"toA": num(sit.get("awayTimeouts")) if live else None, "toH": num(sit.get("homeTimeouts")) if live else None,
+            "wp": max(0.0, min(1.0, w)) if live and w is not None else None, "drv": (dv.get("description") or None) if live else None,
+            "dst": ((dv.get("start") or {}).get("text") or None) if live else None, "lty": (lp.get("type") or {}).get("text"),
+            "ltm": (ab(h) if lt == h.get("id") else ab(a) if lt == a.get("id") else None) if lt else None}
+
+def pbp(sm):
+    """the play-by-play the page shows for a live or finished game: the current drive's plays (or the last drive's), the
+    drives, the scoring plays and ESPN's win probability through the game (at most 121 points)"""
+    dr = sm.get("drives") or {}; num = lambda v: v if isinstance(v, (int, float)) and not isinstance(v, bool) else None
+    def tm(d): k = (d.get("team") or {}).get("abbreviation"); return EMAP.get(k, k) if k else None
+    def play(p): return {"t": str(p.get("text") or ""), "c": (p.get("clock") or {}).get("displayValue") or "", "q": (p.get("period") or {}).get("number"),
+                         "ty": (p.get("type") or {}).get("text") or "", "sc": bool(p.get("scoringPlay")), "y": num(p.get("statYardage")),
+                         "dd": (p.get("start") or {}).get("downDistanceText") or ""}
+    def drv(d): st = d.get("start") or {}; return {"tm": tm(d), "r": d.get("displayResult") or d.get("result") or "", "d": d.get("description") or "",
+                                                  "st": st.get("text") or "", "q": (st.get("period") or {}).get("number"), "c": (st.get("clock") or {}).get("displayValue") or "",
+                                                  "sc": bool(d.get("isScore"))}
+    cur = dr.get("current") or {}; prev = dr.get("previous") or []
+    c = dict(drv(cur), plays=[play(p) for p in (cur.get("plays") or [])[-12:]]) if cur.get("plays") else None
+    sp = [{"q": (p.get("period") or {}).get("number"), "c": (p.get("clock") or {}).get("displayValue") or "", "tm": tm(p),
+           "ty": (p.get("type") or {}).get("text") or (p.get("scoringType") or {}).get("displayName") or "", "t": str(p.get("text") or ""),
+           "as": num(p.get("awayScore")), "hs": num(p.get("homeScore"))} for p in sm.get("scoringPlays") or []]
+    wp = [w for w in (num((x or {}).get("homeWinPercentage")) for x in sm.get("winprobability") or []) if w is not None and 0 <= w <= 1]
+    if len(wp) > 121: k = (len(wp) - 1) / 120; wp = [wp[round(i * k)] for i in range(121)]
+    return {"cur": c, "prev": [drv(d) for d in prev[-16:]], "last": [play(p) for p in ((prev[-1].get("plays") or [])[-6:] if prev else [])],
+            "sp": sp, "wp": [round(v, 3) for v in wp]}
 
 def box(sm):
     """Official box score: every stat category per team (as ESPN lists it), team stats, plus normalized lines for fantasy points."""
@@ -161,12 +194,13 @@ if __name__ == "__main__":
         sb = get(BASE + "scoreboard"); G = games(sb); B = {k: v for k, v in (old.get("box") or {}).items() if isinstance(v, dict)}
         M = {k: v for k, v in (old.get("media") or {}).items() if isinstance(v, dict)}; V = dict(old.get("venues") or {})
         I = {k: v for k, v in (old.get("inj") or {}).items() if isinstance(v, dict)}
+        PB = {k: v for k, v in (old.get("pbp") or {}).items() if isinstance(v, dict)}
         for g in G:
             if g.get("vid") and not g.get("neutral"): V[g["home"]] = str(g["vid"])
         # games not yet started are re-read for their injury lists on a schedule that tightens toward kickoff: every run in
         # the last 4 hours (inactives, late scratches), every half hour within two days (practice reports), every two
         # hours before that. Live games and finals still missing a box score or recap are read every run.
-        need = [g for g in G if g["state"] == "in" or (g["state"] == "pre" and pre_due(g, M, I)) or (g["state"] == "post" and not B.get(g["id"]))
+        need = [g for g in G if g["state"] == "in" or (g["state"] == "pre" and pre_due(g, M, I)) or (g["state"] == "post" and (not B.get(g["id"]) or g["id"] not in PB))
                 or g["id"] not in M or (g["state"] == "post" and recent(g) and not any(p.get("k") in ("Recap", "Story") for p in M[g["id"]].get("ph") or []))]
         print(f"reading {len(need)} of {len(G)} game summaries")
         t0 = time.time()
@@ -175,7 +209,10 @@ if __name__ == "__main__":
             for f in as_completed(futs, timeout=150):
                 try:
                     sm = f.result(); gid = futs[f]; M[gid] = media(sm); stt = next(g for g in G if g["id"] == gid)["state"]
-                    if stt != "pre": B[gid] = box(sm)
+                    if stt != "pre":
+                        B[gid] = box(sm)
+                        try: PB[gid] = pbp(sm)
+                        except Exception as e: print("play-by-play unavailable for", gid, e)
                     else:
                         try:
                             iv = injuries(sm)
@@ -188,8 +225,8 @@ if __name__ == "__main__":
         for v in cur(M).values():
             for u in {p["u"] for p in v.get("ph") or []}: cnt[u] = cnt.get(u, 0) + 1
         for v in M.values(): v["ph"] = [p for p in v.get("ph") or [] if cnt.get(p["u"], 0) <= 1]
-        new = {"src": "ESPN, refreshed every few minutes", "week": (sb.get("week") or {}).get("number"), "games": G, "box": cur(B), "media": drop_shared(cur(M)), "venues": V, "inj": cur(I)}
-        if {k: old.get(k) for k in ("games", "box", "media", "venues", "inj")} != {k: new[k] for k in ("games", "box", "media", "venues", "inj")}:
+        new = {"src": "ESPN, refreshed every few minutes", "week": (sb.get("week") or {}).get("number"), "games": G, "box": cur(B), "media": drop_shared(cur(M)), "venues": V, "inj": cur(I), "pbp": cur(PB)}
+        if {k: old.get(k) for k in ("games", "box", "media", "venues", "inj", "pbp")} != {k: new[k] for k in ("games", "box", "media", "venues", "inj", "pbp")}:
             new["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
             json.dump(new, open("live.json", "w"), separators=(",", ":")); print("live.json updated:", sum(g["state"] == "in" for g in G), "games live")
         else: print("no change")

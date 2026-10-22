@@ -29,6 +29,7 @@ SOURCES = [   # name, feed, homepage, kind, keep(link, title)
 TRENDING = 'https://api.sleeper.app/v1/players/nfl/trending/add?lookback_hours=24&limit=25'
 COLLEGE = re.compile(r'\b(college football|cfb|ncaa|heisman|big ten|big 12|\bsec\b|\bacc\b|cfp|recruit|bowl game|draft prospect|mock draft 20\d\d|top 25)\b', re.I)
 OUT_RE = re.compile(r"(ruled out|won't play|will not play|will miss|expected to miss|out for (the )?(season|year|week|game|\w+ weeks?)|out indefinitely|season[- ]ending|"
+                    r"(miss|misses|missing|out for) (the )?(rest|remainder) of (the )?(season|year)|done for the (season|year)|"
                     r"placed on (ir|injured reserve)|lands on (ir|injured reserve)|to (ir|injured reserve)\b|inactive for|doubtful (for|to play))", re.I)
 OK_RE = re.compile(r"(cleared to play|will play|activated from|returns? to practice|full participant|no injury designation|good to go|expected to play)", re.I)
 INJ_RE = re.compile(r'(injur|hamstring|ankle|knee|concussion|questionable|doubtful|ruled out|\bIR\b|out for|miss time|limited|did not practice|MRI|surgery|sprain|strain|torn)', re.I)

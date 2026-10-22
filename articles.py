@@ -171,7 +171,7 @@ def result_words(tm, before_wk):
 def hot_hand(teams, before_wk):
     best = None
     for p in P:
-        if p['t'] not in teams: continue
+        if p['t'] not in teams or p.get('inj') in ('Out', 'Doubtful', 'IR'): continue   # a player ruled out can't come in hot
         L = [x for x in p.get('wk') or [] if x[0] < before_wk]
         if L and L[-1][1] is not None and L[-1][1] >= 20 and (best is None or L[-1][1] > best[1]): best = (p, L[-1][1], L[-1][0])
     return best
@@ -205,6 +205,23 @@ def picks_for(teams, w):
     L = [x for x in (LINES.get('lines') or []) if x.get('pick') and PI.get(x.get('pid')) and x.get('t') in teams and (x.get('wk') or lw) == w]
     return sorted(L, key=lambda x: -max(x.get('po', .5), 1 - x.get('po', .5)))
 SNAME = {'py': 'passing yards', 'ptd': 'passing TDs', 'ry': 'rushing yards', 'ty': 'receiving yards', 'rec': 'receptions', 'td': 'anytime TD'}
+def low_snap(p, w):
+    """his snap share in week w when it was far below his usual (a starter who barely played usually got hurt in the
+    game or was eased back in), else None"""
+    L = [x for x in (p.get('wk') or []) if x[3] is not None and x[0] <= w]
+    if not L or L[-1][0] != w or L[-1][3] >= .4 or len(L) < 2: return None
+    before = [x[3] for x in L[:-1]]
+    return L[-1][3] if (sum(before) / len(before) >= .6 or max(before) >= .75) else None
+def inj_word(p):
+    """how to name a player's status in a sentence: an official or ESPN listing by its name; BFF's own between-reports
+    estimate (no injury report for the game yet) as what really happened, so it never reads like an official listing"""
+    s = p.get('inj') or ''
+    if s == 'IR': return 'injured reserve'
+    if p.get('injs') == 'expected':
+        m = re.search(r'week (\d+)', p.get('injn') or '')
+        return ('expected out' if s == 'Out' else f"missed week {m.group(1)}, status not set yet" if m else 'status not set yet')
+    if p.get('injs') == 'news' and s == 'Questionable': return 'questionable (back from the exempt list)' if 'exempt' in (p.get('injn') or '') else 'questionable'
+    return s.lower()
 def injured(teams, w, statuses=('Out', 'Doubtful', 'Questionable', 'IR')):
     out = [p for p in P if p['t'] in teams and p.get('inj') in statuses and ((p.get('rl') or 0) >= 7 or (p.get('ecr') or 999) <= 160 or (p.get('pj0') or 0) >= 6)]
     return sorted(out, key=lambda p: -((p.get('rl') or 0) + (p.get('pj0') or 0)))
@@ -396,6 +413,9 @@ def stock_lists(G_list, key):
             elif pj >= 9 and pj - pts >= 6:
                 why = ((f"{plural(r.get('tg', 0), 'target')} but only {r.get('rec', 0)} for {yd(r.get('ty', 0))}" if (r.get('tg') or 0) >= 7 else f"only {plural(r.get('tg', 0), 'target')}") if p['p'] in ('WR', 'TE')
                        else (f"{r.get('ra', 0)} carries went for just {yd(r.get('ry', 0))}" if (r.get('ra') or 0) >= 14 else f"only {plural(r.get('ra', 0), 'carry', 'carries')}") if p['p'] == 'RB' else 'a rough day through the air')
+                sn = low_snap(p, G.w)
+                if p.get('inj') == 'IR' or 'for the season' in (p.get('injn') or ''): why += f"; he has since been {'placed on injured reserve' if p.get('inj') == 'IR' else 'ruled out for the season'}"
+                elif sn is not None: why += f"; he played just {round(sn * 100)}% of the snaps, which often points to an injury, so watch this week's injury report"
                 down.append((pj - pts, p, f"{p['n']} ({p['p']}, {t}): {f1(pts)} points on a {f1(pj)} projection, {why}."))
             if OWN(p) is not None and OWN(p) < 50 and (pts >= 12 or (r.get('tg') or 0) >= 7 or (r.get('ra') or 0) >= 13) and p['p'] != 'QB':
                 wav.append((pts + vol, p, f"{p['n']} ({p['p']}, {t}, rostered in {OWN(p)}% of leagues): {f1(pts)} points on {andj([plural(r['tg'], 'target') if r.get('tg') else '', plural(r['ra'], 'carry', 'carries') if r.get('ra') else ''])}." + (" The volume is worth chasing." if vol >= 10 else " One week is not a role, so check his snaps first.")))
@@ -541,7 +561,7 @@ def team_outlook(g, tm, key, deep=True):
 def injury_line(gs, w):
     L = injured({t for g in gs for t in (g['home'], g['away'])}, w)
     if not L: return ''
-    return 'Injury report: ' + '; '.join(f"{p['n']} ({p['t']}, {('injured reserve' if p['inj'] == 'IR' else p['inj'].lower())}{', ' + p['injd'].lower() if p.get('injd') else ''})" for p in L[:6]) + '.'
+    return 'Injury report: ' + '; '.join(f"{p['n']} ({p['t']}, {inj_word(p)}{', ' + p['injd'].lower() if p.get('injd') else ''})" for p in L[:6]) + '.'
 def prediction(g):
     if g['ih'] is None or g['ia'] is None: return ''
     h, a = round(g['ih']), round(g['ia'])
@@ -645,7 +665,7 @@ def write_sunday_outlook(gs, key):
     if st or sit:
         body.append(H_("Start 'em, sit 'em"))
         body.append(UL([f"Start {p['n']} ({p['p']}, {p['t']}): {p['p']}{wr} this week, well above his usual {p['p']}{ur}." for _, p, wr, ur in st]
-                       + [f"Sit {p['n']} ({p['p']}, {p['t']}{', ' + p['inj'].lower() if p.get('inj') else ''}): only {p['p']}{wr} this week after ranking {p['p']}{ur} most weeks." for _, p, wr, ur in sit]))
+                       + [f"Sit {p['n']} ({p['p']}, {p['t']}{', ' + inj_word(p) if p.get('inj') else ''}): only {p['p']}{wr} this week after ranking {p['p']}{ur} most weeks." for _, p, wr, ur in sit]))
         ment += [x[1] for x in st + sit]
     body.append(H_('Game by game'))
     for g in gs:
@@ -677,7 +697,7 @@ def write_injury_report(w, gs, key):
         L = []
         for p in outs[:10]:
             b = benefactors(p); ment += [p] + b
-            L.append(f"{p['n']} ({p['p']}, {p['t']}, {p['inj'].lower()}{', ' + p['injd'].lower() if p.get('injd') else ''})" + (f": {andj([f'{q[chr(110)]} ({f1(proj_wk(q, w))} projected)' if i == 0 else q['n'] for i, q in enumerate(b)])} {'move' if len(b) > 1 else 'moves'} up" if b else '') + '.')
+            L.append(f"{p['n']} ({p['p']}, {p['t']}, {inj_word(p)}{', ' + p['injd'].lower() if p.get('injd') else ''})" + (f": {andj([f'{q[chr(110)]} ({f1(proj_wk(q, w))} projected)' if i == 0 else q['n'] for i, q in enumerate(b)])} {'move' if len(b) > 1 else 'moves'} up" if b else '') + '.')
         body.append(UL(L))
     if irs: body.append(P_(dot(f"Still on injured reserve: {andj([p['n'] + ' (' + p['t'] + ')' for p in irs[:8]])}")))
     if qs:
@@ -722,7 +742,8 @@ def write_landscape(w, key):
     ch = [(usage_change(p, w), p) for p in P if p['p'] != 'QB']
     ch = [(c, p) for c, p in ch if c]
     ris = sorted([x for x in ch if x[0][0] >= 3 and x[0][1] >= 8], key=lambda x: -x[0][0])[:5]
-    fal = sorted([x for x in ch if x[0][0] <= -3 and x[0][2] >= 8 and x[1].get('inj') not in ('IR',)], key=lambda x: x[0][0])[:5]
+    # fallers are role changes: a player who just missed time hurt (or is out) is injury news, not a usage drop
+    fal = sorted([x for x in ch if x[0][0] <= -3 and x[0][2] >= 8 and x[1].get('inj') not in ('IR', 'Out', 'Doubtful') and x[1].get('injs') != 'expected'], key=lambda x: x[0][0])[:5]
     if ris:
         body.append(H_('Risers'))
         body.append(UL([f"{p['n']} ({p['p']}, {p['t']}): " + pick([f"his usage was worth {f1(c[1])} expected points a game over the last two weeks, up from {f1(c[2])} before.",
@@ -732,12 +753,19 @@ def write_landscape(w, key):
         ment += [p for _, p in ris]
     if fal:
         body.append(H_('Fallers'))
-        body.append(UL([f"{p['n']} ({p['p']}, {p['t']}): down to {f1(c[1])} expected points a game over the last two weeks from {f1(c[2])}." + (f" He is listed {p['inj'].lower()}." if p.get('inj') else ' Watch his snap share this week.') for c, p in fal]))
+        def fal_note(p):
+            if p.get('inj') and p.get('injs') in ('ESPN', 'report'): return f" He is listed {p['inj'].lower()}."
+            if 'for the season' in (p.get('injn') or ''): return ' He has since been ruled out for the season.'
+            sn = low_snap(p, w)   # a starter who barely played his last game usually got hurt in it: say so, don't call it a role change
+            if sn is not None:
+                return f" He played just {round(sn * 100)}% of the snaps in week {w}, which often points to an injury, so check Wednesday's injury report before reading it as a role change."
+            return ' Watch his snap share this week.'
+        body.append(UL([f"{p['n']} ({p['p']}, {p['t']}): down to {f1(c[1])} expected points a game over the last two weeks from {f1(c[2])}." + fal_note(p) for c, p in fal]))
         ment += [p for _, p in fal]
     inj = [p for p in P if p.get('inj') in ('Out', 'IR', 'Doubtful') and ((p.get('rl') or 0) >= 10 or (p.get('ecr') or 999) <= 100)]
     if inj:
         body.append(H_('Injury fallout'))
-        body.append(UL([f"{p['n']} ({p['p']}, {p['t']}, {'injured reserve' if p['inj'] == 'IR' else p['inj'].lower()}{', ' + p['injd'].lower() if p.get('injd') else ''})" + (f": {andj([q['n'] for q in benefactors(p)])} {'stands' if len(benefactors(p)) == 1 else 'stand'} to gain." if benefactors(p) else '.') for p in sorted(inj, key=lambda p: -(p.get('rl') or 0))[:6]]))
+        body.append(UL([f"{p['n']} ({p['p']}, {p['t']}, {inj_word(p)}{', ' + p['injd'].lower() if p.get('injd') else ''})" + (f": {andj([q['n'] for q in benefactors(p)])} {'stands' if len(benefactors(p)) == 1 else 'stand'} to gain." if benefactors(p) else '.') for p in sorted(inj, key=lambda p: -(p.get('rl') or 0))[:6]]))
         ment += inj[:6]
     nw = w + 1
     pjn = lambda p: proj_wk(p, nw) or (float(p.get('rl') or 0) if not any(r[0] == nw for r in p.get('ros') or []) and p.get('nw') != nw else 0.0)
@@ -784,9 +812,11 @@ def teammates(p, n=3):
     return sorted(L, key=lambda q: -(q.get('rl') or 0))[:n]
 def write_breaking(p, ev, key):
     w = p.get('nw') or D['asof']['next_week']; kind = ev['kind']; n = p['n']; ln = last(n)
-    what = {'ir': f"{n} has been placed on injured reserve", 'out': f"{n} has been ruled out for week {w}", 'doubtful': f"{n} is doubtful for week {w}",
+    if kind == 'out' and 'for the season' in (p.get('injn') or ''): kind = 'season'   # BFF already has him out for the season
+    what = {'season': f"{n} is out for the rest of the season", 'ir': f"{n} has been placed on injured reserve", 'out': f"{n} has been ruled out for week {w}", 'doubtful': f"{n} is doubtful for week {w}",
             'traded': f"{n} has been traded", 'released': f"{n} has been released", 'activated': f"{n} has been activated from injured reserve"}[kind]
-    title = pick({'ir': [f"{n} to injured reserve: what it means for fantasy", f"{n} lands on IR. Here is the fantasy fallout", f"Fantasy fallout: {n} heads to injured reserve"],
+    title = pick({'season': [f"{n} out for the season: the fantasy fallout", f"Season over for {n}: who steps up", f"Fantasy fallout: {n} is done for the season"],
+                  'ir': [f"{n} to injured reserve: what it means for fantasy", f"{n} lands on IR. Here is the fantasy fallout", f"Fantasy fallout: {n} heads to injured reserve"],
                   'out': [f"{n} ruled out for week {w}: who to start instead", f"Fantasy fallout: {n} is out this week", f"{n} out for week {w}. Here is what to do"],
                   'doubtful': [f"{n} doubtful for week {w}: pivot now", f"{n} is doubtful. Here is your backup plan"],
                   'traded': [f"{n} traded: what it means for fantasy", f"Fantasy fallout from the {n} trade"],
@@ -797,7 +827,10 @@ def write_breaking(p, ev, key):
     s = f"{ln} has averaged {f1(p.get('fpg') or 0)} PPR points over {plural(g_, 'game')} this season" if g_ else f"{ln} has not played this season"
     if ur and ur <= 60: s += f" and ranks as a {p['p']}{ur} in BFF's per-game rest-of-season projection when healthy"
     s += '.'
-    if kind == 'ir' and p.get('ret'): s += f" Players on injured reserve must miss at least four games; BFF expects him back around week {p['ret']}, and those returns often slip."
+    if kind == 'ir' and p.get('ret'):
+        rep = f"; he was {p['injn'][0].lower() + p['injn'][1:]}" if p.get('injs') == 'news' and p.get('injn') else ''
+        s += (f" Players on injured reserve must miss at least four games{rep}. BFF expects him back around week {p['ret']} at the earliest, and those returns often slip."
+              if p['ret'] <= 18 else f" Players on injured reserve must miss at least four games{rep}, and BFF doesn't expect him back this season.")
     body.append(P_(s))
     tm = teammates(p)
     if kind == 'activated':
@@ -829,7 +862,8 @@ def write_breaking(p, ev, key):
         qb = qb_of(p['t'])
         if qb: body.append(P_(f"For {qb['n']}, losing a top target lowers the ceiling; BFF's projections already shift those targets to the receivers still active."))
     body.append(H_('What to do'))
-    body.append(UL([{'ir': f"Move {ln} to an IR slot if your league has one; do not drop him unless you need the roster spot for a starter.",
+    body.append(UL([{'season': f"In redraft leagues {ln} can go to an IR slot if your league has one, or be dropped for a player who can help this year; in dynasty leagues, hold him for next season.",
+                     'ir': f"Move {ln} to an IR slot if your league has one; do not drop him unless you need the roster spot for a starter.",
                      'out': f"Start someone else in week {w}; {ln} keeps his rest-of-season value.", 'doubtful': f"Plan to start someone else in week {w} and check the inactive list 90 minutes before kickoff.",
                      'traded': "Wait for his new role before moving him; trade values update after the next data run.", 'released': "He is droppable in most leagues until he signs somewhere."}[kind],
                     "BFF's projections, rankings and trade values already reflect this, or will after the next data update (every 3 hours)."]))
@@ -838,6 +872,8 @@ def write_breaking(p, ev, key):
     return dict(kind='breaking', title=title, dek=dek, body=body, players=uniq([p] + tm), teams=[p['t']], wk=w, img={'k': 'player', 'pid': p['id']}, src=src), None
 
 
+SEASON_RE = re.compile(r"\b(out for (the )?((rest|remainder) of (the )?)?(season|year)|season[- ]ending|(miss|misses|missing|sit out) (the )?((rest|remainder) of (the )?)?(season|year)(?!\s*(opener|finale|debut))|done for the (season|year))\b", re.I)
+DIAG_RE = re.compile(r"\b(with|after|due to|suffers|suffered|has) (an? )?((torn|broken|fractured|ruptured|dislocated|separated|sprained|high[- ]ankle|lisfranc|acl|mcl|achilles)[^,.;:!?]{0,40})", re.I)
 def breaking_events():
     """fresh, fantasy-relevant news: official injury report and transactions (data run), and headlines (every 10 minutes)"""
     E = []
@@ -869,10 +905,11 @@ def breaking_events():
         for pid in h.get('p') or []:
             p = PI.get(pid)
             if rel(p) and not kicked(p):
-                k = 'ir' if re.search(r'\b(ir|injured reserve)\b', h.get('h', ''), re.I) else 'out'
-                E.append(dict(p=p, kind=k, why=None, src=h.get('s') or 'news reports', url=h.get('u') or '', at=pdt(h.get('d')) or NOW))
+                k = 'season' if SEASON_RE.search(h.get('h', '')) else 'ir' if re.search(r'\b(ir|injured reserve)\b', h.get('h', ''), re.I) else 'out'
+                dx = DIAG_RE.search(h.get('h', ''))
+                E.append(dict(p=p, kind=k, why=dx.group(3).strip() if dx else None, src=h.get('s') or 'news reports', url=h.get('u') or '', at=pdt(h.get('d')) or NOW))
     E = [e for e in E if e['at'] and NOW - e['at'] < datetime.timedelta(hours=48)]
-    rank = {'ir': 0, 'traded': 1, 'released': 2, 'out': 3, 'doubtful': 4, 'activated': 5}; best = {}
+    rank = {'season': -1, 'ir': 0, 'traded': 1, 'released': 2, 'out': 3, 'doubtful': 4, 'activated': 5}; best = {}
     for e in E:
         pid = e['p']['id']
         if pid not in best or rank[e['kind']] < rank[best[pid]['kind']]: best[pid] = e
@@ -922,20 +959,26 @@ def claude_rewrite(art, facts):
 
 
 # ---------------------------------------------------------------- deciding what to publish
+# writer version: raise it when a fix to a writer should correct the article still in its window (Tuesday landscape).
+# 2: injury statuses are named by their source; a player who just missed time is injury news, not a usage faller;
+#    a starter who barely played his last game is flagged as a possible injury (landscape fallers, recap stock down)
+#    5: season-ending news is its own kind of breaking story (not "ruled out for week N"), with the diagnosis; recaps
+#       note a player since ruled out for the season or placed on injured reserve
+WV = 6
 def publish(aid, key, made, once=False):
     art, digest = made
     if not art: return False
     old = ARTS.get(aid); now = iso(NOW)
     sig = hashlib.md5(json.dumps([art['title'], art['body']], sort_keys=True).encode()).hexdigest()
     if old and old.get('sig') == sig: return False
-    if old and (once or old.get('kind') in ('recap', 'breaking', 'landscape')): return False   # written once
+    if old and (once or old.get('kind') in ('recap', 'breaking', 'landscape')) and old.get('wv', 1) >= WV: return False   # written once (a writer fix rewrites it in its window)
     notes = list((old or {}).get('notes') or [])
     if old and digest:
         ch = change_notes(old.get('digest'), digest)
         if ch: notes = [[now, 'Updated: ' + '; '.join(ch) + '.']] + notes[:4]
     ai = claude_rewrite(art, {'week': art['wk'], 'players': {i: {k: PI[i].get(k) for k in ('n', 'p', 't', 'proj', 'rl', 'fpg', 'inj', 'own', 'role')} for i in art['players'][:25] if i in PI}})
     if ai: art.update(ai)
-    ARTS[aid] = dict(art, id=aid, key=key, sig=sig, digest=digest, notes=notes, pub=(old or {}).get('pub') or now, upd=now, by='BFF AI Desk (Claude)' if ai else 'BFF Data Desk', ai=bool(ai), season=SEASON)
+    ARTS[aid] = dict(art, id=aid, key=key, sig=sig, digest=digest, notes=notes, pub=(old or {}).get('pub') or now, upd=now, by='BFF AI Desk (Claude)' if ai else 'BFF Data Desk', ai=bool(ai), season=SEASON, wv=WV)
     print(('updated' if old else 'published'), aid, '|', ARTS[aid]['title']); return True
 
 
@@ -971,7 +1014,7 @@ def run():
         # recap: right after the final for Monday (and the night it ends), the next morning at 7 for Thursday and other days
         if all(g['state'] == 'post' for g in gs) and datetime.timedelta(hours=3) < NOW - max(g['kick'] for g in gs) < datetime.timedelta(days=3):
             aid = f"{SEASON}-w{w}-{dname}-recap"; ready = NOW >= at_et(day + datetime.timedelta(days=1), 7) if wd != 0 else True
-            if aid not in ARTS and ready and (boxed(gs) or NOW >= at_et(day + datetime.timedelta(days=1), 10)):
+            if (aid not in ARTS or ARTS[aid].get('wv', 1) < WV) and ready and (boxed(gs) or NOW >= at_et(day + datetime.timedelta(days=1), 10)):
                 made += publish(aid, aid, write_recap(gs, aid, label), once=True)
     # Friday 5 PM injury report for the coming Sunday (updated until Sunday's first kickoff)
     for day, gs in sorted(by_day.items()):
@@ -985,7 +1028,7 @@ def run():
         endday = max(gday(g) for g in wg); tue = endday + datetime.timedelta(days=(1 - endday.weekday()) % 7 or 7)
         if at_et(tue, 10) <= NOW < at_et(tue, 10) + datetime.timedelta(days=2):
             aid = f"{SEASON}-w{w}-landscape"
-            if aid not in ARTS: made += publish(aid, aid, write_landscape(w, aid), once=True)
+            if aid not in ARTS or ARTS[aid].get('wv', 1) < WV: made += publish(aid, aid, write_landscape(w, aid), once=True)
     # breaking news
     today = [a for a in ARTS.values() if a.get('kind') == 'breaking' and pdt(a.get('pub')) and NOW - pdt(a['pub']) < datetime.timedelta(hours=24)]
     room = min(MAX_BRK_RUN, MAX_BRK_DAY - len(today)); done = set(); cur = set()
@@ -998,6 +1041,9 @@ def run():
         recent = [a for a in ARTS.values() if a.get('key') == k and pdt(a.get('pub')) and NOW - pdt(a['pub']) < datetime.timedelta(days=6)]
         if recent or k in done: continue
         done.add(k); aid = f"{SEASON}-{k}-{NOW.strftime('%m%d')}"
+        if e['kind'] == 'season':
+            prior = [a for a in ARTS.values() if a.get('kind') == 'breaking' and str(a.get('key', '')).startswith(f"brk-{e['p']['id']}-out") and pdt(a.get('pub')) and NOW - pdt(a['pub']) < datetime.timedelta(days=6)]
+            if prior: aid = prior[0]['id']; ARTS[aid]['wv'] = 0; ARTS[aid]['key'] = k   # replace it in place (same link, corrected story)
         if publish(aid, k, write_breaking(e['p'], e, aid)): room -= 1; made += 1
     # keep three weeks
     keep = {i: a for i, a in ARTS.items() if pdt(a.get('upd')) and NOW - pdt(a['upd']) < datetime.timedelta(days=KEEP_DAYS)}

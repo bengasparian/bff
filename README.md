@@ -24,6 +24,15 @@ last good version, so the published site never breaks.
   for its full-screen game center (outlook, win chances, injuries with the injury and its source, the expected starting
   quarterbacks, top performers, box score). Past and future weeks too. Scores, injuries and projections update on
   their own (see **Injuries** under Projections).
+- **Live game tracker:** while a game is on, its card shows the down and distance, where the ball is on a mini field,
+  ESPN's win probability and the last play; a pop-up names any new touchdown or field goal. Its game center opens on
+  **Live**: score by quarter, each team's timeouts and who has the ball, the field with the current drive shaded from
+  where it started, the current drive play by play (the drive's plays, yards and time), the previous drives with how
+  each ended, every scoring play, ESPN's win-probability chart for the whole game, and fantasy points for everyone in
+  the game. Then the box score, top performers, overview and matchups. A finished game keeps all of this under **Game
+  flow**. Everything comes straight from ESPN's own game feed (the same one ESPN's GameCast uses), read every 30
+  seconds in the browser and every 10 minutes by `live_update.py` into `live.json` (key `pbp`), so the page shows it
+  even where ESPN can't be reached directly. A part ESPN hasn't sent yet is left out rather than guessed.
 - **News:** a sports-site layout with a top story, lead stories with pictures, a trending list (players covered by
   the most outlets in the last day), most-added players on Sleeper and the official injury report. Stories come from
   ESPN, CBS Sports, Yahoo Sports, Pro Football Talk, RotoWire, RotoBaller, PFF and Sharp Football Analysis. Headlines
@@ -76,21 +85,36 @@ last good version, so the published site never breaks.
   story's height follows the window height, so the week's games show on the first screen. The floating
   updates bar and chat button are left to bigger screens. Add it to your home screen for an app icon (on iPhone it then
   opens full screen).
+- **Steady while you use it:** live refreshes (every 30 seconds during games) keep your place: sideways rows, tables in
+  the game center and the story or game you were reading stay where they were. Closing a game, an article or a player
+  card returns you to the same spot; the browser's Back button and Escape close what is open, and Back never reopens
+  an article you closed. Switching tabs starts the new tab at the top. On phones, wide tables (betting picks, draft
+  guide, game box scores) turn into cards instead of running off the screen, text boxes don't zoom the page on
+  iPhone, long names are trimmed instead of wrapping, and nothing hides behind the bottom tab bar. Checked
+  automatically at nine screen sizes, from a 360-pixel phone to a 1920-pixel monitor, for overlapping, cut-off or
+  off-screen elements.
 
 ## Projections
 - A model trained on the four seasons before the latest completed one and tested on every game of that season (in 2026:
   trained on 2021-2024, tested on 2025). It retrains every run, and each finished season joins the window on its own.
   Inputs: usage-based expected points, scoring this season blended with last season, the defense, the Vegas team total,
-  home/away and injured teammates.
+  home/away and injured teammates. Two models (a weighted formula and gradient-boosted trees) are averaged at every
+  position: over 2023, 2024 and 2025, each season predicted by models trained only on earlier seasons, the average
+  ranked players best at all four positions (the old rule picked one model per position from a single test season).
 - **Recent games count more.** Every input also has a recent-form version (each game counts half as much as the one 2.5
   games after it), plus how his snap, target and carry shares are trending against his season average; rookies start
   from what players drafted in their range usually score. A second model aims at the rest of the season (each player's
   next six games), and later weeks use the average of the two. 2023-2025 backtest, out of sample: rest-of-season rank
   accuracy 0.390 -> 0.415, average miss 3.54 -> 3.45 points a game; next game 4.57 -> 4.53 and 0.622 -> 0.630. How much
   recent games count is learned from the data each run, not fixed by hand.
-- **Expert consensus blend:** next week's projection blends the model (35%) with the FantasyPros weekly expert
-  consensus (65%), mapped onto our own projection scale (the k-th ranked RB gets our k-th best RB projection). On every
-  2023-2025 week, out of sample, rank accuracy went from 0.419 to 0.467 and the average miss from 5.56 to 5.43 points.
+- **Expert consensus blend:** next week's projection blends the model (15%) with the FantasyPros weekly expert
+  consensus (85%), mapped onto our own projection scale (the k-th ranked RB gets our k-th best RB projection). Tested on
+  46 weeks of 2023-2025 (13,120 player-games, every season predicted by models trained only on earlier seasons): rank
+  accuracy (mean weekly Spearman by position) season average 0.572, model alone 0.601, experts alone 0.631, blend 0.633;
+  picking the better of two start/sit options 59.9%, 60.5%, 62.1%, 62.2%; average miss 4.79, 4.61, 4.51 (experts on our
+  scale), 4.51 points. The experts are very hard to beat week to week; the blend ties them and turns their ranking into
+  points. The weight was chosen leaving one season out at a time (0.8 to 0.9); the old 65% ranked slightly worse than
+  the experts alone. Reproduce it with `research/bt_weekly.py` (see `research/README.md`).
   The page's **Why?** breakdown shows the consensus adjustment as its own bar.
 - **Injuries:** each player's status for his next game comes from ESPN's injury list for that game (`live_update.py`
   saves it every 10 minutes until kickoff), else the official injury report, else what the practice reports imply
@@ -100,12 +124,27 @@ last good version, so the published site never breaks.
   a game already played never tags anyone. Later weeks for a player out now use the measured return curve (39% the
   next week, 69% after two, 85% after three, about 90% later, compared with healthy players) or ESPN's estimated
   return date. When neither ESPN nor the official report lists a player for his next game yet, a timeline reported in
-  the news ("out at least three weeks", "out for the season") keeps him out until his team's game that many weeks after
+  the news ("out at least three weeks", "out for the season", "to miss the remainder of the season") keeps him out until his team's game that many weeks after
   the story (labeled "expected from news reports"); a headline about a return is never read as a new absence. The page
   also lays ESPN's newest list over the data between runs.
+- **Who is in the player pool:** only players on an NFL team. Each run checks the newest weekly team rosters
+  (then the season roster, then the depth charts): a player who is not on a team's roster as active, reserve,
+  inactive, practice squad or exempt is a free agent and left out (October 2026: Tyreek Hill, who has no team, and four
+  others). A player on the **commissioner's exempt list** is projected 0 and shown as "not allowed to play", until a
+  news report says he has been reinstated (then he is listed Questionable for his return). Fullbacks are no longer
+  ranked as running backs.
+- **No usage this season:** a running back, receiver or tight end who has been on his team at least 3 weeks, never on a
+  reserve list, without one fantasy stat and not a depth-chart starter is capped near what such players really score
+  (measured on 2021-2025, 1,160 players: RB 1.23, WR 1.08, TE 0.58 PPR points the next week), until he gets touches.
+- **Questionable and then inactive:** a player listed Questionable who then did not play is treated as having missed
+  the game. With no injury report for his next game yet, his chance of playing follows what really happened to such
+  players (2021-2025, 558 cases: 52.5% played the next game and 62.5% the one after, against 29% and 46% after an Out).
 - **Starting quarterbacks:** only a team's expected starter is projected (the best quarterback on the depth chart who
   is not out). Backups are projected 0; when the starter is out, the fill-in gets that game and, later, the chance the
-  starter is still out.
+  starter is still out. When the starter missed his last game and his team has no injury report for the next one yet
+  (Monday to Wednesday), he is projected for the measured chance he plays and the next quarterback for the rest (week
+  7 of 2026: Baker Mayfield about 39% of his projection, Jalon Daniels about 61% of his), so the team's quarterback
+  total stays whole; once ESPN or the official report sets a status, the normal rule takes over on the page right away.
 - **Games a player left hurt** still count toward his rates: we tested leaving them out (2025 test season) and next-game
   and rest-of-season errors got slightly worse, because players coming back from those injuries really did score less.
 - **Half PPR and standard:** a player's catches are removed in proportion to how much the projection regressed his
@@ -122,8 +161,8 @@ last good version, so the published site never breaks.
 - For every week from now through week 17, BFF value adds up the starting-lineup points a player should give you over
   the best player at his position who would **not** start in your league (your lineup slots times your league size,
   with flex and superflex filled by projection). Each week counts `0.98 x 0.985^weeks-away` (the chance he is still
-  active) times the expected points above that level, allowing for weekly ups and downs, so fringe players keep a little
-  upside value. Byes, injured reserve and "out" this week come from the weekly projections.
+  active) times the expected points above that level, allowing for weekly ups and downs (a bell curve with a spread of
+  half the replacement level), so fringe players keep some upside value. Byes, injured reserve and "out" this week come from the weekly projections.
 - It is blended with the **FantasyPros rest-of-season expert consensus** (60% in PPR, 50% half PPR, 40% standard;
   a little more for running backs and for players with two games or fewer this season, where the consensus proved more
   reliable), mapped onto the same curve, then scaled 0-100 (the top players sit near 100).
@@ -138,11 +177,16 @@ last good version, so the published site never breaks.
 - Packages: the best player counts fully, then 80%, 60%, 45% (measured: adding two players to a team added
   best + 0.82 x second). A trade is **fair** only when BFF value is within 10%, the consensus within 30% and our
   projections alone within 50%; labels run Even / Slightly favors / Favors / Heavily favors.
-- **Backtest, 2023-2025** (14 checkpoints, weeks 4-12, using only what was known at the time; truth = real
-  starting-lineup points each player added in simulated 12-team leagues, and real points above a starter-level
-  replacement): value accuracy R² 0.22 -> 0.30 and 0.18 -> 0.26; more accurate at 13 of 14
-  checkpoints; "fair" calls that the expert consensus saw as 2x lopsided fell from 41% to 9% (0% with the
-  consensus check). The old formula used a dynasty market, which overrated young players for a one-season league.
+- **Backtest, 2023-2025** (15 checkpoints: weeks 4, 6, 8, 10 and 12; only what was known at the time; truth = the real
+  starting-lineup points each player added over the best free agent in 10 simulated 12-team leagues per checkpoint):
+  rank accuracy experts alone 0.429, BFF model alone 0.387, BFF value 0.446; lopsided trades (values 2x apart) called
+  for the side that really added more 69.8%, 67.2%, 73.2%; R² 0.218, 0.184, 0.241. BFF value beat the experts on
+  lopsided trades in every season, and on ranking on average (clearly in 2024, narrowly behind in 2023 and 2025).
+- **The spread (October 2026 fix):** the bell curve's spread was a guess, 20% of the replacement level. Real weekly
+  misses are 6.5-8 points, about 50-75% of it. At 50%: rank accuracy 0.421 -> 0.446, lopsided trades 69.5% -> 73.2%
+  (better at 12 of 15 checkpoints), R² 0.218 -> 0.241. Wider spreads scored a little higher on average but only because
+  of 2024, so 50% is the conservative choice. Earlier versions used a dynasty market, which overrated young players for
+  a one-season league. Reproduce these with `research/bt_value_build.py` and `research/bt_value_eval.py`.
 - **Value over replacement (VORP):** like basketball's VORP, the points a player should score from now to week 17 over
   the best player at his position likely to be on waivers in your league (in a 12-team league with one QB, two RB, two
   WR, one TE and a flex: about the 20th quarterback, the 61st running back and wide receiver, and the 20th tight end,
@@ -181,10 +225,18 @@ sentences (no stat dumps), a scoreboard that opens the game center, and linked p
 | **Monday outlook** and **Monday recap** | Monday 8 AM (updated until kickoff), and after the Monday game is final |
 | **Fantasy landscape** (the week's MVPs, risers, fallers, injury fallout, waiver priorities, buy low / sell high, byes and best matchups ahead, BFF's calls scorecard) | Tuesday 10 AM, once the week is complete |
 | **Other game days** (Saturday games late in the season, holidays, international games) | outlook by 8 AM that day (or 10 hours before the first kickoff, if that is earlier), recap 7 AM the next day |
-| **Breaking news** (a relevant player ruled out or doubtful for his next game, placed on or activated from injured reserve, traded or released) | on the next run after the news reaches BFF (every 10 minutes for headlines, every 3 hours for the official data) |
+| **Breaking news** (a relevant player ruled out or doubtful for his next game, out for the season (with the diagnosis when the headline names it), placed on or activated from injured reserve, traded or released) | on the next run after the news reaches BFF (every 10 minutes for headlines, every 3 hours for the official data) |
 
 - **Updated as news breaks:** outlooks and the injury report are rewritten when their facts change (injuries, lines,
   projections) until kickoff, with an "Updated:" note saying what changed. Recaps and breaking stories are written once.
+  When BFF's writer is fixed (the version number `WV` in `articles.py`), a recap or Tuesday landscape still in its
+  window is rewritten once with the fix (same link and publish time), and a "ruled out" story whose player is then
+  reported out for the season becomes that season-ending story in place instead of a second article.
+- **Injuries are named by their source:** an official or ESPN listing by its name ("questionable"); BFF's own estimate
+  between reports by what really happened ("missed week 6, status not set yet"), so it never reads like an official
+  listing. A player who just missed time or is out is injury news, not a "faller"; a starter who played under 40% of
+  the snaps in his last game is flagged as a possible injury instead of a role change, and a recap notes a player
+  since ruled out for the season or placed on injured reserve.
 - **Rules:** news counts only if it is under 48 hours old and first seen in the last 6 hours (a first run, or the
   first run after this update, only learns what is already known); an injury report counts only for the player's next
   game and not once that game has started; "ruled out for the rest of the game" headlines wait for the next official
@@ -306,7 +358,8 @@ allows.
 Upload (replace) these files: `template.html`, `app.css`, `index.html`, `articles.py`,
 `ff_build2.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`, `parlay_update.py`,
 `calls_update.py`, `calls_backfill.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `sync_sleeper.py`,
-`health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `README.md`, and both workflow files in
+`health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `README.md`, the `research/` folder (the accuracy
+tests; optional, never run by the workflows), and both workflow files in
 `.github/workflows/` (`update.yml`, `scores.yml`). Leave your `*_history.json`, `lines.json`, `parlays.json`,
 `bet_inputs.json`, `articles.json`, `news.json` and `live.json` alone; your workflows keep those up to date (the first
 run after the update learns the current news without re-publishing it). `DTR.parquet` and `D25.parquet` are no longer used and
