@@ -172,14 +172,14 @@
  "_season": 2026,
  "7": {
   "wk": 7,
-  "made": "2026-10-22T07:09+00:00",
+  "made": "2026-10-22T07:13+00:00",
   "locks": "2026-10-22T20:15:00-04:00",
-  "lines_at": "2026-10-22T01:06+00:00",
+  "lines_at": "2026-10-22T07:13+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
     "type": "safe",
-    "prob": 0.3825,
+    "prob": 0.3788,
     "legs": [
      {
       "pid": "00-0040676",
@@ -192,52 +192,6 @@
       "book": "bff",
       "n": "Cam Ward",
       "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0036309",
-      "t": "NYG",
-      "opp": "HOU",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.617,
-      "book": "bff",
-      "n": "Darnell Mooney",
-      "pos": "WR",
-      "res": "pending"
-     }
-    ],
-    "status": "pending"
-   },
-   {
-    "type": "bal",
-    "prob": 0.2337,
-    "legs": [
-     {
-      "pid": "00-0040676",
-      "t": "TEN",
-      "opp": "CLE",
-      "k": "ptd",
-      "line": 1.5,
-      "lean": "Under",
-      "pr": 0.62,
-      "book": "bff",
-      "n": "Cam Ward",
-      "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0036309",
-      "t": "NYG",
-      "opp": "HOU",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.617,
-      "book": "bff",
-      "n": "Darnell Mooney",
-      "pos": "WR",
       "res": "pending"
      },
      {
@@ -250,6 +204,52 @@
       "pr": 0.611,
       "book": "bff",
       "n": "Bo Nix",
+      "pos": "QB",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
+   },
+   {
+    "type": "bal",
+    "prob": 0.2315,
+    "legs": [
+     {
+      "pid": "00-0040676",
+      "t": "TEN",
+      "opp": "CLE",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.62,
+      "book": "bff",
+      "n": "Cam Ward",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0039732",
+      "t": "DEN",
+      "opp": "ARI",
+      "k": "py",
+      "line": 209.5,
+      "lean": "Over",
+      "pr": 0.611,
+      "book": "bff",
+      "n": "Bo Nix",
+      "pos": "QB",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0035710",
+      "t": "IND",
+      "opp": "MIN",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.611,
+      "book": "bff",
+      "n": "Daniel Jones",
       "pos": "QB",
       "res": "pending"
      }
@@ -258,7 +258,7 @@
    },
    {
     "type": "long",
-    "prob": 0.0847,
+    "prob": 0.0819,
     "legs": [
      {
       "pid": "00-0040676",
@@ -271,19 +271,6 @@
       "book": "bff",
       "n": "Cam Ward",
       "pos": "QB",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0036309",
-      "t": "NYG",
-      "opp": "HOU",
-      "k": "rec",
-      "line": 1.5,
-      "lean": "Over",
-      "pr": 0.617,
-      "book": "bff",
-      "n": "Darnell Mooney",
-      "pos": "WR",
       "res": "pending"
      },
      {
@@ -300,29 +287,42 @@
       "res": "pending"
      },
      {
-      "pid": "00-0035228",
-      "t": "MIN",
-      "opp": "IND",
-      "k": "py",
-      "line": 211.5,
-      "lean": "Over",
-      "pr": 0.61,
+      "pid": "00-0035710",
+      "t": "IND",
+      "opp": "MIN",
+      "k": "ptd",
+      "line": 1.5,
+      "lean": "Under",
+      "pr": 0.611,
       "book": "bff",
-      "n": "Kyler Murray",
+      "n": "Daniel Jones",
       "pos": "QB",
       "res": "pending"
      },
      {
-      "pid": "00-0039793",
-      "t": "SEA",
-      "opp": "KC",
+      "pid": "00-0036309",
+      "t": "NYG",
+      "opp": "HOU",
       "k": "rec",
-      "line": 2.5,
+      "line": 1.5,
+      "lean": "Over",
+      "pr": 0.596,
+      "book": "bff",
+      "n": "Darnell Mooney",
+      "pos": "WR",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0030565",
+      "t": "NYJ",
+      "opp": "MIA",
+      "k": "py",
+      "line": 208.5,
       "lean": "Over",
       "pr": 0.594,
       "book": "bff",
-      "n": "AJ Barner",
-      "pos": "TE",
+      "n": "Geno Smith",
+      "pos": "QB",
       "res": "pending"
      }
     ],
