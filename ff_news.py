@@ -48,9 +48,10 @@ def build_news(season, relevant_ids=None, max_items=220):
                     elif na.status == 'RES' and nb.status == 'ACT': add('ir', pid, nb.full_name, pos, nb.team, 'Activated from injured reserve', stamp)
                     elif na.status in ('DEV', 'INA') and nb.status == 'ACT' and na.status == 'DEV': add('move', pid, nb.full_name, pos, nb.team, 'Promoted from the practice squad', stamp)
                 elif nb.status == 'ACT': add('move', pid, nb.full_name, pos, nb.team, f"Added to the {nb.team} roster", stamp)
+            live = set(b.team)   # teams on a bye have no rows that week: their players have not left
             for pid in a.index.difference(b.index):
                 na = a.loc[pid]
-                if na.status == 'ACT' and pid in rel: add('move', pid, na.full_name, FPOS.get(na.position, na.position), na.team, f"No longer on the {na.team} roster", stamp)
+                if na.status == 'ACT' and pid in rel and na.team in live: add('move', pid, na.full_name, FPOS.get(na.position, na.position), na.team, f"No longer on the {na.team} roster", stamp)
     except Exception as e: print('roster news skipped:', e)
     # ---- depth charts: latest chart vs the one about a week earlier
     try:

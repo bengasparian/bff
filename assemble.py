@@ -52,7 +52,25 @@ if os.path.exists("games.csv"):
         D["post"] = [[int(g["season"]), g["game_type"], *((g["home_team"], g["away_team"], int(g["home_score"]), int(g["away_score"])) if int(g["home_score"]) >= int(g["away_score"]) else (g["away_team"], g["home_team"], int(g["away_score"]), int(g["home_score"]))), g.get("stadium") or "", g.get("gameday") or ""]
                      for g in csv.DictReader(open("games.csv", newline="")) if g.get("game_type") in ("SB", "CON") and g.get("home_score") not in ("", "NA", None) and g.get("away_score") not in ("", "NA", None)]
     except Exception as e: print("postseason results skipped:", e)
+# BFF Brain (Ask BFF's own question model and football knowledge base; trained by research/brain/train.py and kb_export.py)
+for _k, _f in (("brain", "brain.json"), ("kb", "kb.json")):
+    if os.path.exists(_f):
+        try: D[_k] = json.load(open(_f))
+        except Exception as e: print(_f, "could not be read:", e)
 print("accounts:", "on (Firebase project " + A["firebase"]["projectId"] + ")" if A.get("firebase") else "off (set BFF_FIREBASE to turn them on)")
 data = json.dumps(D, separators=(",", ":"), allow_nan=False).replace("</", "<\\/")
-open("index.html", "w").write(t.replace("__CSS__", open("app.css").read()).replace("__DATA__", data))
+css = open("app.css").read()
+# big artwork (tab covers, backgrounds) goes out to art/ as separate files: the page itself gets about 600 KB lighter, the
+# images load after the page and stay in the browser's cache between visits (BFF_INLINE_ART=1 keeps them inline)
+if os.environ.get("BFF_INLINE_ART") != "1":
+    import base64, hashlib
+    os.makedirs("art", exist_ok=True); keep = set()
+    def _ext(m):
+        raw = base64.b64decode(m.group(2)); fn = f"art/{hashlib.md5(raw).hexdigest()[:12]}.{'svg' if m.group(1) == 'svg+xml' else m.group(1)}"; keep.add(fn)
+        if not os.path.exists(fn): open(fn, "wb").write(raw)
+        return f'url("{fn}")'
+    css = re.sub(r"""url\(["']?data:image/(webp|png|jpeg|svg\+xml);base64,([A-Za-z0-9+/=]{8000,})["']?\)""", _ext, css)
+    for f in os.listdir("art"):
+        if f"art/{f}" not in keep: os.remove(f"art/{f}")   # artwork no longer used
+open("index.html", "w").write(t.replace("__CSS__", css).replace("__DATA__", data))
 print("index.html written")

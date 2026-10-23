@@ -5,7 +5,8 @@ and work out which season it is (season.json), so nothing has to be changed by h
   schedule out, no game played yet -> that season, phase "preseason"
   last season finished, next schedule not out yet -> next season, phase "preseason" (draft prep on last season's data)
 
-The model learns from the five completed seasons before the current one. Files for the current season are optional:
+The model learns from the 13 completed seasons before the current one (their features are cached after the first
+build, so later runs download only the last five). Files for the current season are optional:
 they do not exist until its first game. The consensus rankings are optional too: without them the site uses its own
 projections only.
 
@@ -74,17 +75,23 @@ if AS_OF or hide:   # keep the pretend schedule for the rest of the pipeline
         w = csv.DictWriter(f, fieldnames=flds); w.writeheader(); w.writerows(out)
 
 if ONLY: sys.exit(0)
-# ---- nflverse: five completed seasons plus the current one (its files appear after its first game)
+# ---- nflverse. The model (ff_feat.py, ff_model.py) learns from the 13 completed seasons before this one; their features are
+# built once a season and cached (.cache), so after that only the latest seasons are needed here.
+NH = 13; FIRST = SEASON - NH
+WARM = all(os.path.exists(f".cache/f5_{SEASON}_{s}.parquet") for s in range(FIRST, SEASON)) and os.path.exists(f".cache/f5_{SEASON}_xfp.json")
+LO = SEASON - 5 if WARM else FIRST - 1
+print("model features:", "cached (downloading the last 5 seasons)" if WARM else f"building from {FIRST - 1} (downloading {SEASON - FIRST + 2} seasons)", flush=True)
 need, opt = {}, {}
-for y in range(SEASON - 5, SEASON + 1):
+for y in range(LO, SEASON + 1):
     d = need if y < SEASON else opt
     d[f"pbp_{y}.parquet"] = B + f"pbp/play_by_play_{y}.parquet"
     d[f"stats_player_week_{y}.parquet"] = B + f"stats_player/stats_player_week_{y}.parquet"
     d[f"snap_counts_{y}.parquet"] = B + f"snap_counts/snap_counts_{y}.parquet"
     opt[f"roster_weekly_{y}.parquet"] = B + f"weekly_rosters/roster_weekly_{y}.parquet"   # teammate-injury signal (optional)
     opt[f"injuries_{y}.parquet"] = B + f"injuries/injuries_{y}.parquet"
-for y in (SEASON, SEASON - 1):   # rosters and depth charts: this season's, or last season's before it starts
+for y in (SEASON, SEASON - 1):   # rosters (bios, rookies, moves): this season's, or last season's before it starts
     opt[f"roster_{y}.parquet"] = B + f"rosters/roster_{y}.parquet"
+for y in range(SEASON - 2 if WARM else LO, SEASON + 1):   # depth charts (the model reads who starts)
     opt[f"depth_charts_{y}.parquet"] = B + f"depth_charts/depth_charts_{y}.parquet"
 need["db_playerids.csv"] = DP + "db_playerids.csv"              # player ID crosswalk
 opt.update({
@@ -94,7 +101,7 @@ opt.update({
 })
 skip = {f for f in os.environ.get("BFF_SKIP", "").split(",") if f}   # testing only: files to leave out
 KEEP = float(os.environ.get("BFF_KEEP_DAYS", "7")) * 86400
-DONE = {f"{k}_{y}.parquet" for y in range(SEASON - 5, SEASON) for k in ("pbp", "stats_player_week", "snap_counts", "roster_weekly", "injuries")}
+DONE = {f"{k}_{y}.parquet" for y in range(LO, SEASON) for k in ("pbp", "stats_player_week", "snap_counts", "roster_weekly", "injuries", "depth_charts")}
 def kept(name):
     """a completed season's file downloaded within the last week"""
     return name in DONE and os.path.exists(name) and os.path.getsize(name) > 1000 and time.time() - os.path.getmtime(name) < KEEP

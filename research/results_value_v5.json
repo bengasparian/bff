@@ -1,0 +1,182 @@
+{
+ "truth: lineups by the previous projections": {
+  "FantasyPros experts alone (same value scale)": {
+   "rank": 0.448,
+   "lopsided_pct": 73.4,
+   "r2": 0.2572,
+   "by_season": {
+    "2023": {
+     "r2": 0.2467,
+     "rank": 0.4603,
+     "lopsided": 0.7325
+    },
+    "2024": {
+     "r2": 0.2636,
+     "rank": 0.5039,
+     "lopsided": 0.7705
+    },
+    "2025": {
+     "r2": 0.2613,
+     "rank": 0.3798,
+     "lopsided": 0.7021
+    }
+   }
+  },
+  "BFF model alone (no experts)": {
+   "rank": 0.4317,
+   "lopsided_pct": 72.0,
+   "r2": 0.2253,
+   "by_season": {
+    "2023": {
+     "r2": 0.2392,
+     "rank": 0.4492,
+     "lopsided": 0.7201
+    },
+    "2024": {
+     "r2": 0.2192,
+     "rank": 0.5045,
+     "lopsided": 0.7598
+    },
+    "2025": {
+     "r2": 0.2176,
+     "rank": 0.3414,
+     "lopsided": 0.68
+    }
+   }
+  },
+  "BFF value, previous projections": {
+   "rank": 0.446,
+   "lopsided_pct": 73.2,
+   "r2": 0.2406,
+   "by_season": {
+    "2023": {
+     "r2": 0.222,
+     "rank": 0.4513,
+     "lopsided": 0.7306
+    },
+    "2024": {
+     "r2": 0.2616,
+     "rank": 0.5131,
+     "lopsided": 0.7725
+    },
+    "2025": {
+     "r2": 0.2381,
+     "rank": 0.3736,
+     "lopsided": 0.6951
+    }
+   }
+  },
+  "BFF value (site)": {
+   "rank": 0.4541,
+   "lopsided_pct": 73.5,
+   "r2": 0.2592,
+   "by_season": {
+    "2023": {
+     "r2": 0.256,
+     "rank": 0.4682,
+     "lopsided": 0.736
+    },
+    "2024": {
+     "r2": 0.2636,
+     "rank": 0.5176,
+     "lopsided": 0.7738
+    },
+    "2025": {
+     "r2": 0.2578,
+     "rank": 0.3764,
+     "lopsided": 0.6969
+    }
+   }
+  }
+ },
+ "truth: lineups by the new projections": {
+  "FantasyPros experts alone (same value scale)": {
+   "rank": 0.4403,
+   "lopsided_pct": 72.5,
+   "r2": 0.2895,
+   "by_season": {
+    "2023": {
+     "r2": 0.2676,
+     "rank": 0.4976,
+     "lopsided": 0.7561
+    },
+    "2024": {
+     "r2": 0.3242,
+     "rank": 0.4613,
+     "lopsided": 0.7378
+    },
+    "2025": {
+     "r2": 0.2767,
+     "rank": 0.3621,
+     "lopsided": 0.6841
+    }
+   }
+  },
+  "BFF model alone (no experts)": {
+   "rank": 0.4295,
+   "lopsided_pct": 71.3,
+   "r2": 0.2569,
+   "by_season": {
+    "2023": {
+     "r2": 0.2709,
+     "rank": 0.4885,
+     "lopsided": 0.7404
+    },
+    "2024": {
+     "r2": 0.2716,
+     "rank": 0.474,
+     "lopsided": 0.7354
+    },
+    "2025": {
+     "r2": 0.2282,
+     "rank": 0.3261,
+     "lopsided": 0.6658
+    }
+   }
+  },
+  "BFF value, previous projections": {
+   "rank": 0.4369,
+   "lopsided_pct": 72.3,
+   "r2": 0.2673,
+   "by_season": {
+    "2023": {
+     "r2": 0.2498,
+     "rank": 0.4888,
+     "lopsided": 0.7541
+    },
+    "2024": {
+     "r2": 0.3066,
+     "rank": 0.4712,
+     "lopsided": 0.741
+    },
+    "2025": {
+     "r2": 0.2454,
+     "rank": 0.3508,
+     "lopsided": 0.6758
+    }
+   }
+  },
+  "BFF value (site)": {
+   "rank": 0.4478,
+   "lopsided_pct": 72.5,
+   "r2": 0.2927,
+   "by_season": {
+    "2023": {
+     "r2": 0.2813,
+     "rank": 0.5051,
+     "lopsided": 0.7559
+    },
+    "2024": {
+     "r2": 0.3251,
+     "rank": 0.4793,
+     "lopsided": 0.7417
+    },
+    "2025": {
+     "r2": 0.2716,
+     "rank": 0.359,
+     "lopsided": 0.6805
+    }
+   }
+  }
+ }
+}

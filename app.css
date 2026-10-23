@@ -1699,3 +1699,21 @@ button.artsr:hover{border-color:var(--acc)}
  .btab td:nth-child(8){grid-area:ad;text-align:right}
 }
 .sub b.plink{text-decoration:underline dotted;text-underline-offset:3px;border-radius:4px}
+
+.botchips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
+.chipq{font:600 .76rem Inter,sans-serif;padding:6px 10px;border-radius:99px;border:1px solid var(--line2);background:var(--solid);color:var(--ink);cursor:pointer;text-align:left}
+.chipq:hover,.chipq:focus-visible{border-color:var(--acc2);color:var(--acc2)}
+.pbio{font-size:.8rem;color:rgba(255,255,255,.72);margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,.55);position:relative}
+
+/* phones and low-power devices: no see-through blur behind the bars that stay on screen while scrolling (each scroll frame
+   would re-blur what is behind them), and a quick fade instead of the page-snapshot transition between tabs */
+.lite .top,.lite .subtabs[data-pane],.lite #pview,.lite .btabs,.lite .foot,.lite .hero2 .hs,.lite .gcar,.lite .spotc,.lite .hero2 .herocta .ghost{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.lite .top{background:color-mix(in srgb,var(--bg) 97%,transparent)!important}
+.lite .subtabs[data-pane],.lite #pview{background:color-mix(in srgb,var(--bg) 98%,transparent)!important}
+.lite .btabs{background:var(--bar)!important}
+@keyframes paneIn{from{opacity:.35}to{opacity:1}}
+.lite .pane:not([hidden]){animation:paneIn .14s ease-out}
+@media (prefers-reduced-motion:reduce){.lite .pane:not([hidden]){animation:none}}
+/* speed: the browser skips layout and painting of ranking rows that are off screen until they scroll near
+   (auto remembers each row's real height once it has been drawn) */
+#wlist>.row{content-visibility:auto;contain-intrinsic-size:auto 84px}

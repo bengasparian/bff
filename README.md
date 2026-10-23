@@ -51,27 +51,39 @@ last good version, so the published site never breaks.
   kickoff. After the games each call is graded with official stats: a must start hits when he finishes as a starter
   (top 12 QB, 24 RB, 30 WR, 12 TE in PPR), a must sit hits when he finishes outside those spots, and buy lows and sell
   highs are graded on the player's next 3 games. A season scorecard shows the hit rates next to honest yardsticks
-  (starting the best season averages; all usual starters). Weeks 2-5 of 2026 were rebuilt with `calls_backfill.py`
-  from the same model using only pre-game information and are labeled "rebuilt"; everything from week 6 on is saved live.
+  (starting the best season averages; all usual starters). Weeks 2-5 of 2026 were rebuilt
+  (one time) from the model of the day using only pre-game information and are labeled "rebuilt"; everything from week 6
+  on is saved live.
 - **Favorites:** star any player to track him in Home → Favorites (this week's outlook, live points, status, props,
   news). Saved in each visitor's own browser (and in their account, if they have one).
 - **Scoring:** PPR, half PPR, standard, or **Custom** (the Scoring menu): TE premium (extra points per tight-end
   catch), 6-point passing touchdowns, points per carry or first down, interception and fumble penalties, and the
   rest. Every projection, ranking, BFF value, trade value, draft pick and waiver target re-scores for it. A linked
   Sleeper league's scoring is read automatically.
-- **BFF Coach (Ask BFF):** the chat button on every page (in the header on phones) answers any football or site
-  question it has data for, instantly, with the site's own projections, trade values and lines: start/sit, trades,
-  **trade ideas for a team you type in** ("My team: Josh Allen, Bijan Robinson, ... give me mock trades"; it remembers
-  the team for follow-ups), your best lineup and waiver adds, league leaders, a team's record, next game, injuries and
-  starting quarterback, Super Bowl and conference title results, fantasy terms and rules basics, and how BFF works.
-  **Game and betting questions get the answer asked for:** "what would be a good three-leg parlay for tonight's game?"
-  returns exactly three legs from that game, the most likely of BFF's tested picks (no questionable players, one leg
-  per player), each with its chance and our projection, plus the combined chance; also "best bets for the Bears game",
-  "who will score a touchdown tonight", "who wins tonight" and "who should I start tonight". Once a game kicks off its
-  lines are closed and it says so. It only declines clearly unrelated topics. On your GitHub site it runs on BFF's own rules (no AI service or key needed). On the
-  claude.ai copy it can also ask Claude, on the visitor's own Claude account with their permission, for open-ended
-  scenarios and anything the instant answers do not cover; Claude gets the same BFF numbers through the page's tools
-  (or in the question when tools are unavailable) and is told never to refuse a football or site question.
+- **BFF Coach (Ask BFF), powered by BFF Brain:** the chat button on every page (in the header on phones). BFF Brain is
+  BFF's own question model, trained here and running inside the page (no outside AI service or key): a logistic-
+  regression intent model over words, word pairs and letter groups (so typos still work), trained on about 15,600
+  football questions (`research/brain/`), that sorts a question into 25 kinds (start/sit, outlook, trade, trade value,
+  keep or drop, waivers, rankings, league leaders, stats, injury status, news, team, defense matchups, game
+  predictions, props, parlays, touchdown scorers, lineup, roster help, weekly calls, how BFF works, football rules and
+  terms, greetings, thanks, off-topic). On 84 hand-written questions it never trained on it picked the right kind
+  94% of the time. Names, teams, positions and numbers are recognized before it reads the question, so it learns how
+  people ask, not who. A **football knowledge base** (61 topics: scoring, overtime, the dynamic kickoff, penalties,
+  positions and coverages, the playoff format, the draft, rosters, injured reserve, the injury report, fantasy terms,
+  analytics terms like EPA and CPOE, betting terms, special teams, eligible receivers, fantasy scoring, records and 2026 dates) is searched by meaning. It **remembers the
+  conversation** ("what about Gibbs?", "is he playing?", "why?", "rest of season?"), and **asks instead of guessing**:
+  "Allen" gets "Which Allen do you mean?" with buttons, and an unclear question about one player gets the two most
+  likely readings as buttons. Answers use the site's own numbers: start/sit, trades, trade ideas for a team you type
+  in, lineup and waivers, stats and game logs, injury status, news and BFF Originals, rankings, league leaders, team
+  info and depth charts (team nicknames or cities: "the backup running back in Detroit"), standings and division races,
+  schedules and strength of schedule (next 4 weeks, rest of season, fantasy playoffs), defenses ranked against each position,
+  defenses to stream, handcuffs, trade targets by position, game predictions, parlays and props (21+), bios (height,
+  weight, college, draft), every Super Bowl back to Super Bowl I (by number, Roman numeral, year or team), and how BFF
+  works. It says plainly what it does not track (weather forecasts, award odds, coaching staffs) and recognizes when a
+  name is not a current player ("Jerry Rice" is not Jerry Jeudy). On the
+  claude.ai copy it can also ask Claude for open-ended scenarios.
+- **Player cards** show height, weight, birthday, college, draft slot and NFL season (nflverse rosters) next to the
+  number, depth chart role, age and bye.
 - **Learn:** how everything works, accuracy, and **Sources & citations** for every number and story.
 - **Updates bar:** on wider screens, a broadcast-style bar at the bottom of every page cycles through updates that fit the page
   (Home: everything; Live: scores and top performers; News: news; Fantasy Help: fantasy and betting updates;
@@ -95,27 +107,43 @@ last good version, so the published site never breaks.
   off-screen elements.
 
 ## Projections
-- A model trained on the four seasons before the latest completed one and tested on every game of that season (in 2026:
-  trained on 2021-2024, tested on 2025). It retrains every run, and each finished season joins the window on its own.
-  Inputs: usage-based expected points, scoring this season blended with last season, the defense, the Vegas team total,
-  home/away and injured teammates. Two models (a weighted formula and gradient-boosted trees) are averaged at every
-  position: over 2023, 2024 and 2025, each season predicted by models trained only on earlier seasons, the average
-  ranked players best at all four positions (the old rule picked one model per position from a single test season).
-- **Recent games count more.** Every input also has a recent-form version (each game counts half as much as the one 2.5
-  games after it), plus how his snap, target and carry shares are trending against his season average; rookies start
-  from what players drafted in their range usually score. A second model aims at the rest of the season (each player's
-  next six games), and later weeks use the average of the two. 2023-2025 backtest, out of sample: rest-of-season rank
-  accuracy 0.390 -> 0.415, average miss 3.54 -> 3.45 points a game; next game 4.57 -> 4.53 and 0.622 -> 0.630. How much
-  recent games count is learned from the data each run, not fixed by hand.
-- **Expert consensus blend:** next week's projection blends the model (15%) with the FantasyPros weekly expert
-  consensus (85%), mapped onto our own projection scale (the k-th ranked RB gets our k-th best RB projection). Tested on
-  46 weeks of 2023-2025 (13,120 player-games, every season predicted by models trained only on earlier seasons): rank
-  accuracy (mean weekly Spearman by position) season average 0.572, model alone 0.601, experts alone 0.631, blend 0.633;
-  picking the better of two start/sit options 59.9%, 60.5%, 62.1%, 62.2%; average miss 4.79, 4.61, 4.51 (experts on our
-  scale), 4.51 points. The experts are very hard to beat week to week; the blend ties them and turns their ranking into
-  points. The weight was chosen leaving one season out at a time (0.8 to 0.9); the old 65% ranked slightly worse than
-  the experts alone. Reproduce it with `research/bt_weekly.py` (see `research/README.md`).
-  The page's **Why?** breakdown shows the consensus adjustment as its own bar.
+- **BFF's own model (version 5, `ff_feat.py` + `ff_model.py`)**: gradient-boosted decision trees trained on every QB, RB,
+  WR and TE game of the 13 completed seasons before this one (2013-2025 in 2026: about 72,000 player-games), retrained
+  every run. Two kinds of trees are averaged: one predicts total PPR points, the other predicts each scoring stat
+  (passing yards and touchdowns, interceptions, rushing yards and touchdowns, catches, receiving yards and touchdowns),
+  which are then added up with the scoring rules. Each is averaged over 3 random seeds, and each stops training when a
+  held-out slice stops improving, so it does not memorize noise.
+- **What it reads** (all known before kickoff): usage (expected points from targets and carries by depth and field
+  position, snap, target, carry and air-yard shares, red-zone and goal-line chances), production (season to date,
+  recent form fading by half every 2.5 games, the last two games, last season and the one before; rookies start from
+  what players drafted in their range scored), quarterback stats (attempts, yards, touchdowns, EPA, completion % over
+  expected, sacks, rushing), the team's pace, pass rate over expected, efficiency and scoring, the opponent's efficiency
+  against the pass and run and the fantasy points it allows to the position, the Vegas spread, total and implied team
+  total, home, dome, rest, division game, the depth chart, his own injury report and practice participation, and
+  teammates ruled out. Weeks ahead without betting lines use each team's points scored and allowed so far instead.
+- **Tested out of sample:** every season from 2021 to 2026 was predicted by models trained only on earlier seasons
+  (`research/bt_weekly_v5.py`). On the players the FantasyPros experts ranked who played, the model **alone** ranked
+  players 0.622 in 2023-25 (experts 0.631) and **0.633 in 2026, tying the experts (0.633)**; the old model alone was
+  0.601. In the season it is tested on each run (2025 in 2026), against a season average shrunk toward last season:
+  ranking accuracy QB 0.548 (baseline 0.423), RB 0.754 (0.694), WR 0.674 (0.625), TE 0.647 (0.598).
+- **The weekly mix with the experts:** next week's projection mixes the model with the FantasyPros weekly expert
+  consensus by strength within the position that week (z-scores: 40% our model, 60% the experts), then maps the mixed
+  order onto our own projections (the k-th best mix gets our k-th best projection, so the scale stays ours). The weight
+  was chosen on 2021-22 only. Ranking accuracy, BFF vs the experts: 2021 0.589 vs 0.581, 2022 0.619 vs 0.614, 2023
+  0.630 vs 0.629, 2024 0.623 vs 0.616, 2025 0.651 vs 0.647, 2026 (weeks 1-6) 0.637 vs 0.633: **better in all six
+  seasons**, and at every position in 2023-25 (QB 0.489 vs 0.485, RB 0.734 vs 0.728, WR 0.685 vs 0.682, TE 0.633 vs
+  0.630). Picking the better of two start/sit options 62.2% vs 62.1% (2023-25) and 63.6% vs 63.5% (2026); average
+  miss 4.53 points vs 4.55 for the experts mapped onto our scale. The margin is small, because the consensus of dozens
+  of analysts is the toughest public benchmark, but it is consistent; and the model now carries 40% of the weight
+  (it was 15%).
+- **Live head-to-head with ESPN and Sleeper** (`proj_compare.py`, every 10 minutes): before each game BFF saves ESPN's
+  and Sleeper's public projections next to its own, freezes them at kickoff, and after the games grades every source on
+  the same players with official stats (ESPN's projected stats are re-scored to PPR so the scoring matches). The Learn
+  page shows the running results; this replaces the old limitation that their past projections cannot be tested.
+- **Later weeks and the rest of the season:** each remaining game is projected with its own opponent and team totals;
+  a player's rest-of-season level is their average (2023-25 trade-value backtest: better than the separate
+  rest-of-season model the old version added). The page's **Why?** breakdown shows the matchup, Vegas, teammates and
+  expert-mix effects as their own bars, and each card shows the expected stat line behind the projection.
 - **Injuries:** each player's status for his next game comes from ESPN's injury list for that game (`live_update.py`
   saves it every 10 minutes until kickoff), else the official injury report, else what the practice reports imply
   before Friday's game statuses. Measured on every 2021-2025 report against who really played (QB/RB/WR/TE with 3+
@@ -178,15 +206,20 @@ last good version, so the published site never breaks.
   best + 0.82 x second). A trade is **fair** only when BFF value is within 10%, the consensus within 30% and our
   projections alone within 50%; labels run Even / Slightly favors / Favors / Heavily favors.
 - **Backtest, 2023-2025** (15 checkpoints: weeks 4, 6, 8, 10 and 12; only what was known at the time; truth = the real
-  starting-lineup points each player added over the best free agent in 10 simulated 12-team leagues per checkpoint):
-  rank accuracy experts alone 0.429, BFF model alone 0.387, BFF value 0.446; lopsided trades (values 2x apart) called
-  for the side that really added more 69.8%, 67.2%, 73.2%; R² 0.218, 0.184, 0.241. BFF value beat the experts on
-  lopsided trades in every season, and on ranking on average (clearly in 2024, narrowly behind in 2023 and 2025).
-- **The spread (October 2026 fix):** the bell curve's spread was a guess, 20% of the replacement level. Real weekly
-  misses are 6.5-8 points, about 50-75% of it. At 50%: rank accuracy 0.421 -> 0.446, lopsided trades 69.5% -> 73.2%
-  (better at 12 of 15 checkpoints), R² 0.218 -> 0.241. Wider spreads scored a little higher on average but only because
-  of 2024, so 50% is the conservative choice. Earlier versions used a dynasty market, which overrated young players for
-  a one-season league. Reproduce these with `research/bt_value_build.py` and `research/bt_value_eval.py`.
+  starting-lineup points each player added over the best free agent in 10 simulated 12-team leagues per checkpoint;
+  every source put on the same value scale): rank accuracy experts alone 0.448, BFF value with the previous model
+  0.446, **BFF value now 0.454**; lopsided trades (values 2x apart) called for the side that really added more 73.4%,
+  73.2%, 73.5%; R² 0.257, 0.241, **0.259** (lineups in the simulation set by the previous projections, so the test does
+  not favor the new model; with lineups set by the new ones: experts 0.440 / 72.5% / 0.290, BFF 0.448 / 72.5% / 0.293).
+  BFF value is ahead of the experts in 2023 and 2024 and slightly behind in 2025. Reproduce with
+  `research/bt_value_v5.py`.
+- **A correction (October 2026):** an earlier version of this README and the site said BFF value beat the experts
+  (0.446 vs 0.429, 73.2% vs 69.8%). That comparison put the experts on the old value scale (spread 0.2 x R), which
+  understated them; on the same scale the experts score 0.448 / 73.4% / 0.257 and the previous BFF value 0.446 /
+  73.2% / 0.241, so it was even with them, not ahead. The numbers
+  above use the same scale for everyone.
+- **The spread (October 2026):** the bell curve's spread is half the replacement level (real weekly misses are 6.5-8
+  points, about 50-75% of it); the old 20% was a guess and too narrow.
 - **Value over replacement (VORP):** like basketball's VORP, the points a player should score from now to week 17 over
   the best player at his position likely to be on waivers in your league (in a 12-team league with one QB, two RB, two
   WR, one TE and a flex: about the 20th quarterback, the 61st running back and wide receiver, and the 20th tight end,
@@ -227,6 +260,12 @@ sentences (no stat dumps), a scoreboard that opens the game center, and linked p
 | **Other game days** (Saturday games late in the season, holidays, international games) | outlook by 8 AM that day (or 10 hours before the first kickoff, if that is earlier), recap 7 AM the next day |
 | **Breaking news** (a relevant player ruled out or doubtful for his next game, out for the season (with the diagnosis when the headline names it), placed on or activated from injured reserve, traded or released) | on the next run after the news reaches BFF (every 10 minutes for headlines, every 3 hours for the official data) |
 
+- **Publishes itself, and says so when it can't:** both workflows run `articles.py` and save `articles.json` with the
+  page, so new articles appear on the live site within 10 minutes of their time with nothing for you to do. If the
+  writer ever fails, the rest of the run still saves, the 3-hour run is marked failed at the end (GitHub emails you)
+  and `status.json` shows `"articles": "failure"`. (October 2026 fix: a game not started yet, which has no score in
+  `live.json`, crashed the writer, so no new article reached the live site for a day; the Thursday recap and the
+  stories behind it publish on the first run with the fix, and a test now covers it.)
 - **Updated as news breaks:** outlooks and the injury report are rewritten when their facts change (injuries, lines,
   projections) until kickoff, with an "Updated:" note saying what changed. Recaps and breaking stories are written once.
   When BFF's writer is fixed (the version number `WV` in `articles.py`), a recap or Tuesday landscape still in its
@@ -317,7 +356,7 @@ allows.
 
 ## Runs by itself all year
 - **Seasons roll over on their own.** `fetch_data.py` reads the NFL schedule to decide the season: in progress, about
-  to start, or (after the last regular-season game) the next one. The model always learns from the five latest completed
+  to start, or (after the last regular-season game) the next one. The model always learns from the 13 latest completed
   seasons and tests on the most recent, so each finished season joins on its own; nothing is tied to a year.
 - **Offseason:** once a regular season ends, the site switches to the next season: rankings, trade values and the mock
   draft are built from last season's data, rookies and players who changed teams come in through the rosters and the
@@ -330,11 +369,19 @@ allows.
 - **Safe by default:** tested library versions are pinned in `requirements.txt` (the newest versions install if those
   ever stop installing); each run checks the page before saving and keeps the last good version if anything fails;
   missing or late data files are skipped and picked up on the next run; GitHub emails you if a run fails.
-- **Efficient runs:** feature tables for past seasons are cached between runs (`.cache`); the completed seasons'
-  data files (about 100 MB that never changes) are kept for a week in a GitHub cache instead of downloaded every 3
-  hours, and the Python libraries come from pip's cache. The 10-minute job reads ESPN's game pages only when they can
+- **Efficient runs:** the model's features for the 13 completed seasons are built once a season (about 6 minutes,
+  with about 350 MB of downloads) and cached between runs (`.cache`); after that each run downloads only the last five
+  seasons, and those completed-season files are kept for a week in a GitHub cache. Every player's games are projected in
+  one batch (about 4 minutes a run). The Python libraries come from pip's cache.
+- **A lighter page:** the big artwork (tab covers, backgrounds) is saved as separate files in `art/` (written by
+  `assemble.py` from `app.css`), so the page is about 600 KB smaller and the pictures stay in the browser's cache. The 10-minute job reads ESPN's game pages only when they can
   have changed: live games every run, games not yet started every run in the last 4 hours before kickoff (inactives),
   every half hour within two days (practice reports) and every 2 hours before that.
+- **A smoother page:** each tab is drawn the first time it is opened (and again only after new data), not all at
+  start-up; ranking rows that are off screen are skipped by the browser until they scroll near
+  (`content-visibility`); the "Around BFF" stories beside each tab are reused for 20 seconds instead of rebuilt on
+  every tab switch; and phones, tablets and devices with 4 or fewer processor cores get a lighter mode (no page-turn animation or frosted-glass
+  bars). Measured on a desktop: start-up long tasks 962 → 571 ms, switching back to Home about 80 → 30 ms.
 - **Prop lines close at kickoff:** a game's lines leave the picks, parlays and Ask BFF the moment it kicks off, even
   if the live feed is a few minutes behind; a week's late games (Monday night) keep their lines until then.
 
@@ -355,15 +402,16 @@ allows.
 - For entertainment, 21+ where legal. Gambling problem? Call or text 1-800-GAMBLER.
 
 ## Updating an existing site to this version
-Upload (replace) these files: `template.html`, `app.css`, `index.html`, `articles.py`,
-`ff_build2.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`, `parlay_update.py`,
-`calls_update.py`, `calls_backfill.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `sync_sleeper.py`,
-`health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `README.md`, the `research/` folder (the accuracy
-tests; optional, never run by the workflows), and both workflow files in
-`.github/workflows/` (`update.yml`, `scores.yml`). Leave your `*_history.json`, `lines.json`, `parlays.json`,
-`bet_inputs.json`, `articles.json`, `news.json` and `live.json` alone; your workflows keep those up to date (the first
-run after the update learns the current news without re-publishing it). `DTR.parquet` and `D25.parquet` are no longer used and
-can be deleted. Then run **Update Gridiron Fantasy** once (the first run builds the feature tables, about 5 extra minutes).
+If Claude has access to your repository it pushes updates itself. To do it by hand, upload (replace) these files:
+`template.html`, `app.css`, `index.html`, the `art/` folder, `brain.json`, `kb.json`, `articles.py`, `ff_build2.py`,
+`ff_feat.py`, `ff_model.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`,
+`parlay_update.py`, `calls_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `proj_compare.py`,
+`sync_sleeper.py`, `health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `.nojekyll`, `README.md`, the
+`research/` folder (the accuracy tests and Ask BFF's training; optional, never run by the workflows), and both workflow
+files in `.github/workflows/` (`update.yml`, `scores.yml`). `calls_backfill.py` is retired and can be deleted. Leave
+your `*_history.json`, `lines.json`, `parlays.json`, `bet_inputs.json`, `articles.json`, `news.json`, `live.json` and
+`proj_compare.json` alone; your workflows keep those up to date. Then run **Update Gridiron Fantasy** once (the first
+run builds the model's 13-season feature tables, about 6 extra minutes).
 Optional: add the `ANTHROPIC_API_KEY` secret for Claude-written articles (see **BFF Originals**).
 
 ## One-time setup (about 10 minutes)

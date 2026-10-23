@@ -31,12 +31,12 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .cache
-          key: bff-features-${{ hashFiles('ff_build2.py') }}-${{ github.run_id }}
-          restore-keys: bff-features-${{ hashFiles('ff_build2.py') }}-
+          key: bff-features-${{ hashFiles('ff_build2.py', 'ff_feat.py') }}-${{ github.run_id }}
+          restore-keys: bff-features-${{ hashFiles('ff_build2.py', 'ff_feat.py') }}-
       - name: This week's cache name
         id: wk
         run: echo "k=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
-      - name: Reuse this week's downloads of completed seasons (about 100 MB that does not change; refreshed weekly)
+      - name: Reuse this week's downloads of completed seasons (they do not change; refreshed weekly)
         uses: actions/cache@v5
         with:
           path: |
@@ -45,6 +45,7 @@ jobs:
             snap_counts_20*.parquet
             roster_weekly_20*.parquet
             injuries_20*.parquet
+            depth_charts_20*.parquet
           key: bff-seasons-${{ steps.wk.outputs.k }}
       - name: Download data (works out the season on its own)
         id: fetch
@@ -72,18 +73,20 @@ jobs:
           BFF_TERMS_STATE: ${{ vars.BFF_TERMS_STATE }}
           BFF_CONTACT: ${{ vars.BFF_CONTACT }}
         run: python assemble.py
-      - name: BFF Originals, then put the newest ones in the page
+      - name: BFF Originals (game previews, recaps and breaking news; a failure is reported at the end of the run)
         id: articles
+        continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           BFF_AI_MODEL: ${{ vars.BFF_AI_MODEL }}
           BFF_AI_MAX_DAY: ${{ vars.BFF_AI_MAX_DAY }}
+        run: python articles.py
+      - name: Put the newest BFF Originals in the page
+        env:
           BFF_FIREBASE: ${{ vars.BFF_FIREBASE }}
           BFF_TERMS_STATE: ${{ vars.BFF_TERMS_STATE }}
           BFF_CONTACT: ${{ vars.BFF_CONTACT }}
-        run: |
-          python articles.py || echo "BFF Originals skipped this run; the page still updates"
-          python assemble.py
+        run: python assemble.py
       - name: Check the page before saving (keeps the last good page if anything is wrong)
         id: check
         run: |
@@ -94,7 +97,7 @@ jobs:
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in index.html proj_history.json parlay_history.json calls_history.json bet_inputs.json lines.json parlays.json news.json articles.json; do if [ -f "$f" ]; then git add "$f"; fi; done
+          for f in index.html art proj_history.json parlay_history.json calls_history.json bet_inputs.json lines.json parlays.json news.json articles.json proj_compare.json; do if [ -e "$f" ]; then git add -A "$f"; fi; done
           if git diff --cached --quiet; then echo "No changes to save"; exit 0; fi
           git commit -m "Data update $(date -u +%F-%H%M)"
           for i in 1 2 3; do
@@ -125,3 +128,8 @@ jobs:
             sleep $((i*15))
           done
           echo "Could not save the health report this time"; exit 0
+      - name: Report a failed BFF Originals step (the page and data were saved; this makes GitHub email you)
+        if: steps.articles.outcome == 'failure'
+        run: |
+          echo "::error::BFF Originals (articles.py) failed this run. The page and data were saved; see the BFF Originals step above."
+          exit 1

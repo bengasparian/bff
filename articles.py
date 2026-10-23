@@ -121,7 +121,7 @@ def games():
     for x in LIVE.get('games') or []:
         for g in G.values():
             if g['home'] == x.get('home') and g['away'] == x.get('away') and abs((g['kick'] - (pdt(x.get('kick')) or g['kick'])).total_seconds()) < 86400 * 3:
-                g.update(state=x.get('state'), gid=str(x.get('id')), ls=x.get('ls'), hs=x.get('hs') if x.get('hs') is not None else g['hs'], as_=x.get('as') if x.get('as') is not None else g['as'])
+                g.update(state=x.get('state'), gid=str(x.get('id')), ls=x.get('ls'), hs=x.get('hs') if x.get('hs') is not None else g['hs'], as_=x.get('as') if x.get('as') is not None else g['as_'])
     for g in G.values():
         if 'state' not in g or g['state'] is None: g['state'] = 'post' if g['hs'] is not None else 'pre'
     return sorted(G.values(), key=lambda g: g['kick'])
@@ -992,7 +992,7 @@ def run():
     by_day = {}
     for g in near: by_day.setdefault(gday(g), []).append(g)
     for day, gs in sorted(by_day.items()):
-        w = gs[0]['wk']; wd = day.weekday(); dname = DOW[wd].lower()[:3]; first = min(g['kick'] for g in gs); pre = [g for g in gs if g['state'] == 'pre']
+        w = gs[0]['wk']; wd = day.weekday(); dname = DOW[wd].lower()[:3]; first = min(g['kick'] for g in gs); pre = [g for g in gs if g['state'] == 'pre' or g['kick'] > NOW]   # (a game cannot be over before its kickoff: keeps time-travel runs honest)
         if wd == 6:   # Sunday: Saturday-morning outlook; afternoon recap before the night game; night recap
             opens = at_et(day - datetime.timedelta(days=1), 8)
             if opens <= NOW < first and pre: aid = f"{SEASON}-w{w}-sun-outlook"; made += publish(aid, aid, write_sunday_outlook(gs, aid))
