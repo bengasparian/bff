@@ -1,6 +1,8 @@
-"""Write status.json after every data run: whether each step worked, the season the site is on, and when the page was
-last built successfully. It changes at most once a day when all is well, which also keeps the repository active so GitHub
-never pauses the scheduled jobs (it pauses them after 60 days without activity in a public repository).
+"""Write status.json after every data run: whether each step worked, the season the site is on, when the page was last
+built successfully, and which forecasts the weekly projection stack used (m = BFF's model, r = the experts' ranks,
+s = Sleeper, e = ESPN; 'fallback' = neither site answered, so the tested 40% model / 60% experts mix ran). It changes at
+most once a day when all is well, which also keeps the repository active so GitHub never pauses the scheduled jobs (it
+pauses them after 60 days without activity in a public repository).
 
   python health.py   (the workflow passes each step's result in environment variables named STEP_<NAME>)
 """
@@ -12,7 +14,9 @@ steps = {k[5:].lower(): v for k, v in os.environ.items() if k.startswith('STEP_'
 ok = bool(steps) and all(v in ('success', 'skipped') for v in steps.values())
 try: season = json.load(open('season.json'))
 except Exception: season = old.get('season') or {}
-st = {'date': today, 'ok': ok, 'steps': steps, 'season': season,
+try: forecasts = json.load(open('ff_data.json'))['asof'].get('stk')   # which forecasts the weekly stack used, by position
+except Exception: forecasts = old.get('forecasts')
+st = {'date': today, 'ok': ok, 'steps': steps, 'season': season, 'forecasts': forecasts,
       'last_good': today if ok else old.get('last_good'),
       'failing_since': None if ok else (old.get('failing_since') or today)}
 json.dump(st, open('status.json', 'w'), indent=1, sort_keys=True)

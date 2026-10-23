@@ -1,0 +1,622 @@
+{
+ "note": "common = player-games every source projected (the fair head-to-head); all = every player-game the experts ranked",
+ "weights": {
+  "chosen_on": "2020-22",
+  "best": [
+   [
+    0.5631,
+    [
+     0.3,
+     0.1,
+     0.3,
+     0.3
+    ]
+   ],
+   [
+    0.5629,
+    [
+     0.2,
+     0.2,
+     0.3,
+     0.3
+    ]
+   ],
+   [
+    0.5629,
+    [
+     0.3,
+     0.2,
+     0.3,
+     0.2
+    ]
+   ],
+   [
+    0.5629,
+    [
+     0.3,
+     0.2,
+     0.2,
+     0.3
+    ]
+   ],
+   [
+    0.5628,
+    [
+     0.3,
+     0.1,
+     0.2,
+     0.4
+    ]
+   ]
+  ],
+  "used": [
+   0.3,
+   0.1,
+   0.3,
+   0.3
+  ]
+ },
+ "oracle_weights_2023_25": {
+  "rank": 0.5778,
+  "w": [
+   0.2,
+   0.2,
+   0.1,
+   0.5
+  ],
+  "note": "weights picked on the test seasons themselves: the most any re-weighting of these sources could have reached"
+ },
+ "common": {
+  "2020-22": {
+   "experts": {
+    "rank": 0.548,
+    "pairs": 0.6138,
+    "n": 12520
+   },
+   "experts_pts": {
+    "rank": 0.548,
+    "pairs": 0.6138,
+    "n": 12520,
+    "mae": 4.947
+   },
+   "espn": {
+    "rank": 0.5487,
+    "pairs": 0.6146,
+    "n": 12520,
+    "mae": 4.897
+   },
+   "sleeper": {
+    "rank": 0.5506,
+    "pairs": 0.6168,
+    "n": 12520,
+    "mae": 5.167
+   },
+   "bff_model": {
+    "rank": 0.5377,
+    "pairs": 0.613,
+    "n": 12520,
+    "mae": 4.965
+   },
+   "bff_old_mix": {
+    "rank": 0.5543,
+    "pairs": 0.6183,
+    "n": 12520,
+    "mae": 4.924
+   },
+   "bff": {
+    "rank": 0.5631,
+    "pairs": 0.6208,
+    "n": 12520,
+    "mae": 4.889
+   },
+   "bff_vs_best_other_pct": {
+    "rank": 2.3,
+    "pairs": 0.6,
+    "mae": 0.2
+   }
+  },
+  "2023-25": {
+   "experts": {
+    "rank": 0.5653,
+    "pairs": 0.6209,
+    "n": 11636
+   },
+   "experts_pts": {
+    "rank": 0.5652,
+    "pairs": 0.6209,
+    "n": 11636,
+    "mae": 4.802
+   },
+   "espn": {
+    "rank": 0.5647,
+    "pairs": 0.623,
+    "n": 11636,
+    "mae": 4.748
+   },
+   "sleeper": {
+    "rank": 0.5607,
+    "pairs": 0.6206,
+    "n": 11636,
+    "mae": 4.86
+   },
+   "bff_model": {
+    "rank": 0.5563,
+    "pairs": 0.616,
+    "n": 11636,
+    "mae": 4.821
+   },
+   "bff_old_mix": {
+    "rank": 0.5697,
+    "pairs": 0.6225,
+    "n": 11636,
+    "mae": 4.787
+   },
+   "bff": {
+    "rank": 0.5774,
+    "pairs": 0.6266,
+    "n": 11636,
+    "mae": 4.709
+   },
+   "bff_vs_best_other_pct": {
+    "rank": 2.1,
+    "pairs": 0.6,
+    "mae": 0.8
+   },
+   "by_pos": {
+    "QB": {
+     "experts": 0.3687,
+     "espn": 0.3514,
+     "sleeper": 0.3537,
+     "bff": 0.3812
+    },
+    "RB": {
+     "experts": 0.6651,
+     "espn": 0.6774,
+     "sleeper": 0.6803,
+     "bff": 0.6843
+    },
+    "WR": {
+     "experts": 0.6331,
+     "espn": 0.6383,
+     "sleeper": 0.6272,
+     "bff": 0.643
+    },
+    "TE": {
+     "experts": 0.5942,
+     "espn": 0.5915,
+     "sleeper": 0.5814,
+     "bff": 0.6011
+    }
+   }
+  },
+  "2026": {
+   "experts": {
+    "rank": 0.5518,
+    "pairs": 0.6379,
+    "n": 1631
+   },
+   "experts_pts": {
+    "rank": 0.5519,
+    "pairs": 0.638,
+    "n": 1631,
+    "mae": 4.85
+   },
+   "espn": {
+    "rank": 0.5544,
+    "pairs": 0.6342,
+    "n": 1631,
+    "mae": 4.809
+   },
+   "sleeper": {
+    "rank": 0.5601,
+    "pairs": 0.6361,
+    "n": 1631,
+    "mae": 4.806
+   },
+   "bff_model": {
+    "rank": 0.5497,
+    "pairs": 0.6378,
+    "n": 1631,
+    "mae": 4.855
+   },
+   "bff_old_mix": {
+    "rank": 0.5567,
+    "pairs": 0.6395,
+    "n": 1631,
+    "mae": 4.84
+   },
+   "bff": {
+    "rank": 0.5735,
+    "pairs": 0.6411,
+    "n": 1631,
+    "mae": 4.762
+   },
+   "bff_vs_best_other_pct": {
+    "rank": 2.4,
+    "pairs": 0.5,
+    "mae": 0.9
+   },
+   "by_pos": {
+    "QB": {
+     "experts": 0.3457,
+     "espn": 0.3283,
+     "sleeper": 0.366,
+     "bff": 0.3896
+    },
+    "RB": {
+     "experts": 0.6828,
+     "espn": 0.6914,
+     "sleeper": 0.6903,
+     "bff": 0.6981
+    },
+    "WR": {
+     "experts": 0.629,
+     "espn": 0.6437,
+     "sleeper": 0.641,
+     "bff": 0.6503
+    },
+    "TE": {
+     "experts": 0.5498,
+     "espn": 0.5543,
+     "sleeper": 0.5431,
+     "bff": 0.5562
+    }
+   }
+  }
+ },
+ "all": {
+  "2023-25": {
+   "season_avg": {
+    "rank": 0.5691,
+    "pairs": 0.598,
+    "n": 13119,
+    "mae": 4.787
+   },
+   "experts": {
+    "rank": 0.6311,
+    "pairs": 0.6208,
+    "n": 13119
+   },
+   "experts_pts": {
+    "rank": 0.6311,
+    "pairs": 0.6208,
+    "n": 13119,
+    "mae": 4.55
+   },
+   "bff_model": {
+    "rank": 0.6215,
+    "pairs": 0.616,
+    "n": 13119,
+    "mae": 4.581
+   },
+   "bff_old_mix": {
+    "rank": 0.6352,
+    "pairs": 0.6224,
+    "n": 13119,
+    "mae": 4.534
+   },
+   "bff": {
+    "rank": 0.6412,
+    "pairs": 0.6268,
+    "n": 13119,
+    "mae": 4.461
+   },
+   "by_pos": {
+    "QB": {
+     "experts": 0.4852,
+     "bff_model": 0.4703,
+     "bff_old_mix": 0.4891,
+     "bff": 0.4954
+    },
+    "RB": {
+     "experts": 0.7277,
+     "bff_model": 0.7214,
+     "bff_old_mix": 0.7342,
+     "bff": 0.7428
+    },
+    "WR": {
+     "experts": 0.6823,
+     "bff_model": 0.675,
+     "bff_old_mix": 0.6852,
+     "bff": 0.6914
+    },
+    "TE": {
+     "experts": 0.6293,
+     "bff_model": 0.6192,
+     "bff_old_mix": 0.6325,
+     "bff": 0.635
+    }
+   }
+  },
+  "2026": {
+   "season_avg": {
+    "rank": 0.5678,
+    "pairs": 0.6033,
+    "n": 1871,
+    "mae": 4.902
+   },
+   "experts": {
+    "rank": 0.6314,
+    "pairs": 0.6349,
+    "n": 1871
+   },
+   "experts_pts": {
+    "rank": 0.6314,
+    "pairs": 0.6349,
+    "n": 1871,
+    "mae": 4.569
+   },
+   "bff_model": {
+    "rank": 0.6314,
+    "pairs": 0.6347,
+    "n": 1871,
+    "mae": 4.59
+   },
+   "bff_old_mix": {
+    "rank": 0.6362,
+    "pairs": 0.6359,
+    "n": 1871,
+    "mae": 4.562
+   },
+   "bff": {
+    "rank": 0.6476,
+    "pairs": 0.637,
+    "n": 1871,
+    "mae": 4.48
+   },
+   "by_pos": {
+    "QB": {
+     "experts": 0.4921,
+     "bff_model": 0.4982,
+     "bff_old_mix": 0.501,
+     "bff": 0.5113
+    },
+    "RB": {
+     "experts": 0.7319,
+     "bff_model": 0.7329,
+     "bff_old_mix": 0.7389,
+     "bff": 0.7522
+    },
+    "WR": {
+     "experts": 0.6799,
+     "bff_model": 0.6738,
+     "bff_old_mix": 0.6816,
+     "bff": 0.6949
+    },
+    "TE": {
+     "experts": 0.6217,
+     "bff_model": 0.6208,
+     "bff_old_mix": 0.6232,
+     "bff": 0.6321
+    }
+   }
+  },
+  "2021": {
+   "season_avg": {
+    "rank": 0.5188,
+    "pairs": 0.5917,
+    "n": 4814,
+    "mae": 5.091
+   },
+   "experts": {
+    "rank": 0.5808,
+    "pairs": 0.618,
+    "n": 4814
+   },
+   "experts_pts": {
+    "rank": 0.5807,
+    "pairs": 0.6179,
+    "n": 4814,
+    "mae": 4.788
+   },
+   "bff_model": {
+    "rank": 0.5752,
+    "pairs": 0.6093,
+    "n": 4814,
+    "mae": 4.813
+   },
+   "bff_old_mix": {
+    "rank": 0.5893,
+    "pairs": 0.6196,
+    "n": 4814,
+    "mae": 4.762
+   },
+   "bff": {
+    "rank": 0.5966,
+    "pairs": 0.6204,
+    "n": 4814,
+    "mae": 4.74
+   }
+  },
+  "2022": {
+   "season_avg": {
+    "rank": 0.5572,
+    "pairs": 0.5983,
+    "n": 4556,
+    "mae": 4.769
+   },
+   "experts": {
+    "rank": 0.6136,
+    "pairs": 0.6152,
+    "n": 4556
+   },
+   "experts_pts": {
+    "rank": 0.6136,
+    "pairs": 0.6153,
+    "n": 4556,
+    "mae": 4.579
+   },
+   "bff_model": {
+    "rank": 0.6053,
+    "pairs": 0.6203,
+    "n": 4556,
+    "mae": 4.609
+   },
+   "bff_old_mix": {
+    "rank": 0.6193,
+    "pairs": 0.6225,
+    "n": 4556,
+    "mae": 4.562
+   },
+   "bff": {
+    "rank": 0.6221,
+    "pairs": 0.6213,
+    "n": 4556,
+    "mae": 4.547
+   }
+  },
+  "2023": {
+   "season_avg": {
+    "rank": 0.5639,
+    "pairs": 0.5835,
+    "n": 4554,
+    "mae": 4.707
+   },
+   "experts": {
+    "rank": 0.6291,
+    "pairs": 0.6065,
+    "n": 4554
+   },
+   "experts_pts": {
+    "rank": 0.6291,
+    "pairs": 0.6065,
+    "n": 4554,
+    "mae": 4.469
+   },
+   "bff_model": {
+    "rank": 0.6137,
+    "pairs": 0.6046,
+    "n": 4554,
+    "mae": 4.512
+   },
+   "bff_old_mix": {
+    "rank": 0.6304,
+    "pairs": 0.6093,
+    "n": 4554,
+    "mae": 4.463
+   },
+   "bff": {
+    "rank": 0.634,
+    "pairs": 0.612,
+    "n": 4554,
+    "mae": 4.4
+   }
+  },
+  "2024": {
+   "season_avg": {
+    "rank": 0.5745,
+    "pairs": 0.614,
+    "n": 3906,
+    "mae": 4.781
+   },
+   "experts": {
+    "rank": 0.6154,
+    "pairs": 0.631,
+    "n": 3906
+   },
+   "experts_pts": {
+    "rank": 0.6153,
+    "pairs": 0.6309,
+    "n": 3906,
+    "mae": 4.656
+   },
+   "bff_model": {
+    "rank": 0.6114,
+    "pairs": 0.6241,
+    "n": 3906,
+    "mae": 4.669
+   },
+   "bff_old_mix": {
+    "rank": 0.6226,
+    "pairs": 0.6314,
+    "n": 3906,
+    "mae": 4.638
+   },
+   "bff": {
+    "rank": 0.6382,
+    "pairs": 0.6395,
+    "n": 3906,
+    "mae": 4.488
+   }
+  },
+  "2025": {
+   "season_avg": {
+    "rank": 0.5696,
+    "pairs": 0.5991,
+    "n": 4659,
+    "mae": 4.872
+   },
+   "experts": {
+    "rank": 0.6469,
+    "pairs": 0.6267,
+    "n": 4659
+   },
+   "experts_pts": {
+    "rank": 0.6469,
+    "pairs": 0.6266,
+    "n": 4659,
+    "mae": 4.538
+   },
+   "bff_model": {
+    "rank": 0.6381,
+    "pairs": 0.6206,
+    "n": 4659,
+    "mae": 4.573
+   },
+   "bff_old_mix": {
+    "rank": 0.6511,
+    "pairs": 0.628,
+    "n": 4659,
+    "mae": 4.514
+   },
+   "bff": {
+    "rank": 0.651,
+    "pairs": 0.631,
+    "n": 4659,
+    "mae": 4.499
+   }
+  }
+ },
+ "must_start_2023_25": {
+  "bff": 66.2,
+  "bff_old_mix": 66.5,
+  "experts": 66.4,
+  "bff_model": 64.8,
+  "season_avg": 63.6
+ },
+ "hindsight": {
+  "season_avg_other_games": {
+   "rank": 0.5313,
+   "pairs": 0.6126,
+   "n": 11541,
+   "mae": 4.915
+  },
+  "espn_same_games": {
+   "rank": 0.5612,
+   "pairs": 0.6233,
+   "n": 11541,
+   "mae": 4.748
+  },
+  "note": "loo = the player's actual average in all his OTHER games that season, past and future (hindsight no site has)",
+  "same_game_usage_xfp": {
+   "rank": 0.7181,
+   "pairs": 0.7525,
+   "n": 11636,
+   "mae": 5.608
+  },
+  "espn_on_usage_rows": {
+   "rank": 0.5647,
+   "pairs": 0.623,
+   "n": 11636,
+   "mae": 4.748
+  },
+  "note_xfp": "xfp = expected points from the player's actual targets, carries and where they came, in that very game (perfect knowledge of usage)"
+ },
+ "agreement": {
+  "es~sl": 0.921,
+  "model~es": 0.905,
+  "model~sl": 0.905,
+  "e~es": 0.928,
+  "e~model": 0.935
+ }
+}

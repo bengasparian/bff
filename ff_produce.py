@@ -301,8 +301,13 @@ _NUMW={'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'
 _TLW=_re.compile(r"\b(?:out|miss|sidelined|shelved)\b(?:\s+(?:for|at least|a minimum of|minimum of|roughly|about|approximately|around|another|an additional)){0,2}\s+(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s*(?:-|–|to|or)\s*(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten))?\s+(?:more\s+)?weeks?\b",_re.I)
 _TLS=_re.compile(r"\b(out for (the )?((rest|remainder) of (the )?)?(season|year)|season[- ]ending|(miss|misses|missing|sit out) (the )?((rest|remainder) of (the )?)?(season|year)(?!\s*(opener|finale|debut|'s first))|done for the (season|year))\b",_re.I)
 _TLX=_re.compile(r"\b(return|returns|returning|back|activated|cleared|after missing|after being|designated to return)\b",_re.I)
-_REIN=_re.compile(r"\b(reinstat\w*|removed? from (the )?(commissioner'?s )?exempt list|off (the )?(commissioner'?s )?exempt list|can play again|eligible to (play|return)|cleared to play)\b",_re.I)
-_RI={}
+_REIN=_re.compile(r"\b(reinstat\w*|removed? from (the )?(commissioner'?s )?exempt list|off (the )?(commissioner'?s )?exempt list|can play again|eligible to (play|return)|cleared to play|on track (to play|for (his |a |sunday'?s? |monday'?s? |thursday'?s? |week \d+ )?(debut|return))|(?<!not )(?<!n't )(?<!unlikely )(expected|set|slated|poised|going|ready) to (play|suit up|debut|make (his|a) debut)|will (play|suit up|debut|make his debut))\b",_re.I)
+# a reinstatement stays known after its story leaves the news feed (news_state.json), until the roster drops the exempt
+# status itself (October 2026: Josh Jacobs was reinstated on Oct 16, but a week later the story had aged out of the feed
+# while the roster still said exempt, so he showed as out)
+try: _NST=json.load(open('news_state.json')) if os.path.exists('news_state.json') else {}
+except Exception: _NST={}
+_RI={pid_:(pd.Timestamp(v_['d']),v_['s']) for pid_,v_ in (_NST.get('reinstated') or {}).items() if pid_ in EXEMPT}
 NEWS_TL=0
 try:
     _nj=json.load(open('news.json')) if os.path.exists('news.json') else {}
@@ -327,9 +332,13 @@ try:
         _span=f'{n_}-{hi_} weeks' if hi_ and hi_>n_ else f'{n_} week'+('s' if n_>1 else '')
         STATUS[pid_]={'s':'Out','src':'news','d':(STATUS.get(pid_) or {}).get('d'),'rw':rw_,'n':f"Reported out {'for the season' if n_>=99 else _span} ({s_}, {d_.strftime('%b')} {d_.day})"}; NEWS_TL+=1
     for pid_,(d_,s_) in _RI.items():   # reinstated: available again (tagged until the roster catches up)
-        STATUS[pid_]={'s':'Questionable','src':'news','d':None,'n':f"Reinstated from the exempt list ({s_}, {d_.strftime('%b')} {d_.day})"}; NEWS_TL+=1
+        STATUS[pid_]={'s':'Questionable','src':'news','d':None,'n':f"Reinstated from the exempt list (reported by {s_}, {d_.strftime('%b')} {d_.day})"}; NEWS_TL+=1
     if NEWS_TL: print('injuries: timelines from the news for',NEWS_TL,'players')
 except Exception as _e: print('news timelines unavailable:',_e)
+try:
+    json.dump({'reinstated':{pid_:{'d':d_.isoformat(),'s':s_} for pid_,(d_,s_) in sorted(_RI.items())}},open('news_state.json','w'),indent=1)
+    if _RI: print('reinstated from the exempt list (kept until the roster catches up):',', '.join(sorted(str(cur.at[p_,'full_name']) if p_ in cur.index and 'full_name' in cur.columns else p_ for p_ in _RI)))
+except Exception as _e: print('news state not saved:',_e)
 print('injury status:',sum(v['s']=='Out' for v in STATUS.values()),'out,',sum(v['s']=='Doubtful' for v in STATUS.values()),'doubtful,',sum(v['s']=='Questionable' for v in STATUS.values()),'questionable,',sum(v['src']=='expected' for v in STATUS.values()),'of them expected from the report')
 # ---- teammates expected to miss games: Out/Doubtful for the next game; injured reserve for every remaining week
 OUTN={pid_ for pid_,v in STATUS.items() if v['s'] in ('Out','Doubtful')}
@@ -516,19 +525,52 @@ for tm_ in sorted({p['t'] for p in players if p['p']=='QB'}):
                 bq_['proj']=bq_['ros'][0][2] if bq_['ros'] and bq_['ros'][0][0]==bq_['nw'] else 0.0
                 bq_['qbb']=0; bq_['qbf']=1; bq_['pj0']=r(raw_b[0],1)
 print('quarterbacks: expected starters', sum(1 for p in players if p.get('qbs')), '| backups set to 0:', sum(1 for p in players if p.get('qbb')))
-# next week's projection: BFF's model mixed with the FantasyPros weekly consensus by standardized strength (z-scores within
-# the players the experts ranked at each position; 40% our model, 60% the experts), then the mixed order is mapped onto our
-# own projections (the k-th best mixed score gets our k-th best projection, so the scale stays ours). 2021-2026, every
-# season predicted out of sample: this ranked players better than the experts in all six seasons (see research/README.md).
+# ---- ESPN's and Sleeper's public projections for the coming week (PPR points), fetched now. If a site does not answer, the
+# numbers proj_compare.py last saved for this week are used. They join the weekly stack below and show on the player card.
+OTH={}
+def _other_sites():
+    if PHASE!='season' or not NEXT: return
+    got={'e':{},'s':{}}
+    if not os.environ.get('BFF_NO_SITES'):
+        try:
+            import proj_compare as _pcm
+            for k_,fn_ in (('e',_pcm.espn),('s',_pcm.sleeper)):
+                try: got[k_]=fn_(SEASON,NEXT)
+                except Exception as e_: print(f'other sites: {"ESPN" if k_=="e" else "Sleeper"} did not answer ({e_})')
+        except Exception as e_: print('other sites: fetch unavailable',e_)
+    try:
+        _pc=json.load(open('proj_compare.json')) if os.path.exists('proj_compare.json') else {}
+        saved=_pc.get('weeks',{}).get(str(NEXT),{}) if _pc.get('season')==SEASON else {}
+    except Exception: saved={}
+    n_={'e':[0,0],'s':[0,0]}
+    for p in players:
+        if p['nw']!=NEXT or p['p'] not in POS: continue
+        d_={}
+        for k_,idk in (('e','eid'),('s','sid')):
+            v_=got[k_].get(p.get(idk)) if p.get(idk) else None
+            if v_ is not None: n_[k_][0]+=1
+            elif k_ in saved.get(p['id'],{}): v_=saved[p['id']][k_]; n_[k_][1]+=1
+            if v_ is not None and v_>0: d_[k_]=float(v_)
+        if d_: OTH[p['id']]=d_; p['pe']=r(d_['e'],1) if 'e' in d_ else None; p['ps']=r(d_['s'],1) if 's' in d_ else None
+    print(f"other sites, week {NEXT}: ESPN {n_['e'][0]} fetched + {n_['e'][1]} saved, Sleeper {n_['s'][0]} fetched + {n_['s'][1]} saved")
+_other_sites()
+# next week's projection: a stack of four forecasts (ff_stack.py). Within each position, among the players the FantasyPros
+# experts ranked, every source becomes a z-score (spreads above that group's average): BFF's model 30%, the experts' weekly
+# rank 10%, Sleeper's projection 30%, ESPN's 30% (re-weighted over the sources that project a player). The k-th strongest
+# player gets the k-th highest of the players' average points across BFF, Sleeper and ESPN. Weights chosen on 2020-22; on
+# 2023-25 and 2026, which they never saw, the stack ranked players better than ESPN, Sleeper and the FantasyPros consensus and
+# missed by fewer points than ESPN and Sleeper (research/bt_sites.py). A site used here must project at least half of the
+# group; with neither site, the tested mix of 40% model and 60% experts is used (research/README.md).
+from ff_stack import stack as _stack
+NSTK={}
 for _pos in POS:
     _R=[p for p in players if p['p']==_pos and p['nw']==NEXT and (p['proj'] or 0)>0 and p.get('wkr')]
     if len(_R)<5: continue
-    _mv=np.array([p['proj'] for p in _R],float); _ev=np.array([p['wkr'] for p in _R],float)
-    _sc=(1-WK_W)*(_mv-_mv.mean())/(_mv.std() or 1)-WK_W*(_ev-_ev.mean())/(_ev.std() or 1)
-    _curve=np.sort(_mv)[::-1]
-    for k_,i_ in enumerate(np.argsort(-_sc,kind='stable')):
-        p=_R[i_]; _b=r(float(_curve[k_]),1); p['adjc']=r(_b-p['proj'],1); p['proj']=_b
+    _fin,NSTK[_pos]=_stack([p['proj'] for p in _R],[p['wkr'] for p in _R],[OTH.get(p['id'],{}).get('s') for p in _R],[OTH.get(p['id'],{}).get('e') for p in _R],fallback=WK_W)
+    for p,_v in zip(_R,_fin):
+        _b=r(float(_v),1); p['adjc']=r(_b-p['proj'],1); p['proj']=_b
         if p['ros'] and p['ros'][0][0]==NEXT: p['ros'][0][2]=_b
+print('weekly stack:',NSTK)
 for p in players:   # the no-usage cap (above), after the consensus blend so it holds
     c_=NOU.get(p['id'])
     if c_ is None: continue
@@ -637,7 +679,7 @@ SCHED={t:[[int(g.week),g.opp,int(g.home) if g.home==g.home else 0,r(g.it,1),None
 # stadium ids learned by the live job (for real stadium photos on every game, any week)
 try: VENUES=json.load(open('live.json')).get('venues') or {}
 except Exception: VENUES={}
-OUT={'asof':{'season':SEASON,'phase':PHASE,'sched':bool(SCHED_KNOWN),'last_week':LAST,'next_week':NEXT,'built':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'),'depth':str(dc.dt.max())[:10],'ecr':ECR_DATE},
+OUT={'asof':{'season':SEASON,'phase':PHASE,'sched':bool(SCHED_KNOWN),'last_week':LAST,'next_week':NEXT,'built':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'),'depth':str(dc.dt.max())[:10],'ecr':ECR_DATE,'stk':NSTK},
      'players':players,'cmp':CMP,'live':LIVE,'news':NEWS,'headlines':HEAD,'ph':HS.get(str(NEXT),{}),'acc':ACC,'trendsval':json.load(open('trends_val.json')) if os.path.exists('trends_val.json') else None,'dvp':DVP,'lgpos':{p:r(lg26.get(p,np.nan),1) for p in POS},'sched':SCHED,'byes':byes,'venues':VENUES,'model':{'test':res,'range':RNG,'qs':QS,'posavg':{k:r(v,1) for k,v in POSAVG.items()},'train':[min(TRAIN),max(TRAIN)],'test_season':TEST,'hist':[min(HIST5),max(HIST5)],'ew_h':EW_H,'v':5,'rows':int(len(DH))}}
 def clean(o):
     if isinstance(o,float) and (o!=o or abs(o)==float('inf')): return None

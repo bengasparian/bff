@@ -35,14 +35,15 @@ D = pd.concat([C.season_rows(s) for s in range(2013, 2027)], ignore_index=True)
 D = D.merge(C.st[['player_id', 'season', 'week'] + SCOL].drop_duplicates(['player_id', 'season', 'week']), on=['player_id', 'season', 'week'], how='left'); D[SCOL] = D[SCOL].fillna(0)
 FC = [c for c in D.columns if c not in SCOL]; print('features built', len(D), round(time.time() - t0), flush=True)
 out = []
-for S in range(2021, 2027):
+FROM = int(os.environ.get('BT_FROM', 2021))   # first test season (2020 also works: weekly expert ranks start in 2020)
+for S in range(FROM, 2027):
     M = FM.Model(D[(D.season < S) & (D.season >= 2013)], FC, seeds=3, ros=False); te = D[D.season == S]
     for pos in FM.POS:
         t = te[te.pos == pos]; out.append(t[['player_id', 'season', 'week', 'pos', 'team', 'y', 'g', 'm_fp', 'p_fp']].assign(model=M.next(pos, t)))
     print('season', S, round(time.time() - t0), flush=True)
 P = pd.concat(out, ignore_index=True)
 # ---- the weekly consensus, matched to games on or after the ranking date
-E = pd.read_parquet(FPECR, columns=['id', 'pos', 'ecr', 'ecr_type', 'scrape_date', 'fp_page'])
+E = pd.read_parquet(FPECR, columns=['id', 'pos', 'ecr', 'sd', 'player_owned_avg', 'ecr_type', 'scrape_date', 'fp_page'])
 E = E[(E.ecr_type == 'wp') & E.pos.isin(FM.POS)].copy(); E['scrape_date'] = pd.to_datetime(E.scrape_date); E = E[E.fp_page.str.contains('ppr', na=False) | (E.pos == 'QB')]
 ids = pd.read_csv('db_playerids.csv', low_memory=False); FP2G = {str(int(f)): g for f, g in zip(ids.fantasypros_id, ids.gsis_id) if f == f and isinstance(g, str)}
 GM = pd.read_csv('games.csv'); GM = GM[GM.game_type == 'REG']; GM['gameday'] = pd.to_datetime(GM.gameday)
@@ -52,7 +53,8 @@ for (S, W), x in P.groupby(['season', 'week']):
     sun = GM[(GM.season == S) & (GM.week == W)].gameday.max(); e = E[(E.scrape_date <= sun) & (E.scrape_date >= sun - pd.Timedelta(days=6))]
     if not len(e): continue
     sd = e.scrape_date.max(); e = e[e.scrape_date == sd]; rk = {FP2G[str(i)]: float(r) for i, r in zip(e.id, e.ecr) if str(i) in FP2G}
-    x = x.assign(ecr=x.player_id.map(rk), gd=[GD.get((S, W, t)) for t in x.team]); rows.append(x[x.ecr.notna() & (x.gd >= sd)])
+    sdk = {FP2G[str(i)]: float(v) for i, v in zip(e.id, e.sd) if str(i) in FP2G and v == v}; own = {FP2G[str(i)]: float(v) for i, v in zip(e.id, e.player_owned_avg) if str(i) in FP2G and v == v}
+    x = x.assign(ecr=x.player_id.map(rk), ecr_sd=x.player_id.map(sdk), owned=x.player_id.map(own), gd=[GD.get((S, W, t)) for t in x.team]); rows.append(x[x.ecr.notna() & (x.gd >= sd)])
 H = pd.concat(rows, ignore_index=True); G = ['season', 'week', 'pos']; g = H.groupby(G)
 H['mz'] = (H.model - g.model.transform('mean')) / g.model.transform('std'); H['ez'] = -(H.ecr - g.ecr.transform('mean')) / g.ecr.transform('std'); H['experts'] = -H.ecr
 parts = []
@@ -62,6 +64,8 @@ for _, x in H.groupby(G):
         sc = w * x.mz + (1 - w) * x.ez; x[f'mix{int(w*100)}'] = curve[sc.rank(method='first', ascending=False).astype(int).values - 1]
     x['experts_pts'] = curve[x.ecr.rank(method='first').astype(int).values - 1]; parts.append(x)
 H = pd.concat(parts, ignore_index=True)
+if os.environ.get('BT_SAVE'): H.to_parquet(os.path.join(BT, 'h_weekly_v5.parquet'))   # every graded player-game, for further research
+H = H[H.season >= 2021]
 TOPK = {'QB': 24, 'RB': 40, 'WR': 50, 'TE': 20}
 
 

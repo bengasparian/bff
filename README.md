@@ -123,19 +123,40 @@ last good version, so the published site never breaks.
   teammates ruled out. Weeks ahead without betting lines use each team's points scored and allowed so far instead.
 - **Tested out of sample:** every season from 2021 to 2026 was predicted by models trained only on earlier seasons
   (`research/bt_weekly_v5.py`). On the players the FantasyPros experts ranked who played, the model **alone** ranked
-  players 0.622 in 2023-25 (experts 0.631) and **0.633 in 2026, tying the experts (0.633)**; the old model alone was
+  players 0.622 in 2023-25 (experts 0.631) and **0.631 in 2026, tying the experts (0.631)**; the old model alone was
   0.601. In the season it is tested on each run (2025 in 2026), against a season average shrunk toward last season:
   ranking accuracy QB 0.548 (baseline 0.423), RB 0.754 (0.694), WR 0.674 (0.625), TE 0.647 (0.598).
-- **The weekly mix with the experts:** next week's projection mixes the model with the FantasyPros weekly expert
-  consensus by strength within the position that week (z-scores: 40% our model, 60% the experts), then maps the mixed
-  order onto our own projections (the k-th best mix gets our k-th best projection, so the scale stays ours). The weight
-  was chosen on 2021-22 only. Ranking accuracy, BFF vs the experts: 2021 0.589 vs 0.581, 2022 0.619 vs 0.614, 2023
-  0.630 vs 0.629, 2024 0.623 vs 0.616, 2025 0.651 vs 0.647, 2026 (weeks 1-6) 0.637 vs 0.633: **better in all six
-  seasons**, and at every position in 2023-25 (QB 0.489 vs 0.485, RB 0.734 vs 0.728, WR 0.685 vs 0.682, TE 0.633 vs
-  0.630). Picking the better of two start/sit options 62.2% vs 62.1% (2023-25) and 63.6% vs 63.5% (2026); average
-  miss 4.53 points vs 4.55 for the experts mapped onto our scale. The margin is small, because the consensus of dozens
-  of analysts is the toughest public benchmark, but it is consistent; and the model now carries 40% of the weight
-  (it was 15%).
+- **The weekly stack of four forecasts** (new): next week's projection stacks BFF's model with the FantasyPros weekly
+  expert consensus and ESPN's and Sleeper's public projections. Within each position, every forecast becomes a z-score
+  (spreads above that week's average) among the players the experts ranked: model 30%, experts 10%, Sleeper 30%,
+  ESPN 30%, re-weighted over the forecasts a player has. The k-th strongest player gets the k-th highest of the players'
+  average projected points (BFF, Sleeper, ESPN). The rule is in `ff_stack.py`. `ff_produce.py` fetches ESPN and Sleeper every run and falls back to
+  the numbers `proj_compare.py` saved; a site must project at least half of a position group to be used, and with
+  neither site the old tested mix (40% model, 60% experts) is used. The weights were chosen on 2020-22 only
+  (`research/bt_sites.py`), so 2023-2026 are a clean test.
+- **Head to head on the same players** (every player-game ESPN, Sleeper, the experts and BFF all projected; ESPN's and
+  Sleeper's past projections fetched from their public APIs, ESPN re-scored to full PPR):
+
+  | 2023-25 (11,636 player-games) | Ranking accuracy | Better of two starters | Avg. miss (PPR) |
+  | --- | --- | --- | --- |
+  | FantasyPros experts | 0.565 | 62.1% | (ranks only) |
+  | ESPN | 0.565 | 62.3% | 4.75 |
+  | Sleeper | 0.561 | 62.1% | 4.86 |
+  | BFF model alone | 0.556 | 61.6% | 4.82 |
+  | **BFF projection (stack)** | **0.577** | **62.7%** | **4.71** |
+
+  2026 weeks 1-6 (1,631): experts 0.552, ESPN 0.554 / 4.81, Sleeper 0.560 / 4.81, **BFF 0.574 / 4.76**. The stack beat
+  every other source on all three measures in both periods and ranked better than each of them at every position;
+  quarterbacks gained most (0.381 vs 0.369 in 2023-25, 0.390 vs 0.366 in 2026). Over every player the experts ranked
+  (13,119 player-games in 2023-25): stack 0.641, previous 40/60 mix 0.635, experts 0.631, model alone 0.622; average
+  miss 4.46 vs 4.53; 2026: 0.648 vs 0.636 vs 0.631. Better than the experts in all six seasons 2021-2026.
+- **Why 10% better is out of reach** (asked for, tested, not possible): the lead over the best other source is about
+  2% in ranking accuracy and under 1% in average miss. Weekly scoring is mostly noise no forecast can see. Hindsight
+  check on 2023-25: ranking each player by his real average in all his *other* games that season, future games
+  included, scores 0.531 with a 4.92-point miss, worse than ESPN's pre-game projection (0.561, 4.75). The sources agree
+  with each other at 0.90-0.94, so their misses are mostly the same misses; weights picked on the test answers
+  themselves reach only 0.578 (the stack: 0.577); ridge, gradient-boosted and per-position stacks did no better. Only
+  perfect knowledge of each player's usage in that very game reaches 0.718. A 10% lead would need 0.622.
 - **Live head-to-head with ESPN and Sleeper** (`proj_compare.py`, every 10 minutes): before each game BFF saves ESPN's
   and Sleeper's public projections next to its own, freezes them at kickoff, and after the games grades every source on
   the same players with official stats (ESPN's projected stats are re-scored to PPR so the scoring matches). The Learn
@@ -159,7 +180,9 @@ last good version, so the published site never breaks.
   (then the season roster, then the depth charts): a player who is not on a team's roster as active, reserve,
   inactive, practice squad or exempt is a free agent and left out (October 2026: Tyreek Hill, who has no team, and four
   others). A player on the **commissioner's exempt list** is projected 0 and shown as "not allowed to play", until a
-  news report says he has been reinstated (then he is listed Questionable for his return). Fullbacks are no longer
+  news report says he has been reinstated or is on track to play (then he is listed Questionable for his return; the
+  reinstatement is kept in `news_state.json` after the story leaves the news feed, until the roster catches up; this
+  fixed Josh Jacobs showing as out a week after his Oct 16 reinstatement). Fullbacks are no longer
   ranked as running backs.
 - **No usage this season:** a running back, receiver or tight end who has been on his team at least 3 weeks, never on a
   reserve list, without one fantasy stat and not a depth-chart starter is capped near what such players really score
@@ -364,7 +387,8 @@ allows.
   projections, opponents, byes and prop lines appear automatically, and live scores start with the first game.
 - **New players** join from rosters, depth charts, the consensus top 300 and weekly stats; nobody keeps a list.
 - **Health report:** after every data run `health.py` writes `status.json` (which steps worked, the season, the last
-  good build). It changes at least once a day, which also keeps GitHub from pausing the scheduled jobs (GitHub pauses
+  good build, and which forecasts the weekly stack used at each position: `m+r+s+e` = BFF's model, the experts, Sleeper
+  and ESPN; `fallback` = neither site answered, so the tested 40/60 mix ran). It changes at least once a day, which also keeps GitHub from pausing the scheduled jobs (GitHub pauses
   them after 60 days without activity in a public repository).
 - **Safe by default:** tested library versions are pinned in `requirements.txt` (the newest versions install if those
   ever stop installing); each run checks the page before saving and keeps the last good version if anything fails;
@@ -405,12 +429,12 @@ allows.
 If Claude has access to your repository it pushes updates itself. To do it by hand, upload (replace) these files:
 `template.html`, `app.css`, `index.html`, the `art/` folder, `brain.json`, `kb.json`, `articles.py`, `ff_build2.py`,
 `ff_feat.py`, `ff_model.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`,
-`parlay_update.py`, `calls_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `proj_compare.py`,
+`parlay_update.py`, `calls_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `proj_compare.py`, `ff_stack.py`,
 `sync_sleeper.py`, `health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `.nojekyll`, `README.md`, the
 `research/` folder (the accuracy tests and Ask BFF's training; optional, never run by the workflows), and both workflow
 files in `.github/workflows/` (`update.yml`, `scores.yml`). `calls_backfill.py` is retired and can be deleted. Leave
-your `*_history.json`, `lines.json`, `parlays.json`, `bet_inputs.json`, `articles.json`, `news.json`, `live.json` and
-`proj_compare.json` alone; your workflows keep those up to date. Then run **Update Gridiron Fantasy** once (the first
+your `*_history.json`, `lines.json`, `parlays.json`, `bet_inputs.json`, `articles.json`, `news.json`, `news_state.json`,
+`live.json` and `proj_compare.json` alone; your workflows keep those up to date. Then run **Update Gridiron Fantasy** once (the first
 run builds the model's 13-season feature tables, about 6 extra minutes).
 Optional: add the `ANTHROPIC_API_KEY` secret for Claude-written articles (see **BFF Originals**).
 
