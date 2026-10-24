@@ -1,0 +1,262 @@
+[
+ {
+  "url": "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/1?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 401,
+  "cors": {
+   "Access-Control-Allow-Origin": "https://bengasparian.github.io",
+   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD",
+   "Access-Control-Allow-Credentials": "true",
+   "Access-Control-Expose-Headers": "location,content-length,etag,if-none-match,X-Fantasy-Filter-Player-Count,X-Fantasy-Filter-Communication-Count,X-Fantasy-Filter-Schedule-Count,X-Fantasy-Filter-Transaction-Count,X-Fantasy-Role,X-Fantasy-Last-Update-League,X-Fantasy-Server-Time,X-Fantasy-Filter-TopicType-NOTE-Count,X-Fantasy-Filter-TopicType-POLL-Count,X-Fantasy-Filter-TopicType-MSG_BOARD-Count,X-Fantasy-Filter-TopicType-CHAT-Count,X-Fantasy-Filter-TopicType-EMAIL-Count,X-Fantasy-Filter-TopicType-OTHER-Count,X-Fantasy-Filter-TopicType-ACTIVITY_TRANSACTIONS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SETTINGS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_STATUS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SCHEDULE-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_GROUP-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_MATCHUP-Count,X-Fantasy-Filter-TopicType-REMINDER_ACTIVATE-Count,X-Fantasy-Filter-TopicType-REMINDER_SCHEDULE-Count,X-Fantasy-Filter-TopicType-CHAT_ALL_MEMBERS-Count,X-Fantasy-Filter-TopicType-CHAT_DIRECT_MESSAGE-Count,Polling-Interval"
+  },
+  "bytes": 258,
+  "ctype": "application/json;charset=utf-8",
+  "teams": 0,
+  "rosters": 0,
+  "keys": [
+   "messages",
+   "details"
+  ]
+ },
+ {
+  "url": "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/1245?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 404,
+  "cors": {
+   "Access-Control-Allow-Origin": "https://bengasparian.github.io",
+   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD",
+   "Access-Control-Allow-Credentials": "true",
+   "Access-Control-Expose-Headers": "location,content-length,etag,if-none-match,X-Fantasy-Filter-Player-Count,X-Fantasy-Filter-Communication-Count,X-Fantasy-Filter-Schedule-Count,X-Fantasy-Filter-Transaction-Count,X-Fantasy-Role,X-Fantasy-Last-Update-League,X-Fantasy-Server-Time,X-Fantasy-Filter-TopicType-NOTE-Count,X-Fantasy-Filter-TopicType-POLL-Count,X-Fantasy-Filter-TopicType-MSG_BOARD-Count,X-Fantasy-Filter-TopicType-CHAT-Count,X-Fantasy-Filter-TopicType-EMAIL-Count,X-Fantasy-Filter-TopicType-OTHER-Count,X-Fantasy-Filter-TopicType-ACTIVITY_TRANSACTIONS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SETTINGS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_STATUS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SCHEDULE-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_GROUP-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_MATCHUP-Count,X-Fantasy-Filter-TopicType-REMINDER_ACTIVATE-Count,X-Fantasy-Filter-TopicType-REMINDER_SCHEDULE-Count,X-Fantasy-Filter-TopicType-CHAT_ALL_MEMBERS-Count,X-Fantasy-Filter-TopicType-CHAT_DIRECT_MESSAGE-Count,Polling-Interval"
+  },
+  "bytes": 150,
+  "ctype": "application/json;charset=utf-8",
+  "teams": 0,
+  "rosters": 0,
+  "keys": [
+   "messages",
+   "details"
+  ]
+ },
+ {
+  "url": "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/336358?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 401,
+  "cors": {
+   "Access-Control-Allow-Origin": "https://bengasparian.github.io",
+   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD",
+   "Access-Control-Allow-Credentials": "true",
+   "Access-Control-Expose-Headers": "location,content-length,etag,if-none-match,X-Fantasy-Filter-Player-Count,X-Fantasy-Filter-Communication-Count,X-Fantasy-Filter-Schedule-Count,X-Fantasy-Filter-Transaction-Count,X-Fantasy-Role,X-Fantasy-Last-Update-League,X-Fantasy-Server-Time,X-Fantasy-Filter-TopicType-NOTE-Count,X-Fantasy-Filter-TopicType-POLL-Count,X-Fantasy-Filter-TopicType-MSG_BOARD-Count,X-Fantasy-Filter-TopicType-CHAT-Count,X-Fantasy-Filter-TopicType-EMAIL-Count,X-Fantasy-Filter-TopicType-OTHER-Count,X-Fantasy-Filter-TopicType-ACTIVITY_TRANSACTIONS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SETTINGS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_STATUS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SCHEDULE-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_GROUP-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_MATCHUP-Count,X-Fantasy-Filter-TopicType-REMINDER_ACTIVATE-Count,X-Fantasy-Filter-TopicType-REMINDER_SCHEDULE-Count,X-Fantasy-Filter-TopicType-CHAT_ALL_MEMBERS-Count,X-Fantasy-Filter-TopicType-CHAT_DIRECT_MESSAGE-Count,Polling-Interval"
+  },
+  "bytes": 258,
+  "ctype": "application/json;charset=utf-8",
+  "teams": 0,
+  "rosters": 0,
+  "keys": [
+   "messages",
+   "details"
+  ]
+ },
+ {
+  "url": "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/1086064?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 401,
+  "cors": {
+   "Access-Control-Allow-Origin": "https://bengasparian.github.io",
+   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD",
+   "Access-Control-Allow-Credentials": "true",
+   "Access-Control-Expose-Headers": "location,content-length,etag,if-none-match,X-Fantasy-Filter-Player-Count,X-Fantasy-Filter-Communication-Count,X-Fantasy-Filter-Schedule-Count,X-Fantasy-Filter-Transaction-Count,X-Fantasy-Role,X-Fantasy-Last-Update-League,X-Fantasy-Server-Time,X-Fantasy-Filter-TopicType-NOTE-Count,X-Fantasy-Filter-TopicType-POLL-Count,X-Fantasy-Filter-TopicType-MSG_BOARD-Count,X-Fantasy-Filter-TopicType-CHAT-Count,X-Fantasy-Filter-TopicType-EMAIL-Count,X-Fantasy-Filter-TopicType-OTHER-Count,X-Fantasy-Filter-TopicType-ACTIVITY_TRANSACTIONS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SETTINGS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_STATUS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SCHEDULE-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_GROUP-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_MATCHUP-Count,X-Fantasy-Filter-TopicType-REMINDER_ACTIVATE-Count,X-Fantasy-Filter-TopicType-REMINDER_SCHEDULE-Count,X-Fantasy-Filter-TopicType-CHAT_ALL_MEMBERS-Count,X-Fantasy-Filter-TopicType-CHAT_DIRECT_MESSAGE-Count,Polling-Interval"
+  },
+  "bytes": 258,
+  "ctype": "application/json;charset=utf-8",
+  "teams": 0,
+  "rosters": 0,
+  "keys": [
+   "messages",
+   "details"
+  ]
+ },
+ {
+  "url": "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/24481082?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 200,
+  "cors": {
+   "Access-Control-Allow-Origin": "https://bengasparian.github.io",
+   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD",
+   "Access-Control-Allow-Credentials": "true",
+   "Access-Control-Expose-Headers": "location,content-length,etag,if-none-match,X-Fantasy-Filter-Player-Count,X-Fantasy-Filter-Communication-Count,X-Fantasy-Filter-Schedule-Count,X-Fantasy-Filter-Transaction-Count,X-Fantasy-Role,X-Fantasy-Last-Update-League,X-Fantasy-Server-Time,X-Fantasy-Filter-TopicType-NOTE-Count,X-Fantasy-Filter-TopicType-POLL-Count,X-Fantasy-Filter-TopicType-MSG_BOARD-Count,X-Fantasy-Filter-TopicType-CHAT-Count,X-Fantasy-Filter-TopicType-EMAIL-Count,X-Fantasy-Filter-TopicType-OTHER-Count,X-Fantasy-Filter-TopicType-ACTIVITY_TRANSACTIONS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SETTINGS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_STATUS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SCHEDULE-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_GROUP-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_MATCHUP-Count,X-Fantasy-Filter-TopicType-REMINDER_ACTIVATE-Count,X-Fantasy-Filter-TopicType-REMINDER_SCHEDULE-Count,X-Fantasy-Filter-TopicType-CHAT_ALL_MEMBERS-Count,X-Fantasy-Filter-TopicType-CHAT_DIRECT_MESSAGE-Count,Polling-Interval"
+  },
+  "bytes": 37913,
+  "ctype": "application/json;charset=utf-8",
+  "teams": 10,
+  "rosters": 0,
+  "keys": [
+   "draftDetail",
+   "gameId",
+   "id",
+   "members",
+   "scoringPeriodId",
+   "seasonId",
+   "segmentId",
+   "settings",
+   "status",
+   "teams"
+  ]
+ },
+ {
+  "url": "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/98765432?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 404,
+  "cors": {
+   "Access-Control-Allow-Origin": "https://bengasparian.github.io",
+   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD",
+   "Access-Control-Allow-Credentials": "true",
+   "Access-Control-Expose-Headers": "location,content-length,etag,if-none-match,X-Fantasy-Filter-Player-Count,X-Fantasy-Filter-Communication-Count,X-Fantasy-Filter-Schedule-Count,X-Fantasy-Filter-Transaction-Count,X-Fantasy-Role,X-Fantasy-Last-Update-League,X-Fantasy-Server-Time,X-Fantasy-Filter-TopicType-NOTE-Count,X-Fantasy-Filter-TopicType-POLL-Count,X-Fantasy-Filter-TopicType-MSG_BOARD-Count,X-Fantasy-Filter-TopicType-CHAT-Count,X-Fantasy-Filter-TopicType-EMAIL-Count,X-Fantasy-Filter-TopicType-OTHER-Count,X-Fantasy-Filter-TopicType-ACTIVITY_TRANSACTIONS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SETTINGS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_STATUS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SCHEDULE-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_GROUP-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_MATCHUP-Count,X-Fantasy-Filter-TopicType-REMINDER_ACTIVATE-Count,X-Fantasy-Filter-TopicType-REMINDER_SCHEDULE-Count,X-Fantasy-Filter-TopicType-CHAT_ALL_MEMBERS-Count,X-Fantasy-Filter-TopicType-CHAT_DIRECT_MESSAGE-Count,Polling-Interval"
+  },
+  "bytes": 150,
+  "ctype": "application/json;charset=utf-8",
+  "teams": 0,
+  "rosters": 0,
+  "keys": [
+   "messages",
+   "details"
+  ]
+ },
+ {
+  "url": "https://fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/1?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 202,
+  "cors": {
+   "Access-Control-Allow-Origin": "*",
+   "Access-Control-Max-Age": "86400",
+   "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+   "Access-Control-Expose-Headers": "x-amzn-waf-action"
+  },
+  "bytes": 0,
+  "ctype": "text/html; charset=UTF-8",
+  "head": ""
+ },
+ {
+  "url": "https://fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/1245?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 202,
+  "cors": {
+   "Access-Control-Allow-Origin": "*",
+   "Access-Control-Max-Age": "86400",
+   "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+   "Access-Control-Expose-Headers": "x-amzn-waf-action"
+  },
+  "bytes": 0,
+  "ctype": "text/html; charset=UTF-8",
+  "head": ""
+ },
+ {
+  "url": "https://fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/336358?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 202,
+  "cors": {
+   "Access-Control-Allow-Origin": "*",
+   "Access-Control-Max-Age": "86400",
+   "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+   "Access-Control-Expose-Headers": "x-amzn-waf-action"
+  },
+  "bytes": 0,
+  "ctype": "text/html; charset=UTF-8",
+  "head": ""
+ },
+ {
+  "url": "https://fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/1086064?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 202,
+  "cors": {
+   "Access-Control-Allow-Origin": "*",
+   "Access-Control-Max-Age": "86400",
+   "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+   "Access-Control-Expose-Headers": "x-amzn-waf-action"
+  },
+  "bytes": 0,
+  "ctype": "text/html; charset=UTF-8",
+  "head": ""
+ },
+ {
+  "url": "https://fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/24481082?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 202,
+  "cors": {
+   "Access-Control-Allow-Origin": "*",
+   "Access-Control-Max-Age": "86400",
+   "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+   "Access-Control-Expose-Headers": "x-amzn-waf-action"
+  },
+  "bytes": 0,
+  "ctype": "text/html; charset=UTF-8",
+  "head": ""
+ },
+ {
+  "url": "https://fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/98765432?view=mTeam&view=mRoster&view=mSettings",
+  "method": "GET",
+  "status": 202,
+  "cors": {
+   "Access-Control-Allow-Origin": "*",
+   "Access-Control-Max-Age": "86400",
+   "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+   "Access-Control-Expose-Headers": "x-amzn-waf-action"
+  },
+  "bytes": 0,
+  "ctype": "text/html; charset=UTF-8",
+  "head": ""
+ },
+ {
+  "url": "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2026/segments/0/leagues/1245?view=mRoster",
+  "method": "OPTIONS",
+  "status": 200,
+  "cors": {
+   "Access-Control-Allow-Origin": "https://bengasparian.github.io",
+   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD",
+   "Access-Control-Allow-Credentials": "true",
+   "Access-Control-Expose-Headers": "location,content-length,etag,if-none-match,X-Fantasy-Filter-Player-Count,X-Fantasy-Filter-Communication-Count,X-Fantasy-Filter-Schedule-Count,X-Fantasy-Filter-Transaction-Count,X-Fantasy-Role,X-Fantasy-Last-Update-League,X-Fantasy-Server-Time,X-Fantasy-Filter-TopicType-NOTE-Count,X-Fantasy-Filter-TopicType-POLL-Count,X-Fantasy-Filter-TopicType-MSG_BOARD-Count,X-Fantasy-Filter-TopicType-CHAT-Count,X-Fantasy-Filter-TopicType-EMAIL-Count,X-Fantasy-Filter-TopicType-OTHER-Count,X-Fantasy-Filter-TopicType-ACTIVITY_TRANSACTIONS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SETTINGS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_STATUS-Count,X-Fantasy-Filter-TopicType-ACTIVITY_SCHEDULE-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_GROUP-Count,X-Fantasy-Filter-TopicType-MSG_BOARD_MATCHUP-Count,X-Fantasy-Filter-TopicType-REMINDER_ACTIVATE-Count,X-Fantasy-Filter-TopicType-REMINDER_SCHEDULE-Count,X-Fantasy-Filter-TopicType-CHAT_ALL_MEMBERS-Count,X-Fantasy-Filter-TopicType-CHAT_DIRECT_MESSAGE-Count,Polling-Interval",
+   "Access-Control-Max-Age": "600"
+  },
+  "bytes": 0,
+  "ctype": null,
+  "head": ""
+ },
+ {
+  "url": "https://fantasysports.yahooapis.com/fantasy/v2/league/nfl.l.12345/teams?format=json",
+  "method": "GET",
+  "status": 401,
+  "cors": {},
+  "bytes": 156,
+  "ctype": null,
+  "teams": 0,
+  "rosters": 0,
+  "keys": [
+   "error"
+  ]
+ },
+ {
+  "url": "https://fantasysports.yahooapis.com/fantasy/v2/league/nfl.l.12345/teams?format=json",
+  "method": "OPTIONS",
+  "status": 401,
+  "cors": {},
+  "bytes": 156,
+  "ctype": null,
+  "teams": 0,
+  "rosters": 0,
+  "keys": [
+   "error"
+  ]
+ },
+ {
+  "url": "https://api.sleeper.app/v1/league/1/rosters",
+  "method": "GET",
+  "status": 404,
+  "cors": {
+   "access-control-allow-credentials": "true",
+   "access-control-allow-origin": "*",
+   "access-control-expose-headers": "etag,date"
+  },
+  "bytes": 4,
+  "ctype": "application/json; charset=utf-8",
+  "head": "null"
+ }
+]
