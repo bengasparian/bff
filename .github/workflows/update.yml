@@ -21,6 +21,8 @@ jobs:
     timeout-minutes: 50
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref_name }}   # the branch as it is now, not the commit that queued this run (the other job may have saved since)
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"

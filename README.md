@@ -8,7 +8,7 @@ to edit from one season to the next. Two GitHub workflows do the work, no API ke
 | **Update Gridiron Fantasy** | `update.yml` | every 3 hours (23 minutes past) | downloads the latest NFL data, rebuilds every projection, ranking, trend and prop line, saves and grades the weekly calls, collects news, writes and updates BFF Originals, optionally syncs your Sleeper league, checks the page, saves it |
 | **Live scores, news and lines** | `scores.yml` | every 10 minutes | live scores and box scores, news from every source, prop lines moved by ESPN's and Sleeper's latest projections, the odds and news, parlay picks, BFF Originals (breaking news, previews, recaps); only saves when something changed |
 
-Both share one queue, so they never save at the same moment. Before anything is saved, `check_page.py` checks the
+Both share one queue, so they never save at the same moment, and each run starts from the newest saved data (not the version that was current when it was queued). Before anything is saved, `check_page.py` checks the
 page (data readable, enough players, no script errors) and the live files; anything broken is put back to the
 last good version, so the published site never breaks.
 
