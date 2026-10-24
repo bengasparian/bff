@@ -1,0 +1,773 @@
+{
+ "view=mTeam&view=mRoster&view=mSettings": {
+  "status": 200,
+  "top_keys": [
+   "draftDetail",
+   "gameId",
+   "id",
+   "members",
+   "scoringPeriodId",
+   "seasonId",
+   "segmentId",
+   "settings",
+   "status",
+   "teams"
+  ],
+  "teams": 10,
+  "entries_per_team": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "team_shape": {
+   "abbrev": "str",
+   "currentProjectedRank": "int",
+   "divisionId": "int",
+   "draftDayProjectedRank": "int",
+   "eliminated": "bool",
+   "eliminationMatchupPeriod": "int",
+   "id": "int",
+   "isActive": "bool",
+   "isTransactionLocked": "bool",
+   "logo": "str",
+   "logoType": "str",
+   "name": "str",
+   "owners": [
+    "str",
+    "len=1"
+   ],
+   "playoffSeed": "int",
+   "points": "float",
+   "pointsAdjusted": "float",
+   "pointsDelta": "float",
+   "primaryOwner": "str",
+   "rankCalculatedFinal": "int",
+   "rankFinal": "int",
+   "record": {
+    "away": {
+     "gamesBack": "float",
+     "losses": "int",
+     "percentage": "float",
+     "pointsAgainst": "float",
+     "pointsFor": "float",
+     "streakLength": "int",
+     "streakType": "str",
+     "ties": "int",
+     "wins": "int"
+    },
+    "division": {
+     "gamesBack": "float",
+     "losses": "int",
+     "percentage": "float",
+     "pointsAgainst": "float",
+     "pointsFor": "float",
+     "streakLength": "int",
+     "streakType": "str",
+     "ties": "int",
+     "wins": "int"
+    },
+    "home": {
+     "gamesBack": "float",
+     "losses": "int",
+     "percentage": "float",
+     "pointsAgainst": "float",
+     "pointsFor": "float",
+     "streakLength": "int",
+     "streakType": "str",
+     "ties": "int",
+     "wins": "int"
+    },
+    "overall": {
+     "gamesBack": "float",
+     "losses": "int",
+     "percentage": "float",
+     "pointsAgainst": "float",
+     "pointsFor": "float",
+     "streakLength": "int",
+     "streakType": "str",
+     "ties": "int",
+     "wins": "int"
+    }
+   },
+   "roster": {
+    "entries": [],
+    "tradeReservedEntries": "int"
+   },
+   "tradeBlock": {},
+   "transactionCounter": {
+    "acquisitionBudgetSpent": "int",
+    "acquisitions": "int",
+    "drops": "int",
+    "matchupAcquisitionTotals": {},
+    "misc": "int",
+    "moveToActive": "int",
+    "moveToIR": "int",
+    "paid": "float",
+    "teamCharges": "float",
+    "trades": "int"
+   },
+   "waiverRank": "int"
+  },
+  "members_shape": {
+   "displayName": "str",
+   "firstName": "str",
+   "id": "str",
+   "lastName": "str",
+   "notificationSettings": [
+    {
+     "enabled": "bool",
+     "forId": "int",
+     "id": "str",
+     "type": "str"
+    },
+    "len=15"
+   ]
+  },
+  "settings_keys": [
+   "acquisitionSettings",
+   "draftSettings",
+   "financeSettings",
+   "isAutoReactivate",
+   "isCustomizable",
+   "isPublic",
+   "name",
+   "restrictionType",
+   "rosterSettings",
+   "scheduleSettings",
+   "scoringSettings",
+   "size",
+   "tradeSettings"
+  ],
+  "scoring_items": [
+   [
+    89,
+    0.0
+   ],
+   [
+    90,
+    0.0
+   ],
+   [
+    123,
+    0.0
+   ],
+   [
+    206,
+    2.0
+   ],
+   [
+    133,
+    0.0
+   ],
+   [
+    25,
+    6.0
+   ],
+   [
+    209,
+    1.0
+   ],
+   [
+    53,
+    1.0
+   ],
+   [
+    72,
+    -2.0
+   ],
+   [
+    134,
+    0.0
+   ],
+   [
+    95,
+    0.0
+   ],
+   [
+    135,
+    0.0
+   ],
+   [
+    136,
+    0.0
+   ],
+   [
+    93,
+    6.0
+   ],
+   [
+    98,
+    0.0
+   ],
+   [
+    91,
+    0.0
+   ],
+   [
+    96,
+    0.0
+   ],
+   [
+    97,
+    0.0
+   ],
+   [
+    19,
+    2.0
+   ],
+   [
+    43,
+    6.0
+   ],
+   [
+    20,
+    -2.0
+   ],
+   [
+    4,
+    4.0
+   ],
+   [
+    102,
+    6.0
+   ],
+   [
+    24,
+    0.1
+   ],
+   [
+    103,
+    6.0
+   ],
+   [
+    63,
+    6.0
+   ],
+   [
+    101,
+    6.0
+   ],
+   [
+    80,
+    3.0
+   ],
+   [
+    26,
+    2.0
+   ],
+   [
+    104,
+    6.0
+   ],
+   [
+    77,
+    4.0
+   ],
+   [
+    92,
+    0.0
+   ],
+   [
+    128,
+    0.0
+   ],
+   [
+    99,
+    0.0
+   ],
+   [
+    125,
+    0.0
+   ],
+   [
+    85,
+    -1.0
+   ],
+   [
+    3,
+    0.04
+   ],
+   [
+    124,
+    0.0
+   ],
+   [
+    132,
+    0.0
+   ],
+   [
+    86,
+    1.0
+   ]
+  ],
+  "lineup_slots": {
+   "0": 2,
+   "1": 0,
+   "2": 2,
+   "3": 0,
+   "4": 2,
+   "5": 0,
+   "6": 1,
+   "7": 0,
+   "8": 0,
+   "9": 0,
+   "10": 0,
+   "11": 0,
+   "12": 0,
+   "13": 0,
+   "14": 0,
+   "15": 0,
+   "16": 1,
+   "17": 1,
+   "18": 0,
+   "19": 0,
+   "20": 7,
+   "21": 1,
+   "22": 0,
+   "23": 1,
+   "24": 0
+  },
+  "size": 10,
+  "scoringPeriodId": 0
+ },
+ "view=mRoster": {
+  "status": 200,
+  "top_keys": [
+   "draftDetail",
+   "gameId",
+   "id",
+   "scoringPeriodId",
+   "seasonId",
+   "segmentId",
+   "status",
+   "teams"
+  ],
+  "teams": 10,
+  "entries_per_team": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "team_shape": {
+   "id": "int",
+   "roster": {
+    "entries": [],
+    "tradeReservedEntries": "int"
+   }
+  },
+  "members_shape": null,
+  "settings_keys": [],
+  "scoring_items": [],
+  "lineup_slots": null,
+  "size": null,
+  "scoringPeriodId": 0
+ },
+ "view=mRoster&scoringPeriodId=7": {
+  "status": 200,
+  "top_keys": [
+   "draftDetail",
+   "gameId",
+   "id",
+   "scoringPeriodId",
+   "seasonId",
+   "segmentId",
+   "status",
+   "teams"
+  ],
+  "teams": 10,
+  "entries_per_team": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "team_shape": {
+   "id": "int",
+   "roster": {
+    "entries": [],
+    "tradeReservedEntries": "int"
+   }
+  },
+  "members_shape": null,
+  "settings_keys": [],
+  "scoring_items": [],
+  "lineup_slots": null,
+  "size": null,
+  "scoringPeriodId": 0
+ },
+ "view=mTeam": {
+  "status": 200,
+  "top_keys": [
+   "draftDetail",
+   "gameId",
+   "id",
+   "members",
+   "scoringPeriodId",
+   "seasonId",
+   "segmentId",
+   "status",
+   "teams"
+  ],
+  "teams": 10,
+  "entries_per_team": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "team_shape": {
+   "abbrev": "str",
+   "currentProjectedRank": "int",
+   "divisionId": "int",
+   "draftDayProjectedRank": "int",
+   "eliminated": "bool",
+   "eliminationMatchupPeriod": "int",
+   "id": "int",
+   "isActive": "bool",
+   "isTransactionLocked": "bool",
+   "logo": "str",
+   "logoType": "str",
+   "name": "str",
+   "owners": [
+    "str",
+    "len=1"
+   ],
+   "playoffSeed": "int",
+   "points": "float",
+   "pointsAdjusted": "float",
+   "pointsDelta": "float",
+   "primaryOwner": "str",
+   "rankCalculatedFinal": "int",
+   "rankFinal": "int",
+   "record": {
+    "away": {
+     "gamesBack": "float",
+     "losses": "int",
+     "percentage": "float",
+     "pointsAgainst": "float",
+     "pointsFor": "float",
+     "streakLength": "int",
+     "streakType": "str",
+     "ties": "int",
+     "wins": "int"
+    },
+    "division": {
+     "gamesBack": "float",
+     "losses": "int",
+     "percentage": "float",
+     "pointsAgainst": "float",
+     "pointsFor": "float",
+     "streakLength": "int",
+     "streakType": "str",
+     "ties": "int",
+     "wins": "int"
+    },
+    "home": {
+     "gamesBack": "float",
+     "losses": "int",
+     "percentage": "float",
+     "pointsAgainst": "float",
+     "pointsFor": "float",
+     "streakLength": "int",
+     "streakType": "str",
+     "ties": "int",
+     "wins": "int"
+    },
+    "overall": {
+     "gamesBack": "float",
+     "losses": "int",
+     "percentage": "float",
+     "pointsAgainst": "float",
+     "pointsFor": "float",
+     "streakLength": "int",
+     "streakType": "str",
+     "ties": "int",
+     "wins": "int"
+    }
+   },
+   "tradeBlock": {},
+   "transactionCounter": {
+    "acquisitionBudgetSpent": "int",
+    "acquisitions": "int",
+    "drops": "int",
+    "matchupAcquisitionTotals": {},
+    "misc": "int",
+    "moveToActive": "int",
+    "moveToIR": "int",
+    "paid": "float",
+    "teamCharges": "float",
+    "trades": "int"
+   },
+   "waiverRank": "int"
+  },
+  "members_shape": {
+   "displayName": "str",
+   "firstName": "str",
+   "id": "str",
+   "lastName": "str",
+   "notificationSettings": [
+    {
+     "enabled": "bool",
+     "forId": "int",
+     "id": "str",
+     "type": "str"
+    },
+    "len=15"
+   ]
+  },
+  "settings_keys": [],
+  "scoring_items": [],
+  "lineup_slots": null,
+  "size": null,
+  "scoringPeriodId": 0
+ },
+ "view=mSettings": {
+  "status": 200,
+  "top_keys": [
+   "draftDetail",
+   "gameId",
+   "id",
+   "scoringPeriodId",
+   "seasonId",
+   "segmentId",
+   "settings",
+   "status"
+  ],
+  "teams": 0,
+  "entries_per_team": [],
+  "team_shape": null,
+  "members_shape": null,
+  "settings_keys": [
+   "acquisitionSettings",
+   "draftSettings",
+   "financeSettings",
+   "isAutoReactivate",
+   "isCustomizable",
+   "isPublic",
+   "name",
+   "restrictionType",
+   "rosterSettings",
+   "scheduleSettings",
+   "scoringSettings",
+   "size",
+   "tradeSettings"
+  ],
+  "scoring_items": [
+   [
+    89,
+    0.0
+   ],
+   [
+    90,
+    0.0
+   ],
+   [
+    123,
+    0.0
+   ],
+   [
+    206,
+    2.0
+   ],
+   [
+    133,
+    0.0
+   ],
+   [
+    25,
+    6.0
+   ],
+   [
+    209,
+    1.0
+   ],
+   [
+    53,
+    1.0
+   ],
+   [
+    72,
+    -2.0
+   ],
+   [
+    134,
+    0.0
+   ],
+   [
+    95,
+    0.0
+   ],
+   [
+    135,
+    0.0
+   ],
+   [
+    136,
+    0.0
+   ],
+   [
+    93,
+    6.0
+   ],
+   [
+    98,
+    0.0
+   ],
+   [
+    91,
+    0.0
+   ],
+   [
+    96,
+    0.0
+   ],
+   [
+    97,
+    0.0
+   ],
+   [
+    19,
+    2.0
+   ],
+   [
+    43,
+    6.0
+   ],
+   [
+    20,
+    -2.0
+   ],
+   [
+    4,
+    4.0
+   ],
+   [
+    102,
+    6.0
+   ],
+   [
+    24,
+    0.1
+   ],
+   [
+    103,
+    6.0
+   ],
+   [
+    63,
+    6.0
+   ],
+   [
+    101,
+    6.0
+   ],
+   [
+    80,
+    3.0
+   ],
+   [
+    26,
+    2.0
+   ],
+   [
+    104,
+    6.0
+   ],
+   [
+    77,
+    4.0
+   ],
+   [
+    92,
+    0.0
+   ],
+   [
+    128,
+    0.0
+   ],
+   [
+    99,
+    0.0
+   ],
+   [
+    125,
+    0.0
+   ],
+   [
+    85,
+    -1.0
+   ],
+   [
+    3,
+    0.04
+   ],
+   [
+    124,
+    0.0
+   ],
+   [
+    132,
+    0.0
+   ],
+   [
+    86,
+    1.0
+   ]
+  ],
+  "lineup_slots": {
+   "0": 2,
+   "1": 0,
+   "2": 2,
+   "3": 0,
+   "4": 2,
+   "5": 0,
+   "6": 1,
+   "7": 0,
+   "8": 0,
+   "9": 0,
+   "10": 0,
+   "11": 0,
+   "12": 0,
+   "13": 0,
+   "14": 0,
+   "15": 0,
+   "16": 1,
+   "17": 1,
+   "18": 0,
+   "19": 0,
+   "20": 7,
+   "21": 1,
+   "22": 0,
+   "23": 1,
+   "24": 0
+  },
+  "size": 10,
+  "scoringPeriodId": 0
+ }
+}
