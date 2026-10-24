@@ -41,8 +41,22 @@ last good version, so the published site never breaks.
   wire...), outlet counts and "fantasy impact" notes are BFF's. Pictures load from each publisher's own feed image.
   **BFF Originals** (below) are mixed into the feed with a gold "BFF Original" label, lead it while fresh, and have
   their own panel.
-- **My League:** link a Sleeper, ESPN or Yahoo league for your best lineup, waiver targets, trade ideas and a
-  matchup simulator.
+- **My League:** link your league for your best lineup, waiver targets, trade ideas and a matchup simulator.
+  **ESPN:** paste the league's link (or ID) and the page reads every team, roster, record, lineup spot and the scoring
+  straight from ESPN's league service, then refreshes the rosters on its own (at most every 3 hours, paused after you
+  edit rosters by hand; "Update now" any time). Checked in October 2026 that ESPN's service answers this site from the
+  browser: public leagues for anyone, private ones when the visitor is signed in to ESPN in the same browser (some
+  browsers block that; then the league manager can make the league viewable to the public, or use the page copy below).
+  **Sleeper:** type your username (pick a league if you have several; your team is found for you) or the league ID.
+  **Yahoo, NFL.com, CBS and the rest:** Yahoo's data needs an approved app login and does not answer websites (checked),
+  so these are read from what you copy: select all on a team's roster page (or a page with every roster), copy, paste,
+  "Read page", repeat per team, Import. The page finds every player (also "J. Allen" style names with a team or
+  position nearby, and names glued to team codes), splits a page with every roster into teams, and guesses each team's
+  name (the line above its record); every name can be fixed and missing players added before the import. **Screenshots**
+  work on phones: each one is cleaned up (enlarged, turned into black text on white) and read in the browser with the
+  open-source Tesseract.js (version 6.0.1, loaded from jsDelivr only when used, about 6 MB the first time); a test with
+  14-player rosters (light and dark mode, full and "J. Allen" names) found every player and the team name. The typed
+  format still works: one line per team, "Team name: Player, Player, ..."
 - **Draft:** everything for draft day: **Mock draft** against AI teams with different strategies (graded at the end),
   the pick-by-pick **Draft guide** for your league settings, and draft tips.
 - **Fantasy Help:** the in-season toolkit: **Weekly calls** (below), Trends (best bets, buy & sell, usage, proof),
@@ -502,8 +516,8 @@ Optional: add the `ANTHROPIC_API_KEY` secret for Claude-written articles (see **
 1. Find your league ID: the long number in your league's web address on sleeper.com.
 2. **Settings > Secrets and variables > Actions > Variables tab > New repository variable**. Name it
    `SLEEPER_LEAGUE_ID` and paste the number.
-3. Run the data workflow again. Sleeper league data is public and needs no password. ESPN and Yahoo need a login,
-   so for those leagues use the paste-in import on the page.
+3. Run the data workflow again. Sleeper league data is public and needs no password. (Visitors don't need this: the
+   page links Sleeper and ESPN leagues itself, and reads Yahoo and other leagues from a copied page or screenshots.)
 
 ## Good to know
 - GitHub Pages has a soft limit of 10 site builds per hour, which is why the live workflow runs every 10 minutes

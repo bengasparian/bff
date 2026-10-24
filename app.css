@@ -1710,3 +1710,18 @@ button.artsr:hover{border-color:var(--acc)}
 #wlist>.row{content-visibility:auto;contain-intrinsic-size:auto 84px}
 .csskip{margin:10px 2px 0;font-size:.84rem;line-height:1.45}.csskip a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .botmsg .botv{margin-top:8px;color:var(--mute);font-size:.88rem}
+/* ===== league linking: ESPN by link, Sleeper by username, anything else by page or screenshots */
+.lgpick{margin:0 0 12px}
+.lgp h2{margin-top:0}
+.lgrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0 4px}.lgrow input{flex:1 1 260px;min-width:0}.lgrow .btn{flex:0 0 auto}
+.lgrow label.btn{display:inline-flex;align-items:center;cursor:pointer}
+.lgsteps{margin:4px 0 8px;padding-left:20px;font-size:.9rem;line-height:1.5}.lgsteps li{margin:0 0 4px}
+.lgnote{margin-top:8px}
+.lgmine{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}.lgmine .sub{margin-left:4px}
+.lgprev h3{margin:14px 0 6px}
+.lgtq{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px;margin:6px 0;background:var(--panel)}
+.lgtq input[type=text]{min-width:0}.lgtq details{grid-column:1/-1;font-size:.85rem}.lgtq details p{margin:4px 0 0}
+.lgtq label{display:inline-flex;gap:4px;align-items:center;white-space:nowrap}
+@media(max-width:700px){.lgtq{grid-template-columns:minmax(0,1fr) auto}.lgtq button{grid-column:2;grid-row:1}.lgtq label{grid-column:1}}
+.lgtq input[type=radio]{width:auto;margin:0;flex:none}
+#lg_msg .note{margin:10px 0}
