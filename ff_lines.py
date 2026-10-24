@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
 """Predicted prop lines for BFF: what PrizePicks, Underdog and sportsbooks are expected to post this week.
 
-Lines are built the way books build them, from OPPORTUNITY:
+MARKET LINES (October 2026): books' lines track the public projections. Each passing, rushing and receiving yards and
+receptions line is set from the average of ESPN's and Sleeper's projections for that stat (site_stats.py, refreshed every
+10 minutes), scaled to where books set their lines: passing yards x 0.989, receiving yards x 0.919, rushing yards x 0.862
+(fit on the real week-7 2026 lines), receptions x 0.95 (no real receptions lines in the sample; this gives the same over rate
+as the other calibrated lines, 46% in 2025). Against the real week-7 lines, scored on players the fit did not use: average
+gap 3.4 receiving yards (was 6.9), 5.5 rushing yards (was 9.1), 9.6 passing yards (was 13.3), and lines for 48 of 49 real
+rushing lines (was 31) (research/bt_lines.py). BFF's own model stays out of the line, so the picks can test it.
+PICKS (October 2026): an under on passing, receiving or rushing yards when BFF's own model projects the player at least 10%
+below ESPN and Sleeper. In 2025, against lines built this way, those unders hit 57.2% (1,511 picks; taking every yardage
+under hit 55.1%), while overs where BFF was higher hit only 48.5%, so BFF picks no overs from them. "Chance" for every line
+is how often the over hit in 2025 for that stat and that gap between BFF and the sites. Passing touchdowns keep the
+model's own 0.5 / 1.5 / 2.5 lines and tested picks (below). A player neither site projects gets the model's line (below).
+
+MODEL LINES (the fallback, and passing touchdowns) are built the way books build them, from OPPORTUNITY:
   expected volume (targets, carries or pass attempts; recent games count more, last season counts like 1-3 games,
   injury-shortened games are left out) x the player's efficiency (catch rate, yards per target / carry / attempt,
   touchdowns per attempt; shrunk toward the position average) x this game (Vegas implied team total, the defense).
@@ -45,6 +58,15 @@ VOL = {'rec': 'tg', 'ty': 'tg', 'ry': 'car', 'ryq': 'car', 'py': 'att', 'ptd': '
 EFF = {'rec': ('rec', 'tg'), 'ty': ('ty', 'tg'), 'ry': ('ry', 'car'), 'ryq': ('ry', 'car'), 'py': ('py', 'att'), 'ptd': ('ptd', 'att')}
 GLI = {'att': 2, 'py': 3, 'ptd': 4, 'car': 6, 'ry': 7, 'rec': 9, 'tg': 10, 'ty': 11}       # columns of a game-log row
 PICKS = {'rec', 'ry', 'py', 'ptd'}; PICK_MIN = .55
+# market lines (see the docstring and research/results_lines.json)
+KMK = {'py': .989, 'ty': .919, 'ry': .862, 'ryq': .862, 'rec': .95}
+MKMIN = {'py': 150, 'ty': 15, 'ry': 7, 'ryq': 10, 'rec': 1.5}   # the smallest market projection that gets a line (books post down to about these)
+OVR = {'py': {'below': .416, 'level': .527, 'above': .527}, 'ty': {'below': .427, 'level': .435, 'above': .459},
+       'ry': {'below': .435, 'level': .478, 'above': .491}, 'rec': {'below': .439, 'level': .457, 'above': .512}}   # 2025: share of overs that hit
+MK_PICKS = {'py', 'ty', 'ry'}
+BT_MKT = {'source': 'real week-7 2026 lines from a public props page', 'gap_before': {'py': 13.3, 'ty': 6.9, 'ry': 9.1}, 'gap_after': {'py': 9.6, 'ty': 3.4, 'ry': 5.5},
+          'rush_lines': [31, 48, 49], 'over_2025': {'py': 46.1, 'ty': 43.4, 'ry': 46.3, 'rec': 46.4},
+          'picks': {'n': 1511, 'won': .572, 'by': {'py': .584, 'ty': .573, 'ry': .565}, 'every_under': .551, 'overs': .485}}
 BT = {'season': 2025, 'tuned_on': 2024,
       'lines': {'rec': {'n': 2159, 'mae': 1.67, 'over': 46.8}, 'ty': {'n': 2159, 'mae': 21.9, 'over': 44.4}, 'ry': {'n': 658, 'mae': 26.4, 'over': 49.1},
                 'ryq': {'n': 293, 'mae': 13.7, 'over': 50.2}, 'py': {'n': 487, 'mae': 64.5, 'over': 50.0}, 'ptd': {'n': 502, 'mae': 1.00, 'over': 47.2}},
@@ -88,13 +110,14 @@ def build_inputs():
     if not mu:   # league-typical efficiency if last season's file is missing
         mu = {'QB': {'rec': 1, 'ty': 1.6, 'ry': 4.6, 'py': 6.9, 'ptd': .045}, 'RB': {'rec': .78, 'ty': 5.6, 'ry': 4.3, 'py': 7, 'ptd': .04},
               'WR': {'rec': .64, 'ty': 8.1, 'ry': 6, 'py': 7, 'ptd': .04}, 'TE': {'rec': .72, 'ty': 7.4, 'ry': 4, 'py': 7, 'ptd': .04}}
-    keep = ('id', 'n', 'p', 't', 'opp', 'nw', 'proj', 'inj', 'prac', 'fpg', 'g', 'gl', 'wk', 'role', 'bmp', 'home', 'sid')
+    keep = ('id', 'n', 'p', 't', 'opp', 'nw', 'proj', 'inj', 'prac', 'fpg', 'g', 'gl', 'wk', 'role', 'bmp', 'home', 'sid', 'eid', 'pe', 'ps')
     players = []
     for p in P:
         if p['p'] not in ('QB', 'RB', 'WR', 'TE'): continue
         q = {k: p.get(k) for k in keep}
         q['ros'] = [x for x in (p.get('ros') or []) if x[0] in (NW, FW)]
         q['pri'] = pri.get(p['id'])
+        if p.get('nw') == NW and p.get('proj') is not None: q['mo'] = round(float(p['proj']) - float(p.get('adjc') or 0), 2)   # BFF's model alone, before the stack
         players.append(q)
     I = {'asof': D['asof'], 'fw': FW, 'nw': NW, 'sched': SCHED, 'dvp': D.get('dvp', {}), 'mu': mu, 'players': players}
     json.dump(I, open('bet_inputs.json', 'w'), separators=(',', ':'))
@@ -142,10 +165,31 @@ def news_status(I):
             if (it.get('d') or '') >= since: st[pid] = (it['st'], it['h'], it.get('s'))
     return {pid: v for pid, v in st.items() if v[0] == 'out'}
 
+def site_week(I, wk):
+    """ESPN's and Sleeper's stat projections for week wk (site_stats.py): {gsis id: {'e': {...}, 's': {...}}}"""
+    try: S = json.load(open('site_stats.json'))
+    except Exception: return {}
+    if int(S.get('season') or 0) != int((I.get('asof') or {}).get('season') or 0): return {}
+    return (S.get('weeks') or {}).get(str(wk)) or {}
+
+def market(site, k):
+    """the market's projection for stat k: the average of ESPN's and Sleeper's (either alone if only one projects him)"""
+    xs = [d[k] for d in ((site or {}).get('e'), (site or {}).get('s')) if d and (d.get(k) or 0) > 0]
+    return sum(xs) / len(xs) if xs else None
+
+def gap_bin(p, site):
+    """BFF's own model vs ESPN and Sleeper (fantasy points this week): below (10%+ lower), level or above (10%+ higher)"""
+    fp = [d['fp'] for d in ((site or {}).get('e'), (site or {}).get('s')) if d and (d.get('fp') or 0) > 0]
+    if not fp: fp = [v for v in (p.get('pe'), p.get('ps')) if v]
+    mo = p.get('mo')
+    if len(fp) < 2 or not mo: return 'level', None
+    r = mo / (sum(fp) / len(fp))
+    return ('below' if r < .9 else 'above' if r > 1.1 else 'level'), round(r, 3)
+
 def build_lines(I, wk=None, teams=None):
     """lines for week wk (default: the coming fantasy week); teams limits them to some teams (this week's late games)"""
     FW, SCHED, DVP, MU = wk or I['fw'], I['sched'], I['dvp'], I['mu']
-    QS = json.load(open('prop_qs.json')); ESPN = espn_totals(I, FW); global PULLED; PULLED = news_status(I)
+    QS = json.load(open('prop_qs.json')); ESPN = espn_totals(I, FW); global PULLED; PULLED = news_status(I); SITE = site_week(I, FW)
     sch = lambda tm: next((x for x in SCHED.get(tm, []) if x[0] == FW), None)
     rows = []
     for p in I['players']:
@@ -166,7 +210,7 @@ def build_lines(I, wk=None, teams=None):
         it_sched = e[3] if e[3] is not None else 22.5; it = ESPN.get(p['t'], it_sched); dv = ((DVP.get(e[1]) or {}).get(pos) or [None, None, 1.0])[2] or 1.0
         bmp = next((b for w, b in (p.get('bmp') or []) if w == FW), 0.0) or 0.0
         rows.append(dict(p=p, pos=pos, F=F, pr=pr, last_part=last_part, it=it, it_src='ESPN' if p['t'] in ESPN else 'schedule', dv=dv, bmp=bmp, opp=e[1],
-                         kick=e[5] if len(e) > 5 else None, wp=wp))
+                         kick=e[5] if len(e) > 5 else None, wp=wp, site=SITE.get(p['id'])))
 
     def volume(r, v, d, Wv):
         h = [x[GLI[v]] for x in r['F']]; n = len(h)
@@ -210,31 +254,48 @@ def build_lines(I, wk=None, teams=None):
             qb_done.add(p['t'])
         vtg = volume(r, 'tg', .75, 2) or 0; vcar = volume(r, 'car', .75, 2) or 0
         sn = max(.8, min(1.25, r['s'] / MED[pos])) if r['s'] and MED.get(pos) else 1.0
-        stats = ['py', 'ptd', 'ryq'] if pos == 'QB' else (['ry'] if pos == 'RB' and vcar >= 8 else []) + (['rec', 'ty'] if vtg >= (2.5 if pos == 'RB' else 3.5) else [])
+        mk_ = lambda k: market(r['site'], 'ry' if k == 'ryq' else k)
+        has = lambda k: (mk_(k) or 0) >= MKMIN[k]
+        stats = ['py', 'ptd', 'ryq'] if pos == 'QB' else (['ry'] if pos == 'RB' and (vcar >= 8 or has('ry')) else []) + \
+            (['rec', 'ty'] if vtg >= (2.5 if pos == 'RB' else 3.5) or has('ty') else [])
+        gb, gr = gap_bin(p, r['site'])
         for k in stats:
             res = mean_for(r, k)
             if not res: continue
             m, vol, eff = res
+            mk = mk_(k) if k != 'ptd' else None
             if k == 'ryq':
                 base_ry = (sum(x[7] for x in r['F']) + (r['pr'] or {}).get('ry', 0)) / max(1, len(r['F']) + (r['pr'] or {}).get('n', 0))
-                if base_ry < 12: continue
+                if base_ry < 12 and not has('ryq'): continue
+            mm = None
             if PAR[k].get('sh') and CEN.get((k, pos)) is not None: m = CEN[(k, pos)] + PAR[k]['sh'] * (m - CEN[(k, pos)])
-            raw = m * PAR[k]['c']
-            line = (.5 if m < .70 else 1.5 if m < 2.55 else 2.5) if k == 'ptd' else math.floor(raw) + .5   # passing-TD cutoffs tuned on 2024
-            if k == 'py' and line < 150.5: continue
-            mm = m * (sn if k == 'ptd' else 1 + (sn - 1) * .7)
-            if k == 'ptd': pm = 1 - sum(math.exp(-mm) * mm ** i / math.factorial(i) for i in range(int(line) + 1))
-            else: pm = 1 - cdf(QS[QK(pos, k)], (line + 1e-4) / max(mm, .05))
-            po = min(.62, max(.38, .5 * pm + .25))
             kk = 'ry' if k == 'ryq' else k
+            if mk is not None and mk > 0:   # market line: where books are expected to set it
+                line = math.floor(KMK[k] * mk) + .5
+                if k == 'py' and line < 150.5: continue
+                mm = m * (1 + (sn - 1) * .7)
+                po = OVR[kk][gb]; pick = bool(k in MK_PICKS and gb == 'below' and not (pos == 'QB' and kk == 'ry'))
+                src = 'mkt'
+            else:                           # model line
+                raw = m * PAR[k]['c']
+                line = (.5 if m < .70 else 1.5 if m < 2.55 else 2.5) if k == 'ptd' else math.floor(raw) + .5   # passing-TD cutoffs tuned on 2024
+                if k == 'py' and line < 150.5: continue
+                mm = m * (sn if k == 'ptd' else 1 + (sn - 1) * .7)
+                if k == 'ptd': pm = 1 - sum(math.exp(-mm) * mm ** i / math.factorial(i) for i in range(int(line) + 1))
+                else: pm = 1 - cdf(QS[QK(pos, k)], (line + 1e-4) / max(mm, .05))
+                po = min(.62, max(.38, .5 * pm + .25)); pick = bool(k in PICKS and max(po, 1 - po) >= PICK_MIN)
+                src = 'bff'
             lines.append({'pid': p['id'], 'wk': FW, 't': p['t'], 'opp': r['opp'], 'k': kk, 'line': line, 'mm': round(float(mm), 2), 'po': round(float(po), 3),
-                          'pick': bool(k in PICKS and max(po, 1 - po) >= PICK_MIN), 'kick': r['kick'], 'q': bool(p.get('inj') == 'Questionable'),
+                          'pick': pick, 'kick': r['kick'], 'q': bool(p.get('inj') == 'Questionable'), 'src': src, 'mk': round(float(mk), 1) if src == 'mkt' else None,
+                          'gap': gr if src == 'mkt' else None,
                           'vol': round(float(vol), 1), 'eff': round(float(eff), 3), 'it': round(float(r['it']), 1), 'its': r['it_src'], 'bmp': round(float(r['bmp']), 1), 'pp': bool(r['last_part'])})
     return lines
 
 # ------------------------------------------------------------------ history: opening line and every move, with the reason
 def why(old, new):
     R = []
+    if old.get('mk') and new.get('mk') and abs(new['mk'] - old['mk']) >= max(1, .03 * old['mk']): R.append(f"ESPN and Sleeper projections {old['mk']} → {new['mk']}")
+    if old.get('src') != new.get('src') and new.get('src'): R.append('set from ESPN and Sleeper' if new['src'] == 'mkt' else 'set from BFF\'s model (sites not projecting him)')
     if abs((old.get('it') or 0) - (new.get('it') or 0)) >= .5: R.append(f"Vegas team total {old.get('it')} → {new.get('it')}")
     if abs((old.get('bmp') or 0) - (new.get('bmp') or 0)) >= .3: R.append('teammate injury news' if (new.get('bmp') or 0) > (old.get('bmp') or 0) else 'teammate returning')
     if old.get('q') != new.get('q'): R.append('listed questionable' if new.get('q') else 'off the injury report')
@@ -257,6 +318,7 @@ def merge_history(new_lines, fw):
     moves = list(old.get('moves') or [])
     for l in new_lines:
         o = prev.get(key(l))
+        if o and 'src' not in o: o = None   # a line from before the market lines (Oct 2026): it reopens rather than counting as a move
         if not o:
             l['open'] = l['line']; l['opened'] = STAMP; l['mv'] = []
             continue
@@ -268,11 +330,12 @@ def merge_history(new_lines, fw):
     for kk_ in [k_ for k_ in prev if k_ not in now_keys]:
         pid, k, wk_ = kk_; o_ = prev[kk_]
         if o_.get('kick') and _dt(o_['kick']) and _dt(o_['kick']) <= NOW: continue   # the game started: not a pulled line
+        if 'src' not in o_: continue   # a line from before the market lines: not a pulled line
         n_ = PULLED.get(pid); w_ = f"pulled: {n_[1]} ({n_[2]})" if n_ else 'line pulled (injury report or role change)'
         moves.append({'pid': pid, 'k': k, 'from': o_['line'], 'to': None, 'at': STAMP, 'why': w_})
     sig = lambda L: sorted((l['pid'], l['k'], l['line'], round(l['po'], 2), l['q']) for l in L)
     changed = (not old) or sig(new_lines) != sig(old.get('lines') or [])
-    out = {'wk': fw, 'at': STAMP if changed else old.get('at', STAMP), 'odds_from': None, 'bt': BT, 'lines': new_lines, 'moves': moves[-60:],
+    out = {'wk': fw, 'at': STAMP if changed else old.get('at', STAMP), 'odds_from': None, 'bt': BT, 'mkt': BT_MKT, 'lines': new_lines, 'moves': moves[-60:],
            'pulled': [{'pid': k, 'h': v[1], 's': v[2]} for k, v in PULLED.items()]}
     return out, changed
 

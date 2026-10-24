@@ -525,6 +525,109 @@ for tm_ in sorted({p['t'] for p in players if p['p']=='QB'}):
                 bq_['proj']=bq_['ros'][0][2] if bq_['ros'] and bq_['ros'][0][0]==bq_['nw'] else 0.0
                 bq_['qbb']=0; bq_['qbf']=1; bq_['pj0']=r(raw_b[0],1)
 print('quarterbacks: expected starters', sum(1 for p in players if p.get('qbs')), '| backups set to 0:', sum(1 for p in players if p.get('qbb')))
+# ---- common sense: fill-ins and returning starters (research/bt_fillin.py, research/bt_commonsense.py). A fill-in is a
+# back or receiver who took a starter's snaps (40%+ of them, 15+ points more than beside the starter) while that starter (a
+# .55+ snap share for RBs, .70+ for WRs/TEs in his best 2 of his last 3 games, or first on the depth chart) missed 1-6
+# games, and who ranks below the starter (lower on the depth chart; without that, fewer targets + carries in their games
+# together, or, never together, fewer in the games he filled than the starter's best 2). When the starter is back the model still reads
+# the fill-in's starter-sized role: in 2020-25 it over-projected such fill-ins 73% of the time, and they scored 79% (RB),
+# 80% (WR) and 75% (TE) of what it said (2023-25 check: average miss 3.82 -> 3.44 points, bias +1.37 -> +0.13). So each
+# week of his is scaled by that share, in proportion to the chance the starter plays that week (no change while the starter
+# is out). The starter's own projection needed no change (he scored 100-104% of it). The flags feed the buy-low and
+# sell-high lists: as buy lows, fill-ins whose starter was back were right 27% of the time (60% for all calls).
+FILLF={'RB':.786,'WR':.803,'TE':.754}; FSH={'RB':.55,'WR':.70,'TE':.70}
+_PB={p['id']:p for p in players}; NFILL=[]
+def _rk(p):
+    m_=_re.match(r'[A-Z]+(\d+)$',p.get('role') or ''); return int(m_.group(1)) if m_ else 9
+if PHASE=='season' and len(S26):
+    _S=S26[S26.position.isin(list(FSH))&(S26.offense_pct.fillna(0)>0)]
+    _TW={t_:sorted(int(w_) for w_ in g_.week.unique()) for t_,g_ in S26.groupby('team')}
+    _U={(x_.player_id,x_.team,int(x_.week)):float(x_.offense_pct) for x_ in _S.itertuples()}
+    _O={(x_.player_id,int(x_.week)):float((x_.targets or 0)+(x_.carries or 0)) for x_ in S26.itertuples()}   # targets + carries
+    for (tm_,pos_),G_ in _S.groupby(['team','position']):
+        W_=_TW.get(tm_) or []; n_=len(W_)
+        for L_ in G_.player_id.unique():
+            pL=_PB.get(L_)
+            if pL is None or pL['t']!=tm_ or pL['p']!=pos_ or n_<2: continue
+            pl_=[(L_,tm_,w_) in _U for w_ in W_]
+            if not pl_[-1]:                                   # still missing games
+                j_=n_-1
+                while j_>=0 and not pl_[j_]: j_-=1
+                if j_<0: continue
+                miss_=W_[j_+1:]; back_=0
+            else:                                             # back, within the team's last 2 games
+                hit_=None
+                for back_ in (1,2):
+                    i_=n_-back_
+                    if i_<1 or not pl_[i_] or pl_[i_-1]: continue
+                    j_=i_-1
+                    while j_>=0 and not pl_[j_]: j_-=1
+                    if j_>=0: hit_=(W_[j_+1:i_],back_,j_)
+                    break
+                if hit_ is None: continue
+                miss_,back_,j_=hit_
+            if not 1<=len(miss_)<=6: continue
+            bef_=[W_[k_] for k_ in range(j_,-1,-1) if pl_[k_]][:3]; sb_=sorted([_U[(L_,tm_,b_)] for b_ in bef_],reverse=True)
+            if len(sb_)<2: continue
+            if not (np.mean(sb_[:2])>=FSH[pos_] or (_rk(pL)<=(2 if pos_=='WR' else 1) and sb_[0]>=FSH[pos_])): continue
+            aL_={int(row[0]):a_ for row,a_ in zip(pL['ros'],AVL.get(L_,([1.0]*len(pL['ros']),None))[0])}
+            nxt_=[int(row[0]) for row in pL['ros']][:2]
+            due_=next((w_ for w_ in sorted(aL_) if aL_[w_]>=.5),None)
+            for X_ in G_.player_id.unique():
+                pX=_PB.get(X_)
+                if X_==L_ or pX is None or pX['t']!=tm_ or pX['p']!=pos_: continue
+                sm_=[_U.get((X_,tm_,m_),0.0) for m_ in miss_]
+                if np.mean(sm_)<.40: continue
+                wi_=[_U[(X_,tm_,b_)] for b_ in bef_ if (X_,tm_,b_) in _U]
+                if wi_ and np.mean(wi_)>np.mean(sm_)-.15: continue    # he had this role already (his snaps must have risen 15+ points)
+                # he ranks below the starter: the depth chart settles it when both are on it at different spots; otherwise
+                # their targets + carries (together, or the games he filled vs the starter's best 2), as in the research
+                if _rk(pX)<9 and _rk(pL)<9 and _rk(pX)!=_rk(pL):
+                    if _rk(pX)<_rk(pL): continue
+                else:
+                    bes_=[b_ for b_ in bef_ if (X_,tm_,b_) in _U]
+                    if bes_ and np.mean([_O.get((X_,b_),0) for b_ in bes_])>=np.mean([_O.get((L_,b_),0) for b_ in bes_]): continue
+                    if not bes_ and np.mean([_O.get((X_,m_),0) for m_ in miss_])>=np.mean(sorted([_O.get((L_,b_),0) for b_ in bef_],reverse=True)[:2]): continue
+                f_=FILLF[pos_]; mult_=[]
+                for row in pX['ros']:
+                    m_=1-aL_.get(int(row[0]),0.0)*(1-f_); mult_.append(m_); row[2]=r(row[2]*m_,1)
+                if pX['ros'] and pX['ros'][0][0]==pX['nw']: pX['proj']=r((pX['proj'] or 0)*mult_[0],1)
+                if mult_ and pX.get('rl') is not None: pX['rl']=r(pX['rl']*float(np.mean(mult_)),1)
+                st_='back' if back_ else ('q' if pL.get('inj')=='Questionable' else 'act' if not pL.get('inj') else 'out')
+                soon_=int(bool(due_) and due_ in nxt_)
+                old_=pX.get('fill')
+                if old_ is None or soon_>old_.get('soon',0):
+                    pX['fill']={'by':pL['n'],'id':L_,'st':st_,'w':due_,'soon':soon_,'f':f_,'m':r(float(np.mean(sm_)),2),'wi':r(float(np.mean(wi_)),2) if wi_ else None}
+                pL.setdefault('rtn',[]).append(pX['n']); NFILL.append(f"{pX['n']} ({tm_}, for {pL['n']}{', due back week '+str(due_) if due_ and not back_ else ', back' if back_ else ''})")
+# a starter who has not played yet this season (suspension, exempt list, an injury since camp) and is active now: the backs
+# or receivers who took his snaps are fill-ins too. With no games of his to measure, the depth chart decides (he must rank
+# above them) and he must have been a starter last season (8+ PPR points a game); they must have played 40%+ of the snaps
+# over the team's last 2 games (e.g. Josh Jacobs back from the exempt list, Pierre Strong).
+if PHASE=='season' and len(S26):
+    for pL in players:
+        if pL['p'] not in FSH or (pL.get('g') or 0)>0 or pL.get('inj') in ('Out','Doubtful','IR') or _rk(pL)>(2 if pL['p']=='WR' else 1) or (pL.get('prev') or 0)<8: continue
+        tm_,pos_=pL['t'],pL['p']; W_=(_TW.get(tm_) or [])[-2:]
+        if not W_: continue
+        aL_={int(row[0]):a_ for row,a_ in zip(pL['ros'],AVL.get(pL['id'],([1.0]*len(pL['ros']),None))[0])}
+        nxt_=[int(row[0]) for row in pL['ros']][:2]; due_=next((w_ for w_ in sorted(aL_) if aL_[w_]>=.5),None)
+        for pX in players:
+            if pX is pL or pX['t']!=tm_ or pX['p']!=pos_ or not (pL and _rk(pL)<_rk(pX)<9) or pX.get('fill'): continue
+            sm_=[_U.get((pX['id'],tm_,w_),0.0) for w_ in W_]
+            if np.mean(sm_)<.40: continue
+            f_=FILLF[pos_]; mult_=[]
+            for row in pX['ros']:
+                m_=1-aL_.get(int(row[0]),0.0)*(1-f_); mult_.append(m_); row[2]=r(row[2]*m_,1)
+            if pX['ros'] and pX['ros'][0][0]==pX['nw']: pX['proj']=r((pX['proj'] or 0)*mult_[0],1)
+            if mult_ and pX.get('rl') is not None: pX['rl']=r(pX['rl']*float(np.mean(mult_)),1)
+            pX['fill']={'by':pL['n'],'id':pL['id'],'st':'q' if pL.get('inj')=='Questionable' else 'act','w':due_,'soon':int(bool(due_) and due_ in nxt_),'f':f_,'m':r(float(np.mean(sm_)),2),'wi':None,'new':1}
+            pL.setdefault('rtn',[]).append(pX['n']); NFILL.append(f"{pX['n']} ({tm_}, for {pL['n']}, first game of the season)")
+# role going down: snap share over his last 2 games under 75% of his season share (3+ games). In 2020-25 buy-low calls on
+# such players were right 37% of the time (61% for the rest).
+for p in players:
+    if p['p'] in FSH and (p.get('g') or 0)>=3 and p.get('snap'):
+        _l2=S26[(S26.player_id==p['id'])].sort_values('week').offense_pct.dropna().tail(2)
+        if len(_l2)==2 and float(_l2.mean())<.75*p['snap']: p['rdn']=r(float(_l2.mean()),3)
+print('fill-ins (projection scaled for the weeks their starter plays):',', '.join(NFILL) if NFILL else 'none','| snaps falling:',sum(1 for p in players if p.get('rdn')))
 # ---- ESPN's and Sleeper's public projections for the coming week (PPR points), fetched now. If a site does not answer, the
 # numbers proj_compare.py last saved for this week are used. They join the weekly stack below and show on the player card.
 OTH={}

@@ -1,0 +1,170 @@
+{
+ "week7": {
+  "source": "openinglineanalytics.com/nfl/props (passing-yards read Oct 23, page updated Oct 21; receiving-yards and rushing-yards updated Oct 23); book not named on the page",
+  "py": {
+   "real_lines": 17,
+   "before": {
+    "n": 15,
+    "avg_gap": 13.3,
+    "bias": 0.6
+   },
+   "after": {
+    "n": 17,
+    "avg_gap_leave_one_out": 9.6,
+    "bias": -0.4
+   },
+   "after_same_players": 8.4,
+   "k": 0.989
+  },
+  "ty": {
+   "real_lines": 57,
+   "before": {
+    "n": 49,
+    "avg_gap": 6.9,
+    "bias": 6.0
+   },
+   "after": {
+    "n": 57,
+    "avg_gap_leave_one_out": 3.4,
+    "bias": 0.8
+   },
+   "after_same_players": 3.3,
+   "k": 0.919
+  },
+  "ry": {
+   "real_lines": 49,
+   "before": {
+    "n": 31,
+    "avg_gap": 9.1,
+    "bias": -0.5
+   },
+   "after": {
+    "n": 48,
+    "avg_gap_leave_one_out": 5.5,
+    "bias": 0.7
+   },
+   "after_same_players": 5.8,
+   "k": 0.862
+  }
+ },
+ "overs_2025": {
+  "py": {
+   "n": 508,
+   "over_pct": 46.1
+  },
+  "ty": {
+   "n": 2612,
+   "over_pct": 43.4
+  },
+  "ry": {
+   "n": 1574,
+   "over_pct": 46.3
+  },
+  "rec": {
+   "n": 2665,
+   "over_pct": 46.4
+  }
+ },
+ "k": {
+  "py": 0.989,
+  "ty": 0.919,
+  "ry": 0.862,
+  "rec": 0.95
+ },
+ "picks_2025": {
+  "gap_10": {
+   "overs": {
+    "n": 1088,
+    "hit_pct": 48.5
+   },
+   "unders_all": {
+    "n": 2271,
+    "hit_pct": 56.8
+   },
+   "unders_yards": {
+    "n": 1511,
+    "hit_pct": 57.2,
+    "by": {
+     "py": 58.4,
+     "ty": 57.3,
+     "ry": 56.5
+    }
+   },
+   "every_yards_under": 55.1
+  },
+  "gap_15": {
+   "overs": {
+    "n": 756,
+    "hit_pct": 47.4
+   },
+   "unders_all": {
+    "n": 1368,
+    "hit_pct": 57.0
+   },
+   "unders_yards": {
+    "n": 909,
+    "hit_pct": 57.5,
+    "by": {
+     "py": 64.3,
+     "ty": 55.3,
+     "ry": 57.7
+    }
+   },
+   "every_yards_under": 55.1
+  }
+ },
+ "over_rate_2025": {
+  "py": {
+   "below": {
+    "n": 250,
+    "over": 0.416
+   },
+   "level": {
+    "n": 188,
+    "over": 0.527
+   }
+  },
+  "ty": {
+   "below": {
+    "n": 719,
+    "over": 0.427
+   },
+   "level": {
+    "n": 1055,
+    "over": 0.435
+   },
+   "above": {
+    "n": 458,
+    "over": 0.459
+   }
+  },
+  "ry": {
+   "below": {
+    "n": 542,
+    "over": 0.435
+   },
+   "level": {
+    "n": 590,
+    "over": 0.478
+   },
+   "above": {
+    "n": 218,
+    "over": 0.491
+   }
+  },
+  "rec": {
+   "below": {
+    "n": 760,
+    "over": 0.439
+   },
+   "level": {
+    "n": 1108,
+    "over": 0.457
+   },
+   "above": {
+    "n": 412,
+    "over": 0.512
+   }
+  }
+ }
+}

@@ -61,6 +61,7 @@ jobs:
       - name: Predicted prop lines and parlay picks
         id: lines
         run: |
+          python site_stats.py
           python ff_lines.py
           python parlay_update.py
       - name: Weekly calls (lock at kickoff, grade with official stats)
@@ -97,7 +98,7 @@ jobs:
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in index.html art proj_history.json parlay_history.json calls_history.json bet_inputs.json lines.json parlays.json news.json news_state.json articles.json proj_compare.json; do if [ -e "$f" ]; then git add -A "$f"; fi; done
+          for f in index.html art proj_history.json parlay_history.json calls_history.json bet_inputs.json lines.json parlays.json news.json news_state.json articles.json proj_compare.json site_stats.json; do if [ -e "$f" ]; then git add -A "$f"; fi; done
           if git diff --cached --quiet; then echo "No changes to save"; exit 0; fi
           git commit -m "Data update $(date -u +%F-%H%M)"
           for i in 1 2 3; do

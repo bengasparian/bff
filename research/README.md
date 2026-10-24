@@ -13,11 +13,14 @@ the model), so what is tested is what the site runs.
 | --- | --- | --- |
 | `bt_weekly_v5.py` | Weekly projections (version 5) vs the FantasyPros weekly expert consensus, 2021-2026, on the same player-games (about 24,000); the expert weight; the must-start calls. With `BT_FROM=2020 BT_SAVE=1` it also saves `h_weekly_v5.parquet` for the next script | about 40 minutes |
 | `bt_sites.py` | The weekly stack BFF publishes (its model + the experts + ESPN + Sleeper) head to head with ESPN, Sleeper and the experts on the same player-games, 2020-2026; the stack weights (chosen on 2020-22); by position; hindsight bounds on how much room any projection has (`--ceiling` adds the perfect-usage bound) | about 5 minutes (10 with `--ceiling`) |
+| `bt_lines.py` | Predicted prop lines against real posted week-7 2026 lines (before and after setting them from ESPN's and Sleeper's stat projections), over rates in 2025, and the picks against lines built that way. Data in `props/` | seconds |
+| `bt_fillin.py` | Fill-ins (backups who took a hurt starter's snaps) and returning starters: BFF's model vs what happened once the starter was back, 2020-25; the scaling the site uses | seconds |
+| `bt_commonsense.py` | Buy-low and sell-high calls with and without the common-sense checks (fill-ins, two games, falling snaps, top-6 usage), 2020-25 | seconds |
 | `hist_fetch.py` | Fetches ESPN's and Sleeper's past weekly projections into `hist/` (run on GitHub Actions or anywhere those sites are reachable; already done, the files are here) | about 15 minutes |
 | `bt_value_build.py` then `bt_value_eval.py` | The rest-of-season value formula (spread, expert weight, waiver-wire share) at 15 checkpoints (weeks 4, 6, 8, 10, 12 of 2023-2025), scored against 10 simulated 12-team leagues per checkpoint | about 20 minutes |
 | `bt_value_v5.py` | The same checkpoints and truth with the version 5 projections | about 40 minutes (`--reuse` re-scores in a few) |
 | `bt_weekly.py` | The previous model (version 4), kept for comparison | about 10 minutes |
-| `brain/` | How Ask BFF's own model (BFF Brain) is trained: `corpus.py` (training questions), `train.py` (the classifier, writes brain.json), `kb.py` and `kb_export.py` (the football knowledge base, writes kb.json) | about 2 minutes |
+| `brain/` | How Ask BFF's own model (BFF Brain) is trained: `corpus.py` (training questions), `train.py` (the classifier, writes brain.json), `voice.py` (how it talks: Ben's voice, shipped inside brain.json), `kb.py` and `kb_export.py` (the football knowledge base, writes kb.json) | about 2 minutes |
 
 ```
 python research/bt_weekly_v5.py       # writes research/results_weekly_v5.json
@@ -100,6 +103,58 @@ player-games):
 
 The version 5 model alone (`bt_weekly_v5.py`) has closed most of its gap to the experts (0.030 behind with version 4,
 0.010 behind with version 5, level in 2026).
+
+### Prop lines (`bt_lines.py`)
+
+Real week-7 2026 lines for passing, receiving and rushing yards were read from a public props page (122 matched players;
+`props/real_lines_2026_w7.json`). Average gap to the real line, each new line scored on players the fit did not use:
+
+| Stat | Before (opportunity model) | Now (ESPN + Sleeper, scaled) | Scale |
+| --- | --- | --- | --- |
+| Passing yards | 13.3 (15 lines) | 9.6 (17) | 0.989 |
+| Receiving yards | 6.9 (49) | 3.4 (57) | 0.919 |
+| Rushing yards | 9.1 (31) | 5.5 (48) | 0.862 |
+
+The old lines aimed at the typical outcome and squeezed players toward the middle; the public projections, scaled to
+where books set lines, follow the real lines far more closely (correlation 0.91, 0.98 and 0.97 for the average of ESPN
+and Sleeper, against 0.81, 0.93 and 0.81 for the old lines). In 2025, overs at lines built this way hit 46% (passing),
+43% (receiving), 46% (rushing) and 46% (receptions, scale 0.95), about what real prop overs do. Picks: unders when BFF's
+own model is at least 10% below ESPN and Sleeper hit 57.2% of 1,511 (every yardage under: 55.1%; overs where BFF was
+higher: 48.5%). These used lines built from ESPN and Sleeper, not real book lines.
+
+### Common sense: fill-ins, buy low and sell high (`bt_fillin.py`, `bt_commonsense.py`)
+
+`python research/bt_fillin.py` (writes `results_fillin.json`, a few seconds). A **fill-in** took a starter's snaps (40%+,
+and 15+ points more than beside the starter) while the starter (.55+ snap share for RBs, .70+ for WRs/TEs in his best 2 of his last 3
+games) missed 1-6 games, and ranks below him (fewer targets + carries together, or, never together, fewer in the games he
+filled than the starter's best 2). For the starter's return week and the 3 after (2020-25 regular seasons), BFF's weekly
+model against what happened:
+
+| | Fit 2020-22 | Check 2023-25 |
+|---|---|---|
+| Fill-ins: actual / projected (RB, WR, TE) | 0.74, 0.83, 0.84 | 0.85, 0.76, 0.58 |
+| Fill-ins over-projected | 72% (521 games) | 74% (379 games) |
+| Returning starters: actual / projected | 1.00 (558) | 1.04 (386) |
+
+Scaling fill-ins by the 2020-22 ratios on 2023-25: average miss 3.82 -> 3.44 points, bias +1.37 -> +0.13. The site uses
+the ratios pooled over all six seasons (RB 0.786, WR 0.803, TE 0.754), weighted by the chance the starter plays each week.
+
+`python research/bt_commonsense.py` (writes `results_commonsense.json`). Buy-low calls (usage 8+ a game, scoring 2.5+
+below it) and sell-high calls (10+ a game, 3+ above usage) in weeks 4-13, judged on the rest of the season against the
+player's average so far:
+
+| | Calls | Right | Points a game after vs before |
+|---|---|---|---|
+| Buy low, every call | 496 | 60% | +1.12 |
+| Buy low, fill-in whose starter is back | 11 | 27% | -1.49 |
+| Buy low, two games played | 34 | 56% | +0.98 |
+| Buy low, snaps falling (last 2 under 75% of season) | 19 | 37% | -0.59 |
+| Buy low, usage already top 6 at his position | 114 | 40% | -1.11 |
+| Buy low, after all four checks | 327 | 69% | +1.96 |
+| Buy low, returning starter | 50 | 72% | +2.73 |
+| Fill-in scoring 8+ once his starter is back (a sell) | 148 | 68% | -1.67 |
+| Sell high, every call | 1,240 | 75% | -3.08 |
+| Sell high, top-6 usage (stud) | 312 | 80% | -4.17 (still 17.9 a game after) |
 
 ### Rest-of-season value (BFF value)
 

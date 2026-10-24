@@ -1222,20 +1222,11 @@ body.boton .botfab{opacity:0;pointer-events:none}
 .tr2 b{display:inline-flex;align-items:center;gap:5px}.tkl{width:16px;height:16px;object-fit:contain}
 .pkln{display:flex;align-items:center;gap:8px;min-width:0}
 /* ===== v30: Live = games first; readable text on every photo; phone app layout; accounts ===== */
-/* Live: Scores | Fantasy points */
-.lvseg{margin:0 0 14px}
-#live[data-lv=scores] .lside,#live[data-lv=scores] #mylive{display:none}
-#live[data-lv=scores] .livegrid{display:block;width:auto;margin-left:0}
-#live[data-lv=fan] #games{display:none}
-#live[data-lv=fan] .livegrid{grid-template-columns:repeat(2,minmax(0,1fr));width:auto;margin-left:0}
-#live[data-lv=fan] .lmain{grid-column:1/-1;order:-1}
-#live[data-lv=fan] .lside{position:static;max-height:none}
 #live .games{grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
 .livenote{margin:-6px 0 12px;font-size:.78rem}
 .cover.solo{grid-template-columns:minmax(0,1fr)}
 .cover.solo .cvside{display:none}
 #live .cover .cvlead{min-height:250px}
-@media(max-width:700px){#live[data-lv=fan] .livegrid{grid-template-columns:1fr}}
 /* readable text on photos: the scrim follows the text block and the picture's measured brightness (--sa) */
 .cover .cvlead::before{background:linear-gradient(90deg,rgba(3,6,13,calc(var(--sa,.64) + .2)) 0%,rgba(3,6,13,var(--sa,.64)) var(--sx,62%),rgba(3,6,13,calc(var(--sa,.64)*.4)) calc(var(--sx,62%) + 20%),rgba(3,6,13,.06) 100%),linear-gradient(0deg,rgba(3,6,13,.45) 0%,rgba(3,6,13,0) 42%)}
 .cover .cvlead[data-so=v]::before{background:linear-gradient(0deg,rgba(3,6,13,calc(var(--sa,.64) + .22)) 0%,rgba(3,6,13,var(--sa,.64)) var(--sy,62%),rgba(3,6,13,calc(var(--sa,.64)*.35)) calc(var(--sy,62%) + 18%),rgba(3,6,13,.04) 100%)}
@@ -1442,7 +1433,7 @@ label.accagree{flex-direction:row;align-items:flex-start;gap:10px;font-weight:50
 .artgame i{font-style:normal;color:var(--mute);font-size:.85rem}.artgame .linkbtn{margin-left:auto;font:600 .82rem Inter,sans-serif;text-transform:none;letter-spacing:0}
 .artchips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
 .artfoot{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
-@media(max-width:700px){.artv{padding:0;align-items:stretch}.artbox{border-radius:0;min-height:100dvh;margin:0}.arthero{height:200px}.arthero .cvtm{width:84px}.artin{padding:16px 16px calc(28px + env(safe-area-inset-bottom,0px))}.artbody{font-size:1rem}}
+@media(max-width:700px){.artv{padding:0;align-items:flex-start}.artbox{border-radius:0;min-height:100dvh;margin:0;flex:0 0 100%}.arthero{height:200px}.arthero .cvtm{width:84px}.artin{padding:16px 16px calc(28px + env(safe-area-inset-bottom,0px))}.artbody{font-size:1rem}}
 /* ===== v32c: injury tags: expected statuses */
 .inj.exp{background:transparent;color:var(--bad);box-shadow:inset 0 0 0 1.5px var(--bad)}.inj.exp.Q{color:var(--warn);box-shadow:inset 0 0 0 1.5px var(--warn);background:transparent}
 /* ===== v33c: newsletter articles: scoreboard, finals grid, pull quotes, drop cap */
@@ -1717,3 +1708,5 @@ button.artsr:hover{border-color:var(--acc)}
 /* speed: the browser skips layout and painting of ranking rows that are off screen until they scroll near
    (auto remembers each row's real height once it has been drawn) */
 #wlist>.row{content-visibility:auto;contain-intrinsic-size:auto 84px}
+.csskip{margin:10px 2px 0;font-size:.84rem;line-height:1.45}.csskip a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.botmsg .botv{margin-top:8px;color:var(--mute);font-size:.88rem}

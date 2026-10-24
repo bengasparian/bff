@@ -6,7 +6,7 @@ to edit from one season to the next. Two GitHub workflows do the work, no API ke
 | Workflow | File | When | What it does |
 |---|---|---|---|
 | **Update Gridiron Fantasy** | `update.yml` | every 3 hours (23 minutes past) | downloads the latest NFL data, rebuilds every projection, ranking, trend and prop line, saves and grades the weekly calls, collects news, writes and updates BFF Originals, optionally syncs your Sleeper league, checks the page, saves it |
-| **Live scores, news and lines** | `scores.yml` | every 10 minutes | live scores and box scores, news from every source, prop lines moved by the latest odds and news, parlay picks, BFF Originals (breaking news, previews, recaps); only saves when something changed |
+| **Live scores, news and lines** | `scores.yml` | every 10 minutes | live scores and box scores, news from every source, prop lines moved by ESPN's and Sleeper's latest projections, the odds and news, parlay picks, BFF Originals (breaking news, previews, recaps); only saves when something changed |
 
 Both share one queue, so they never save at the same moment. Before anything is saved, `check_page.py` checks the
 page (data readable, enough players, no script errors) and the live files; anything broken is put back to the
@@ -19,8 +19,9 @@ last good version, so the published site never breaks.
   (rankings), **Trade values** (the rest-of-season BFF value chart, tiered, for your league settings), **Start/sit**
   (cheat sheet) and **Favorites**. Every player has a card with projections, usage, game logs, schedule, VORP, news
   and this week's prop lines. Old links to the Week and Players tabs open Home.
-- **Live:** just the games and scores, each with its photo: the featured game on top, then every game of the week.
-  **Fantasy points** (your lineup live, top performers, leaders by position) is one tap away on the same tab. Tap a game
+- **Live:** the games and scores in the middle (each with its photo: the featured game on top, then every game of the
+  week, with your lineup live above them), the week's **top performers** on the left and **leaders by position** on the
+  right (under the games on phones and narrower screens). Before kickoff both lists show projections. Tap a game
   for its full-screen game center (outlook, win chances, injuries with the injury and its source, the expected starting
   quarterbacks, top performers, box score). Past and future weeks too. Scores, injuries and projections update on
   their own (see **Injuries** under Projections).
@@ -50,7 +51,8 @@ last good version, so the published site never breaks.
   sit calls keep updating until that player's game kicks off, then lock; buy and sell calls lock at the week's first
   kickoff. After the games each call is graded with official stats: a must start hits when he finishes as a starter
   (top 12 QB, 24 RB, 30 WR, 12 TE in PPR), a must sit hits when he finishes outside those spots, and buy lows and sell
-  highs are graded on the player's next 3 games. A season scorecard shows the hit rates next to honest yardsticks
+  highs are graded on the player's next 3 games. Buy and sell calls get the same **common-sense checks** as the
+  Trends page (see **Common sense** below). A season scorecard shows the hit rates next to honest yardsticks
   (starting the best season averages; all usual starters). Weeks 2-5 of 2026 were rebuilt
   (one time) from the model of the day using only pre-game information and are labeled "rebuilt"; everything from week 6
   on is saved live.
@@ -60,14 +62,20 @@ last good version, so the published site never breaks.
   catch), 6-point passing touchdowns, points per carry or first down, interception and fumble penalties, and the
   rest. Every projection, ranking, BFF value, trade value, draft pick and waiver target re-scores for it. A linked
   Sleeper league's scoring is read automatically.
-- **BFF Coach (Ask BFF), powered by BFF Brain:** the chat button on every page (in the header on phones). BFF Brain is
-  BFF's own question model, trained here and running inside the page (no outside AI service or key): a logistic-
-  regression intent model over words, word pairs and letter groups (so typos still work), trained on about 15,600
-  football questions (`research/brain/`), that sorts a question into 25 kinds (start/sit, outlook, trade, trade value,
-  keep or drop, waivers, rankings, league leaders, stats, injury status, news, team, defense matchups, game
-  predictions, props, parlays, touchdown scorers, lineup, roster help, weekly calls, how BFF works, football rules and
-  terms, greetings, thanks, off-topic). On 84 hand-written questions it never trained on it picked the right kind
-  94% of the time. Names, teams, positions and numbers are recognized before it reads the question, so it learns how
+- **Ask BFF, powered by BFF Brain, in Ben's voice:** the chat button on every page (in the header on phones). BFF Brain
+  is BFF's own question model, trained here and running inside the page (no outside AI anywhere in Ask BFF: no Claude,
+  no ChatGPT, no key): a logistic-regression intent model over words, word pairs and letter groups (so typos still work),
+  trained on about 16,200 football questions (`research/brain/`), that sorts a question into 28 kinds (start/sit,
+  outlook, trade, trade value, keep or drop, waivers, rankings, league leaders, stats, injury status, news, team,
+  defense matchups, game predictions, props, parlays, touchdown scorers, lineup, roster help, weekly calls, how BFF
+  works, football rules and terms, greetings, thanks, small talk, venting, complaints, off-topic). On 94 hand-written
+  questions it never trained on it picked the right kind 96% of the time. **The voice** (`research/brain/voice.py`,
+  shipped inside `brain.json`) makes it talk like Ben: a short human opener that fits the answer (an easy start/sit
+  call, a coin flip, a trade that tilts your way or one to avoid, bad injury news), a follow-up on about half the
+  answers, never the same opener twice in a row, small talk ("how's it going?", a football joke), sympathy plus real
+  help when someone vents about their team, and owning a miss when someone says a projection was wrong (with the
+  accuracy record). The numbers, verdicts and reasons always come from BFF's own functions. Asked whether it is a
+  person, it says plainly that it is a bot Ben built. Names, teams, positions and numbers are recognized before it reads the question, so it learns how
   people ask, not who. A **football knowledge base** (61 topics: scoring, overtime, the dynamic kickoff, penalties,
   positions and coverages, the playoff format, the draft, rosters, injured reserve, the injury report, fantasy terms,
   analytics terms like EPA and CPOE, betting terms, special teams, eligible receivers, fantasy scoring, records and 2026 dates) is searched by meaning. It **remembers the
@@ -80,8 +88,7 @@ last good version, so the published site never breaks.
   defenses to stream, handcuffs, trade targets by position, game predictions, parlays and props (21+), bios (height,
   weight, college, draft), every Super Bowl back to Super Bowl I (by number, Roman numeral, year or team), and how BFF
   works. It says plainly what it does not track (weather forecasts, award odds, coaching staffs) and recognizes when a
-  name is not a current player ("Jerry Rice" is not Jerry Jeudy). On the
-  claude.ai copy it can also ask Claude for open-ended scenarios.
+  name is not a current player ("Jerry Rice" is not Jerry Jeudy).
 - **Player cards** show height, weight, birthday, college, draft slot and NFL season (nflverse rosters) next to the
   number, depth chart role, age and bye.
 - **Learn:** how everything works, accuracy, and **Sources & citations** for every number and story.
@@ -90,7 +97,7 @@ last good version, so the published site never breaks.
   My League: your players). Pause, step through, or hide it.
 - **Accounts:** visitors can create an account (they must agree to the Terms of Use and Privacy Policy) to save their
   linked leagues, team, favorite players and settings and get them back on any device. See **Accounts** below.
-- **Phones:** an app-style layout: a compact header (search, BFF Coach, account), each tab's sections pinned under it,
+- **Phones:** an app-style layout: a compact header (search, Ask BFF, account), each tab's sections pinned under it,
   one compact top story under the sections, a bottom tab bar (Home, Live, News, Help, More; the More sheet holds your
   account, My League, Draft and Learn), full-screen article reader, compact type and pictures sized for a phone, two
   games per row on Live, news as thumbnail rows under the top story, and tighter player rows. On computers the cover
@@ -208,6 +215,28 @@ last good version, so the published site never breaks.
   by BFF value; with 6-point passing touchdowns quarterback projections rose about 11%. In custom leagues the expert
   consensus (which is scored in PPR) counts 10 points less.
 
+## Common sense: fill-ins, buy low and sell high
+
+Numbers alone can be silly: a backup running back who piled up usage while the starter was hurt looks like a buy low
+right when the starter comes back. BFF checks for that and a few other things, and every check was tested on 2020-25.
+
+- **Fill-ins** (`ff_produce.py`, research `research/bt_fillin.py`): a back or receiver who took a starter's snaps (40%+
+  of them, and 15+ points more than he played beside the starter) while that starter (a .55+ snap share for RBs, .70+ for WRs and TEs
+  in his best 2 of his last 3 games, or first on the depth chart) missed 1-6 games, and who ranks below the starter
+  (on the depth chart; without one, by targets plus carries). Once the starter was back, BFF's model over-projected such
+  fill-ins 73% of the time: they scored 79% (RB), 80% (WR) and 75% (TE) of their projection. So each of a fill-in's
+  weeks is scaled by that share, in proportion to the chance the starter plays that week (2023-25 check, fit on
+  2020-22 only: average miss 3.82 -> 3.44 points, bias +1.37 -> +0.13). The starter's own projection needed no change
+  (100-104% of it). A starter who has not played yet this season (suspension, exempt list) counts too: Josh Jacobs
+  coming back makes Pierre Strong a fill-in. Example, week 7 of 2026: Dameon Pierce while Saquon Barkley returns.
+- **Buy low / sell high** (`research/bt_commonsense.py`): no buy low on a fill-in whose starter is back or due back
+  within two games, on two games played, on a player whose snaps are falling (last two games under 75% of his season
+  share), or on a player whose usage is already top 6 at his position (that usage tends to come back down). With the
+  checks, buy-low calls were right 69% of the time (60% without; the calls they drop: 44%). A fill-in still scoring 8+
+  a game when his starter returns is a sell (68% of them scored less from then on, 1.7 fewer a game). Studs (top-6
+  usage) running hot stay off the sell list: they cooled off by 4.2 a game but still averaged 17.9. The Trends page shows
+  who was left off and why, and the player card, the dashboard, Ask BFF and the weekly calls use the same rules.
+
 ## BFF value: trade values and rankings
 - For every week from now through week 17, BFF value adds up the starting-lineup points a player should give you over
   the best player at his position who would **not** start in your league (your lineup slots times your league size,
@@ -259,7 +288,7 @@ last good version, so the published site never breaks.
   backup quarterbacks (such as Joe Burrow or Trevor Lawrence as filler). **Looking for: a QB** (or RB, WR, TE) in the
   trade analyzer lifts that rule for the position you need.
 - The same value drives the Trade values chart, BFF rank on player cards, Find trades, the trade analyzer, the mock
-  draft board (AI teams also follow the consensus), the draft guide, waiver targets and BFF Coach.
+  draft board (AI teams also follow the consensus), the draft guide, waiver targets and Ask BFF.
 
 ## BFF Originals: our own articles (`articles.py`)
 Data-driven fantasy articles written for BFF and published on their own, mixed into the News tab (gold "BFF Original"
@@ -410,17 +439,32 @@ allows.
   if the live feed is a few minutes behind; a week's late games (Monday night) keep their lines until then.
 
 ## Predicted prop lines (`ff_lines.py`)
-- Built the way books build them, from **opportunity**: expected targets, carries or pass attempts (recent full
-  games count most, last season fills in early) times the player's efficiency, adjusted for the Vegas team total
-  and the defense. Partial games (injury exits) are marked down, and teammates' injuries add volume.
-- Lines **move during the week**: every 10 minutes the scores workflow re-reads the current ESPN odds and the news.
-  A line moves when the Vegas total changes, when the 3-hourly data update brings new injury reports or roles,
-  and is pulled when a player is reported out. Each line keeps its opening number and the reason for every move.
-- Tested honestly: tuned on 2024, then checked on every 2025 game using only what was known before kickoff.
-  Overs hit 44-50% for every stat (a fair line is about 50%); typical miss 65 passing yards, 26 rushing yards,
-  1.7 catches, 22 receiving yards. Picks at 55% or more won 59.6% of 1,080 (passing TDs 58%, passing yards 60%,
-  receptions 60%, rushing yards 54%). Receiving-yard picks won only 46%, so they are never made. Real app lines
-  can be sharper than ours, so expect real results to run lower.
+- **Set where the market sets them (October 2026).** Books' prop lines track the public projections, so every passing,
+  receiving and rushing yards and receptions line comes from the average of ESPN's and Sleeper's projections for that
+  stat (`site_stats.py`), scaled to where books put their lines: passing yards x 0.989, receiving x 0.919, rushing
+  x 0.862 (fit on 122 real week-7 2026 lines read from a public props page), receptions x 0.95 (no real receptions
+  lines in the sample; this gives the same over rate as the others). BFF's own model stays out of the line so the
+  picks can test it. Why the change: the old lines aimed at the typical outcome, which sits below where books set
+  yardage lines and squeezed the best and worst players toward the middle (Bo Nix 209.5 passing yards against a real
+  224.5; Justin Jefferson 51.5 receiving against 72.5).
+- **How close (research/bt_lines.py):** on the real week-7 lines, each scored on players the fit did not use, the
+  average gap fell to 3.4 receiving yards (was 6.9), 5.5 rushing (was 9.1) and 9.6 passing (was 13.3), and BFF now
+  has a line for 48 of the 49 real rushing lines (was 31). In 2025, overs at lines built this way hit 43-46%, about
+  what real prop overs do.
+- **Picks:** an under on passing, receiving or rushing yards when BFF's own model projects the player at least 10%
+  below ESPN and Sleeper: 57.2% of 1,511 in 2025 at lines built this way (passing 58%, receiving 57%, rushing 57%).
+  Taking every yardage under hit 55.1%, and overs where BFF was higher hit only 48.5%, so no overs are picked from
+  these lines. "Chance" on each line is how often that side hit in 2025 for that stat and that gap. The test used lines
+  built from ESPN and Sleeper, not real book lines, and real prices carry a fee, so expect real results to run lower.
+- **Passing touchdowns, and players neither site projects,** keep the opportunity model: expected targets, carries or
+  pass attempts times efficiency, adjusted for the Vegas team total and the defense (tuned on 2024, tested on 2025;
+  passing-TD picks won 58%).
+- **Updates every 10 minutes:** the scores workflow re-reads ESPN's and Sleeper's projections, the current ESPN odds and
+  the news; a line moves when the sites' projections, the Vegas total or a role changes, and is pulled when a player is
+  reported out. Each line keeps its opening number and the reason for every move. `site_stats.json` is saved only when
+  a number changed.
+- **To follow real sportsbook lines directly**, a licensed odds feed is needed (for example The Odds API or PropLine,
+  both with free tiers and an API key); BFF does not scrape sportsbooks.
 - `parlay_update.py` builds the best 2-, 3- and 5-pick parlays from tested picks only (one leg per game, no
   questionable players), locks them at the week's first kickoff, and grades them from official box scores.
 - For entertainment, 21+ where legal. Gambling problem? Call or text 1-800-GAMBLER.
@@ -429,12 +473,12 @@ allows.
 If Claude has access to your repository it pushes updates itself. To do it by hand, upload (replace) these files:
 `template.html`, `app.css`, `index.html`, the `art/` folder, `brain.json`, `kb.json`, `articles.py`, `ff_build2.py`,
 `ff_feat.py`, `ff_model.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`,
-`parlay_update.py`, `calls_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `proj_compare.py`, `ff_stack.py`,
+`parlay_update.py`, `calls_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `proj_compare.py`, `ff_stack.py`, `site_stats.py`,
 `sync_sleeper.py`, `health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `.nojekyll`, `README.md`, the
 `research/` folder (the accuracy tests and Ask BFF's training; optional, never run by the workflows), and both workflow
 files in `.github/workflows/` (`update.yml`, `scores.yml`). `calls_backfill.py` is retired and can be deleted. Leave
 your `*_history.json`, `lines.json`, `parlays.json`, `bet_inputs.json`, `articles.json`, `news.json`, `news_state.json`,
-`live.json` and `proj_compare.json` alone; your workflows keep those up to date. Then run **Update Gridiron Fantasy** once (the first
+`live.json`, `site_stats.json` and `proj_compare.json` alone; your workflows keep those up to date. Then run **Update Gridiron Fantasy** once (the first
 run builds the model's 13-season feature tables, about 6 extra minutes).
 Optional: add the `ANTHROPIC_API_KEY` secret for Claude-written articles (see **BFF Originals**).
 

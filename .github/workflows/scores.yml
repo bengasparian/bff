@@ -26,8 +26,9 @@ jobs:
         run: |
           python live_update.py
           python news_update.py
-      - name: Move prop lines with the latest odds and news, refresh parlay picks
+      - name: Move prop lines with ESPN's and Sleeper's latest projections, the odds and news; refresh parlay picks
         run: |
+          python site_stats.py
           python ff_lines.py --refresh
           python parlay_update.py --refresh
       - name: BFF Originals (breaking news, game previews and recaps; Claude writes them if ANTHROPIC_API_KEY is set)
@@ -46,7 +47,7 @@ jobs:
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in live.json news.json lines.json parlays.json parlay_history.json articles.json proj_compare.json; do if [ -f "$f" ]; then git add "$f"; fi; done
+          for f in live.json news.json lines.json parlays.json parlay_history.json articles.json proj_compare.json site_stats.json; do if [ -f "$f" ]; then git add "$f"; fi; done
           if git diff --cached --quiet; then echo "Nothing changed"; exit 0; fi
           git commit -m "Live update $(date -u +%H:%M)"
           for i in 1 2 3; do

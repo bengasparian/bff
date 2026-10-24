@@ -1,0 +1,303 @@
+{
+ "buy": {
+  "all": {
+   "n": 496,
+   "players": 139,
+   "avg_so_far": 9.58,
+   "avg_usage": 13.3,
+   "avg_after": 10.7,
+   "after_reached_usage_pct": 34.5,
+   "change": 1.12,
+   "call_right_pct": 60.1,
+   "after_per_team_game": 9.16
+  },
+  "fill": {
+   "n": 11,
+   "players": 8,
+   "avg_so_far": 6.33,
+   "avg_usage": 10.25,
+   "avg_after": 4.83,
+   "after_reached_usage_pct": 0.0,
+   "change": -1.49,
+   "call_right_pct": 27.3,
+   "after_per_team_game": 4.15
+  },
+  "not_fill": {
+   "n": 485,
+   "players": 137,
+   "avg_so_far": 9.65,
+   "avg_usage": 13.37,
+   "avg_after": 10.83,
+   "after_reached_usage_pct": 35.3,
+   "change": 1.18,
+   "call_right_pct": 60.8,
+   "after_per_team_game": 9.27
+  },
+  "two": {
+   "n": 34,
+   "players": 34,
+   "avg_so_far": 7.25,
+   "avg_usage": 12.06,
+   "avg_after": 8.24,
+   "after_reached_usage_pct": 26.5,
+   "change": 0.98,
+   "call_right_pct": 55.9,
+   "after_per_team_game": 6.77
+  },
+  "not_two": {
+   "n": 462,
+   "players": 126,
+   "avg_so_far": 9.75,
+   "avg_usage": 13.4,
+   "avg_after": 10.88,
+   "after_reached_usage_pct": 35.1,
+   "change": 1.13,
+   "call_right_pct": 60.4,
+   "after_per_team_game": 9.33
+  },
+  "role_down": {
+   "n": 19,
+   "players": 12,
+   "avg_so_far": 6.6,
+   "avg_usage": 10.3,
+   "avg_after": 6.02,
+   "after_reached_usage_pct": 31.6,
+   "change": -0.59,
+   "call_right_pct": 36.8,
+   "after_per_team_game": 4.94
+  },
+  "not_role_down": {
+   "n": 477,
+   "players": 138,
+   "avg_so_far": 9.7,
+   "avg_usage": 13.42,
+   "avg_after": 10.89,
+   "after_reached_usage_pct": 34.6,
+   "change": 1.19,
+   "call_right_pct": 61.0,
+   "after_per_team_game": 9.32
+  },
+  "starter_back": {
+   "n": 50,
+   "players": 26,
+   "avg_so_far": 7.84,
+   "avg_usage": 11.78,
+   "avg_after": 10.56,
+   "after_reached_usage_pct": 38.0,
+   "change": 2.73,
+   "call_right_pct": 72.0,
+   "after_per_team_game": 8.71
+  },
+  "not_starter_back": {
+   "n": 446,
+   "players": 128,
+   "avg_so_far": 9.77,
+   "avg_usage": 13.48,
+   "avg_after": 10.72,
+   "after_reached_usage_pct": 34.1,
+   "change": 0.94,
+   "call_right_pct": 58.7,
+   "after_per_team_game": 9.21
+  },
+  "stud": {
+   "n": 114,
+   "players": 38,
+   "avg_so_far": 14.22,
+   "avg_usage": 18.06,
+   "avg_after": 13.1,
+   "after_reached_usage_pct": 21.1,
+   "change": -1.11,
+   "call_right_pct": 40.4,
+   "after_per_team_game": 10.92
+  },
+  "not_stud": {
+   "n": 382,
+   "players": 127,
+   "avg_so_far": 8.2,
+   "avg_usage": 11.88,
+   "avg_after": 9.98,
+   "after_reached_usage_pct": 38.5,
+   "change": 1.79,
+   "call_right_pct": 66.0,
+   "after_per_team_game": 8.63
+  },
+  "after_checks": {
+   "n": 327,
+   "players": 113,
+   "avg_so_far": 8.5,
+   "avg_usage": 12.09,
+   "avg_after": 10.46,
+   "after_reached_usage_pct": 40.4,
+   "change": 1.96,
+   "call_right_pct": 68.5,
+   "after_per_team_game": 9.09
+  },
+  "dropped_by_checks": {
+   "n": 169,
+   "players": 76,
+   "avg_so_far": 11.67,
+   "avg_usage": 15.66,
+   "avg_after": 11.17,
+   "after_reached_usage_pct": 23.1,
+   "change": -0.5,
+   "call_right_pct": 43.8,
+   "after_per_team_game": 9.28
+  }
+ },
+ "sell": {
+  "all": {
+   "n": 1240,
+   "players": 199,
+   "avg_so_far": 17.47,
+   "avg_usage": 12.62,
+   "avg_after": 14.39,
+   "after_reached_usage_pct": 73.1,
+   "change": -3.08,
+   "call_right_pct": 74.7,
+   "after_per_team_game": 12.92
+  },
+  "fill": {
+   "n": 11,
+   "players": 7,
+   "avg_so_far": 15.62,
+   "avg_usage": 10.88,
+   "avg_after": 13.98,
+   "after_reached_usage_pct": 81.8,
+   "change": -1.64,
+   "call_right_pct": 54.5,
+   "after_per_team_game": 11.5
+  },
+  "not_fill": {
+   "n": 1229,
+   "players": 198,
+   "avg_so_far": 17.48,
+   "avg_usage": 12.64,
+   "avg_after": 14.39,
+   "after_reached_usage_pct": 73.0,
+   "change": -3.09,
+   "call_right_pct": 74.9,
+   "after_per_team_game": 12.93
+  },
+  "two": {
+   "n": 46,
+   "players": 43,
+   "avg_so_far": 16.69,
+   "avg_usage": 10.67,
+   "avg_after": 11.31,
+   "after_reached_usage_pct": 52.2,
+   "change": -5.38,
+   "call_right_pct": 78.3,
+   "after_per_team_game": 8.88
+  },
+  "not_two": {
+   "n": 1194,
+   "players": 192,
+   "avg_so_far": 17.5,
+   "avg_usage": 12.7,
+   "avg_after": 14.5,
+   "after_reached_usage_pct": 73.9,
+   "change": -2.99,
+   "call_right_pct": 74.5,
+   "after_per_team_game": 13.08
+  },
+  "role_down": {
+   "n": 21,
+   "players": 16,
+   "avg_so_far": 16.17,
+   "avg_usage": 12.03,
+   "avg_after": 13.46,
+   "after_reached_usage_pct": 66.7,
+   "change": -2.71,
+   "call_right_pct": 71.4,
+   "after_per_team_game": 12.79
+  },
+  "not_role_down": {
+   "n": 1219,
+   "players": 199,
+   "avg_so_far": 17.49,
+   "avg_usage": 12.63,
+   "avg_after": 14.4,
+   "after_reached_usage_pct": 73.2,
+   "change": -3.09,
+   "call_right_pct": 74.7,
+   "after_per_team_game": 12.92
+  },
+  "starter_back": {
+   "n": 97,
+   "players": 41,
+   "avg_so_far": 16.86,
+   "avg_usage": 12.28,
+   "avg_after": 14.72,
+   "after_reached_usage_pct": 81.4,
+   "change": -2.14,
+   "call_right_pct": 69.1,
+   "after_per_team_game": 13.45
+  },
+  "not_starter_back": {
+   "n": 1143,
+   "players": 191,
+   "avg_so_far": 17.52,
+   "avg_usage": 12.65,
+   "avg_after": 14.36,
+   "after_reached_usage_pct": 72.4,
+   "change": -3.16,
+   "call_right_pct": 75.2,
+   "after_per_team_game": 12.88
+  },
+  "stud": {
+   "n": 312,
+   "players": 58,
+   "avg_so_far": 22.04,
+   "avg_usage": 16.92,
+   "avg_after": 17.87,
+   "after_reached_usage_pct": 66.7,
+   "change": -4.17,
+   "call_right_pct": 79.5,
+   "after_per_team_game": 16.31
+  },
+  "not_stud": {
+   "n": 928,
+   "players": 188,
+   "avg_so_far": 15.93,
+   "avg_usage": 11.18,
+   "avg_after": 13.22,
+   "after_reached_usage_pct": 75.2,
+   "change": -2.72,
+   "call_right_pct": 73.1,
+   "after_per_team_game": 11.78
+  },
+  "after_checks": {
+   "n": 928,
+   "players": 188,
+   "avg_so_far": 15.93,
+   "avg_usage": 11.18,
+   "avg_after": 13.22,
+   "after_reached_usage_pct": 75.2,
+   "change": -2.72,
+   "call_right_pct": 73.1,
+   "after_per_team_game": 11.78
+  },
+  "dropped_by_checks": {
+   "n": 312,
+   "players": 58,
+   "avg_so_far": 22.04,
+   "avg_usage": 16.92,
+   "avg_after": 17.87,
+   "after_reached_usage_pct": 66.7,
+   "change": -4.17,
+   "call_right_pct": 79.5,
+   "after_per_team_game": 16.31
+  }
+ },
+ "fill_in_scoring_8_plus": {
+  "n": 148,
+  "players": 66,
+  "avg_so_far": 10.96,
+  "avg_usage": 9.95,
+  "avg_after": 9.3,
+  "after_reached_usage_pct": 45.3,
+  "change": -1.67,
+  "call_right_pct": 67.6,
+  "after_per_team_game": 8.36
+ }
+}

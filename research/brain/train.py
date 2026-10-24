@@ -60,6 +60,8 @@ out = {'v': 1, 'classes': list(m2.classes_), 'scale': sc, 'b': [round(float(x), 
        'wv': list(vw2.get_feature_names_out()), 'wi': [round(float(x), 4) for x in vw2.idf_],
        'cv': list(vc2.get_feature_names_out()), 'ci': [round(float(x), 4) for x in vc2.idf_],
        'W': base64.b64encode(Q.tobytes()).decode(), 'acc': round(acc3, 3), 'ntest': len(TY2), 'ntrain': len(X)}
+import voice   # how Ask BFF talks (Ben's voice); plain text the page assembles
+out['voice'] = voice.BANK
 json.dump(out, open(os.path.join(REPO, 'brain.json'), 'w'), separators=(',', ':'))
 # a few reference predictions for the JS port test
 REF = ['should i start qqp or qqp this week', 'what is ppr', 'qqp for qqp and qqp', 'who should i pick up at qqpos', 'is qqp playing tonight', 'hi']

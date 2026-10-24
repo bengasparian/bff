@@ -122,11 +122,25 @@ T_ = {
   'how many timeouts does a team get', 'what is the two minute warning', 'how do challenges work', 'what is holding', 'what is a false start'],
  'greeting': ['good evening', 'good afternoon', 'hey there', 'hi there', 'whats good', 'hey man', 'hello bff', 'hi', 'hello', 'hey', 'yo', 'sup', 'good morning', 'hey bff', 'whats up', 'hello there', 'hiya', 'howdy'],
  'thanks': ['thanks a lot', 'thanks so much', 'thank you so much', 'much appreciated', 'cheers', 'sweet thanks', 'you rock', 'helpful thanks', 'thanks', 'thank you', 'thx', 'ty', 'appreciate it', 'great thanks', 'awesome thank you', 'perfect', 'ok cool', 'got it', 'nice', 'that helps'],
+ 'smalltalk': ['how are you', 'how are you doing', 'hows it going', 'how you doing today', 'what are you up to', 'how is your day', 'who are you', 'what are you',
+  'are you a real person', 'are you human', 'am i talking to a real person', 'is this a bot', 'are you a bot', 'are you ben', 'is this ben', 'who made you',
+  'who built you', 'who created this site', 'what is your name', 'whats your name', 'do you have a name', 'tell me a joke', 'tell me a football joke', 'do you know any jokes', 'any good jokes', 'joke please',
+  'say something funny', 'make me laugh', 'whats your favorite team', 'who is your favorite player', 'who do you root for', 'what can you do',
+  'what do you know', 'are you smart', 'are you better than chatgpt', 'do you like football', 'what is your favorite color', 'are you alive'],
+ 'vent': ['my team sucks', 'i lost again', 'i lost by one point', 'my season is over', 'i hate fantasy football', 'injuries ruined my season',
+  'my team is so bad', 'my team is awful', 'my roster is trash this year', 'my team stinks this season', 'my squad is horrible', 'i am 0 and NUM', 'im 0 NUM', 'i keep losing', 'my rbs keep getting hurt', 'worst week ever', 'my lineup got destroyed',
+  'i lost on monday night', 'i got unlucky again', 'i scored the second most points and still lost', 'this league hates me', 'ugh my team',
+  'my qb got hurt', 'i benched the wrong guy', 'i started the wrong player', 'i am so mad', 'i am frustrated with my team', 'how do i save my season',
+  'lost my matchup by NUM points', 'my team is cursed', 'everyone on my team is injured'],
+ 'complaint': ['you were wrong', 'that was bad advice', 'your projections are wrong', 'your projection was way off', 'you told me to start {P} and he busted',
+  'why did you say to start {P}', 'bff got it wrong', 'your site is wrong', 'this is terrible advice', 'your rankings are bad', 'you suck at this',
+  'that pick was awful', 'you said {P} would score more', 'your model is broken', 'you were way off on {P}', 'worst advice ever', 'your bot is dumb',
+  'why are your projections so low', 'your numbers make no sense', 'that trade advice was bad'],
  'offtopic': ['how do i bake a cake', 'whats a good recipe for chicken', 'how do i change a tire', 'what is the best laptop', 'who is the richest person', 'whats the tallest building', 'recommend a book', 'how do i learn guitar', 'what is the best video game', 'what is the capital of france', 'can you help me write an essay', 'who won the stanley cup', 'how do i make pasta', 'whats the best phone to buy', 'who is taylor swift', 'solve this math problem', 'what should i eat for dinner', 'help me with my resume', 'how far is the moon', 'who won the masters', 'nba trade rumors', 'what is the meaning of life', 'write a cover letter', 'summarize this article', 
-  'what is the weather', 'write me a poem', 'help with my homework', 'what is 2 plus 2', 'who won the nba finals', 'best pizza near me', 'tell me a joke',
+  'what is the weather', 'write me a poem', 'help with my homework', 'what is 2 plus 2', 'who won the nba finals', 'best pizza near me',
   'how do i code in python', 'what stock should i buy', 'who is the president', 'recommend a movie', 'how do i lose weight', 'what time is it',
   'translate this to spanish', 'who won the world series', 'how tall is mount everest', 'explain quantum physics', 'book a flight', 'what is bitcoin',
-  'nhl scores', 'premier league table', 'how do i fix my car', 'whats your favorite color', 'are you human'],
+  'nhl scores', 'premier league table', 'how do i fix my car'],
 }
 
 NOISE_PRE = ['', '', '', 'yo ', 'hey ', 'quick question ', 'bff ', 'ok ', 'so ', 'help ', 'honestly ', 'real quick ']
@@ -166,7 +180,7 @@ OFFQ = ['what is {o}', 'tell me {o}', 'whats {o}', 'find {o}']
 def generate(n_per=500):
     X, Y = [], []
     for lab, temps in T_.items():
-        k = n_per if lab not in ('greeting', 'thanks') else n_per // 3
+        k = n_per if lab not in ('greeting', 'thanks', 'smalltalk', 'vent', 'complaint') else n_per // 3
         for _ in range(k):
             s = fill(R.choice(temps))
             if R.random() < .15 and lab in ('start_sit', 'player', 'trade', 'keep_drop', 'waiver', 'injury', 'stats', 'prop'): s = s.replace('should i', R.choice(WHO))
@@ -278,5 +292,8 @@ TEST3 = [
  ('what is a handcuff', 'knowledge'), ('how many points for a field goal', 'knowledge'), ('what is the red zone in football', 'knowledge'),
  ('what does ppr stand for', 'knowledge'), ('how many teams are in the nfl', 'knowledge'), ('what is a two point conversion', 'knowledge'), ('what is pass interference', 'knowledge'),
  ('hey', 'greeting'), ('hello!', 'greeting'), ('thanks!', 'thanks'), ('ok thank you', 'thanks'),
- ('what is the weather tomorrow', 'offtopic'), ('who won the world cup', 'offtopic'), ('help me with math homework', 'offtopic'), ('tell me a funny story', 'offtopic'),
+ ('what is the weather tomorrow', 'offtopic'), ('who won the world cup', 'offtopic'), ('help me with math homework', 'offtopic'), ('recommend a good movie tonight', 'offtopic'),
+ ('hey hows it going', 'smalltalk'), ('wait are you an actual person', 'smalltalk'), ('who built this thing', 'smalltalk'), ('got any jokes', 'smalltalk'),
+ ('my team is terrible this year', 'vent'), ('lost by 2 points again ugh', 'vent'), ('my whole team got hurt', 'vent'),
+ ('you were totally wrong about PLAYER', 'complaint'), ('your projections stink', 'complaint'), ('that advice cost me my matchup', 'complaint'),
 ]

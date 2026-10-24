@@ -1,0 +1,241 @@
+{
+ "cases": {
+  "fill_RB": 207,
+  "fill_TE": 126,
+  "fill_WR": 567,
+  "starter_RB": 224,
+  "starter_TE": 163,
+  "starter_WR": 557
+ },
+ "fit_2020_22": {
+  "fill_RB": {
+   "n": 121,
+   "model": 9.59,
+   "actual": 7.1,
+   "ratio": 0.74,
+   "over_projected_pct": 72.7
+  },
+  "fill_WR": {
+   "n": 324,
+   "model": 6.74,
+   "actual": 5.58,
+   "ratio": 0.827,
+   "over_projected_pct": 72.5
+  },
+  "fill_TE": {
+   "n": 76,
+   "model": 5.17,
+   "actual": 4.33,
+   "ratio": 0.839,
+   "over_projected_pct": 69.7
+  },
+  "fill_all": {
+   "n": 521,
+   "model": 7.18,
+   "actual": 5.75,
+   "ratio": 0.802,
+   "over_projected_pct": 72.2
+  },
+  "fill_first_week": {
+   "n": 167,
+   "model": 7.87,
+   "actual": 5.6,
+   "ratio": 0.711,
+   "over_projected_pct": 76.0
+  },
+  "fill_later_weeks": {
+   "n": 354,
+   "model": 6.85,
+   "actual": 5.83,
+   "ratio": 0.851,
+   "over_projected_pct": 70.3
+  },
+  "fill_never_beside": {
+   "n": 68,
+   "model": 6.71,
+   "actual": 4.95,
+   "ratio": 0.739,
+   "over_projected_pct": 72.1
+  },
+  "fill_had_games_beside": {
+   "n": 453,
+   "model": 7.25,
+   "actual": 5.87,
+   "ratio": 0.81,
+   "over_projected_pct": 72.2
+  },
+  "starter_RB": {
+   "n": 140,
+   "model": 13.78,
+   "actual": 14.56,
+   "ratio": 1.057,
+   "over_projected_pct": 48.6
+  },
+  "starter_WR": {
+   "n": 309,
+   "model": 10.88,
+   "actual": 10.86,
+   "ratio": 0.998,
+   "over_projected_pct": 56.6
+  },
+  "starter_TE": {
+   "n": 109,
+   "model": 9.13,
+   "actual": 8.24,
+   "ratio": 0.902,
+   "over_projected_pct": 59.6
+  },
+  "starter_all": {
+   "n": 558,
+   "model": 11.27,
+   "actual": 11.28,
+   "ratio": 1.001,
+   "over_projected_pct": 55.2
+  },
+  "starter_first_week": {
+   "n": 168,
+   "model": 10.91,
+   "actual": 10.6,
+   "ratio": 0.972,
+   "over_projected_pct": 58.9
+  },
+  "starter_later_weeks": {
+   "n": 390,
+   "model": 11.42,
+   "actual": 11.57,
+   "ratio": 1.013,
+   "over_projected_pct": 53.6
+  }
+ },
+ "check_2023_25": {
+  "fill_RB": {
+   "n": 86,
+   "model": 9.22,
+   "actual": 7.86,
+   "ratio": 0.852,
+   "over_projected_pct": 68.6
+  },
+  "fill_WR": {
+   "n": 243,
+   "model": 5.6,
+   "actual": 4.27,
+   "ratio": 0.763,
+   "over_projected_pct": 74.1
+  },
+  "fill_TE": {
+   "n": 50,
+   "model": 3.88,
+   "actual": 2.26,
+   "ratio": 0.583,
+   "over_projected_pct": 80.0
+  },
+  "fill_all": {
+   "n": 379,
+   "model": 6.19,
+   "actual": 4.82,
+   "ratio": 0.778,
+   "over_projected_pct": 73.6
+  },
+  "fill_first_week": {
+   "n": 126,
+   "model": 6.83,
+   "actual": 4.76,
+   "ratio": 0.697,
+   "over_projected_pct": 76.2
+  },
+  "fill_later_weeks": {
+   "n": 253,
+   "model": 5.87,
+   "actual": 4.85,
+   "ratio": 0.825,
+   "over_projected_pct": 72.3
+  },
+  "fill_never_beside": {
+   "n": 39,
+   "model": 7.77,
+   "actual": 7.46,
+   "ratio": 0.96,
+   "over_projected_pct": 66.7
+  },
+  "fill_had_games_beside": {
+   "n": 340,
+   "model": 6.01,
+   "actual": 4.52,
+   "ratio": 0.751,
+   "over_projected_pct": 74.4
+  },
+  "starter_RB": {
+   "n": 84,
+   "model": 11.79,
+   "actual": 11.99,
+   "ratio": 1.017,
+   "over_projected_pct": 53.6
+  },
+  "starter_WR": {
+   "n": 248,
+   "model": 10.48,
+   "actual": 10.8,
+   "ratio": 1.031,
+   "over_projected_pct": 52.8
+  },
+  "starter_TE": {
+   "n": 54,
+   "model": 8.58,
+   "actual": 9.83,
+   "ratio": 1.146,
+   "over_projected_pct": 46.3
+  },
+  "starter_all": {
+   "n": 386,
+   "model": 10.5,
+   "actual": 10.92,
+   "ratio": 1.041,
+   "over_projected_pct": 52.1
+  },
+  "starter_first_week": {
+   "n": 119,
+   "model": 10.09,
+   "actual": 10.35,
+   "ratio": 1.026,
+   "over_projected_pct": 52.1
+  },
+  "starter_later_weeks": {
+   "n": 267,
+   "model": 10.68,
+   "actual": 11.18,
+   "ratio": 1.047,
+   "over_projected_pct": 52.1
+  }
+ },
+ "factor": {
+  "fill": {
+   "RB": 0.74,
+   "WR": 0.827,
+   "TE": 0.839
+  },
+  "starter": {
+   "RB": 1.057,
+   "WR": 0.998,
+   "TE": 0.902
+  }
+ },
+ "check_2023_25_error": {
+  "fill": {
+   "mae_model": 3.82,
+   "mae_adjusted": 3.44,
+   "bias_model": 1.37,
+   "bias_adjusted": 0.13
+  },
+  "starter": {
+   "mae_model": 5.47,
+   "mae_adjusted": 5.49,
+   "bias_model": -0.43,
+   "bias_adjusted": -0.41
+  }
+ },
+ "factor_all": {
+  "RB": 0.786,
+  "WR": 0.803,
+  "TE": 0.754
+ }
+}

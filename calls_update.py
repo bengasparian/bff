@@ -95,9 +95,23 @@ def make_calls(D, w, nw):
         res['pool'] += [{'id': p['id'], 'p': pos, 't': p['t'], 'k': kickoff(D, p['t'], w)} for p in regs]
         res['base'] += [{'id': p['id'], 'p': pos, 't': p['t'], 'k': kickoff(D, p['t'], w)} for p in sorted([p for p in L if p.get('inj') != 'Doubtful'], key=lambda p: -blend(p))[:10]]
     sk = [p for p in P if p['p'] != 'QB' and not out(p) and (p.get('g') or 0) >= 2 and p.get('xfpg') is not None and p.get('fpg') is not None]
-    buy = sorted([p for p in sk if p['xfpg'] >= 8 and p['xfpg'] - p['fpg'] >= 2.5], key=lambda p: -(p['xfpg'] - p['fpg']) * math.sqrt(p['xfpg']))[:10]
-    sell = sorted([p for p in sk if p['fpg'] >= 10 and p['fpg'] - p['xfpg'] >= 3], key=lambda p: -(p['fpg'] - p['xfpg']))[:10]
-    bs = lambda p: {'id': p['id'], 'n': p['n'], 'p': p['p'], 't': p['t'], 'fpg': p['fpg'], 'xfpg': p['xfpg'], 'g': p['g']}
+    # common sense on top of the numbers (the page uses the same checks; research/bt_commonsense.py, 2020-25): no buy low on
+    # a fill-in whose starter is back or due back within two games, on two games, on a player losing snaps or on usage that
+    # is already top 6 at his position; no sell high on such a stud; a fill-in still scoring 8+ a game once his starter is
+    # back is a sell
+    fill_soon = lambda p: bool((p.get('fill') or {}).get('soon'))
+    xr = {}
+    for q in ('RB', 'WR', 'TE'):
+        U = [p for p in P if p['p'] == q and (p.get('g') or 0) >= 2 and p.get('xfpg') is not None and p.get('fpg') is not None]
+        for i, p in enumerate(sorted(U, key=lambda p: -p['xfpg'])): xr[p['id']] = i + 1
+    stud = lambda p: xr.get(p['id'], 99) <= 6           # usage already top 6 at his position
+    no_buy = lambda p: fill_soon(p) or (p.get('g') or 0) < 3 or bool(p.get('rdn')) or stud(p)
+    sell_nums = lambda p: p['fpg'] >= 10 and p['fpg'] - p['xfpg'] >= 3
+    buy = sorted([p for p in sk if p['xfpg'] >= 8 and p['xfpg'] - p['fpg'] >= 2.5 and not no_buy(p)], key=lambda p: -(p['xfpg'] - p['fpg']) * math.sqrt(p['xfpg']))[:10]
+    sell = sorted([p for p in sk if (sell_nums(p) and not stud(p)) or (fill_soon(p) and p['fpg'] >= 8)],
+                  key=lambda p: -((100 + p['fpg'] * (1 - p['fill'].get('f', .8))) if fill_soon(p) and p['fpg'] >= 8 else p['fpg'] - p['xfpg']))[:10]   # fill-ins first
+    bs = lambda p: {'id': p['id'], 'n': p['n'], 'p': p['p'], 't': p['t'], 'fpg': p['fpg'], 'xfpg': p['xfpg'], 'g': p['g'],
+                    **({'fb': p['fill']['by']} if fill_soon(p) else {})}
     res['buy'] = [bs(p) for p in buy]; res['sell'] = [bs(p) for p in sell]
     return res
 
