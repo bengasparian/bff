@@ -106,21 +106,47 @@ The version 5 model alone (`bt_weekly_v5.py`) has closed most of its gap to the 
 
 ### Prop lines (`bt_lines.py`)
 
-Real week-7 2026 lines for passing, receiving and rushing yards were read from a public props page (122 matched players;
-`props/real_lines_2026_w7.json`). Average gap to the real line, each new line scored on players the fit did not use:
+Two samples of real week-7 2026 lines: A, a public props page (Oct 21-23; passing, receiving, rushing yards; one number
+per player) and B, scoresandodds.com on Sunday Oct 25 before kickoff (each player's lowest and highest line across books
+for passing, receiving and rushing yards and receptions, and the main passing-TD line with its odds;
+`props/real_lines_2026_w7_sun.json`, with the projections at that moment in `props/site_2026_w7_sun.json`). Each line
+is the average of ESPN's and Sleeper's projection through a rule fit to both samples; average gap to the real line, every
+rule scored on players it never saw (sample B; the old rule on the same players in brackets):
 
-| Stat | Before (opportunity model) | Now (ESPN + Sleeper, scaled) | Scale |
-| --- | --- | --- | --- |
-| Passing yards | 13.3 (15 lines) | 9.6 (17) | 0.989 |
-| Receiving yards | 6.9 (49) | 3.4 (57) | 0.919 |
-| Rushing yards | 9.1 (31) | 5.5 (48) | 0.862 |
+| Stat | Rule | Gap (B) | Books' own spread | Inside the books' range |
+| --- | --- | --- | --- | --- |
+| Passing yards | 0.981 x | 11.2 (11.1) | 7.2 | 7 of 28 |
+| Receiving yards | 0.916 x | 3.3 (3.3) | 3.3 | 32 of 81 |
+| Rushing yards | 0.957 x - 3.9 | 4.0 (4.6) | 2.8 | 28 of 84 (21) |
+| Receptions | 0.975 x + 0.15 | 0.25 (0.29) | 0.38 | 76 of 81 (73) |
+| Passing TDs | 0.5 below 0.95, 2.5 from 2.3 | 26 of 28 match (24 left out one at a time) | | was 21 of 25 |
 
-The old lines aimed at the typical outcome and squeezed players toward the middle; the public projections, scaled to
-where books set lines, follow the real lines far more closely (correlation 0.91, 0.98 and 0.97 for the average of ESPN
-and Sleeper, against 0.81, 0.93 and 0.81 for the old lines). In 2025, overs at lines built this way hit 46% (passing),
-43% (receiving), 46% (rushing) and 46% (receptions, scale 0.95), about what real prop overs do. Picks: unders when BFF's
-own model is at least 10% below ESPN and Sleeper hit 57.2% of 1,511 (every yardage under: 55.1%; overs where BFF was
-higher: 48.5%). These used lines built from ESPN and Sleeper, not real book lines.
+Adding BFF's own stat model, its fantasy-point gap to the sites or the Vegas team total did not shrink the gap on players
+left out. The books' expected passing TDs, read from the odds, are 0.578 + 0.676 x the projection (they lift low
+projections: every 0.5 line came with about one expected TD). In 2025, at lines built this way, overs hit 46.9%
+(passing), 43.5% (receiving), 48.3% (rushing), 41.4% (receptions), 46.3% (passing TDs). Picks, unders when BFF's own
+model is at least 10% below ESPN and Sleeper: passing 58.0% of 250, receiving 57.2% of 719 (together 57.4%), rushing
+53.7% (not a pick), receptions 60.8% and passing TDs 59.6% (not picks: real books price those unders at -150 to -200);
+every yardage under 54.4%; overs where BFF was higher 46.6%. A passing-yard under pick still hits 55% down to 1.5% below
+our line, receiving 4.5%. These used lines built from ESPN and Sleeper, not real book lines.
+
+### Kickers and team defenses (`bt_kdst.py`)
+
+`python research/bt_kdst.py` (writes `results_kdst.json`, about a minute). Points with Yahoo's default scoring from
+nflverse play-by-play (D/ST) and weekly stats (kickers). The D/ST counts against nflverse's own team stats, 2023-25: interceptions,
+safeties and blocked kicks match exactly; sacks run about 0.7% higher (play-by-play counts team sacks no player gets);
+return and fumble touchdowns within one or two a season. Projections fit on 2015-22, scored on 2023-25:
+
+| | Rule | Average miss | Correlation | Week-by-week rank correlation |
+| --- | --- | --- | --- | --- |
+| D/ST | opponent's Vegas implied points, sacks and takeaways so far (both sides), home | 4.40 | 0.33 | 0.33 |
+| D/ST | Vegas alone | 4.42 | 0.32 | 0.32 |
+| D/ST | season so far | 4.57 | 0.10 | 0.10 |
+| D/ST | league average | 4.53 | 0.08 | |
+| Kicker | team's Vegas implied points, his points so far, indoors | 3.60 | 0.16 | 0.16 |
+| Kicker | league average | 3.67 | 0.04 | |
+
+Kickers are mostly luck week to week (no rule tried does much better), and a defense's week is mostly its opponent.
 
 ### Common sense: fill-ins, buy low and sell high (`bt_fillin.py`, `bt_commonsense.py`)
 

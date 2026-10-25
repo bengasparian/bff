@@ -1,137 +1,392 @@
 {
  "week7": {
-  "source": "openinglineanalytics.com/nfl/props (passing-yards read Oct 23, page updated Oct 21; receiving-yards and rushing-yards updated Oct 23); book not named on the page",
+  "samples": {
+   "A": "openinglineanalytics.com/nfl/props (passing-yards read Oct 23, page updated Oct 21; receiving-yards and rushing-yards updated Oct 23); book not named on the page",
+   "B": "scoresandodds.com/nfl/props market pages (passing yards, receiving yards, rushing yards, receptions): each player's best over (the lowest line across books) and best under (the highest line), read by hand Oct 25 2026 before the 1 pm games; main QB lines and passing-TD odds from the same site's player pages (real_lines_2026_w7_qb_sun.json)"
+  },
   "py": {
-   "real_lines": 17,
-   "before": {
-    "n": 15,
-    "avg_gap": 13.3,
-    "bias": 0.6
+   "rule": {
+    "k": 0.9809
    },
-   "after": {
+   "n": 45,
+   "A": {
     "n": 17,
-    "avg_gap_leave_one_out": 9.6,
-    "bias": -0.4
+    "gap_after_leave_one_out": 8.82,
+    "bias_after": -1.35,
+    "gap_old_rule": 8.59,
+    "published_before": {
+     "n": 15,
+     "gap": 13.3,
+     "bias": -0.63
+    }
    },
-   "after_same_players": 8.4,
-   "k": 0.989
+   "B": {
+    "n": 28,
+    "gap_after_leave_one_out": 11.16,
+    "bias_after": 1.05,
+    "gap_old_rule": 11.12,
+    "published_before": {
+     "n": 25,
+     "gap": 10.18,
+     "bias": 1.82
+    },
+    "inside_books_range": {
+     "after": 7,
+     "old_rule": 9
+    },
+    "books_range_width": 7.18
+   }
   },
   "ty": {
-   "real_lines": 57,
-   "before": {
-    "n": 49,
-    "avg_gap": 6.9,
-    "bias": 6.0
+   "rule": {
+    "k": 0.9163
    },
-   "after": {
-    "n": 57,
-    "avg_gap_leave_one_out": 3.4,
-    "bias": 0.8
+   "n": 141,
+   "A": {
+    "n": 60,
+    "gap_after_leave_one_out": 3.14,
+    "bias_after": -1.09,
+    "gap_old_rule": 3.06,
+    "published_before": {
+     "n": 51,
+     "gap": 6.78,
+     "bias": -5.82
+    }
    },
-   "after_same_players": 3.3,
-   "k": 0.919
+   "B": {
+    "n": 81,
+    "gap_after_leave_one_out": 3.26,
+    "bias_after": -0.04,
+    "gap_old_rule": 3.28,
+    "published_before": {
+     "n": 75,
+     "gap": 3.23,
+     "bias": -0.01
+    },
+    "inside_books_range": {
+     "after": 32,
+     "old_rule": 32
+    },
+    "books_range_width": 3.28
+   }
   },
   "ry": {
-   "real_lines": 49,
-   "before": {
-    "n": 31,
-    "avg_gap": 9.1,
-    "bias": -0.5
+   "rule": {
+    "a": 0.9571,
+    "b": -3.894
    },
-   "after": {
-    "n": 48,
-    "avg_gap_leave_one_out": 5.5,
-    "bias": 0.7
+   "n": 133,
+   "A": {
+    "n": 49,
+    "gap_after_leave_one_out": 4.5,
+    "bias_after": 0.01,
+    "gap_old_rule": 4.93,
+    "published_before": {
+     "n": 31,
+     "gap": 9.06,
+     "bias": 0.45
+    }
    },
-   "after_same_players": 5.8,
-   "k": 0.862
+   "B": {
+    "n": 84,
+    "gap_after_leave_one_out": 4.02,
+    "bias_after": 0.01,
+    "gap_old_rule": 4.6,
+    "published_before": {
+     "n": 64,
+     "gap": 4.52,
+     "bias": 0.0
+    },
+    "inside_books_range": {
+     "after": 28,
+     "old_rule": 21
+    },
+    "books_range_width": 2.8
+   }
+  },
+  "rec": {
+   "rule": {
+    "a": 0.9746,
+    "b": 0.154
+   },
+   "n": 81,
+   "B": {
+    "n": 81,
+    "gap_after_leave_one_out": 0.25,
+    "bias_after": -0.03,
+    "gap_old_rule": 0.29,
+    "published_before": {
+     "n": 71,
+     "gap": 0.32,
+     "bias": -0.27
+    },
+    "inside_books_range": {
+     "after": 76,
+     "old_rule": 73
+    },
+    "books_range_width": 0.38
+   }
+  },
+  "ptd": {
+   "rule": {
+    "t1": 0.95,
+    "t2": 2.3
+   },
+   "n": 28,
+   "match": 26,
+   "match_leave_one_out": 24,
+   "published_before_match": 21,
+   "published_before_n": 25,
+   "misses": [
+    "Jared Goff",
+    "J.J. McCarthy"
+   ],
+   "books_rate": {
+    "a": 0.578,
+    "b": 0.676,
+    "n": 28,
+    "note": "books' expected TDs = a + b x market projection (no-vig odds at the posted line, Poisson)"
+   }
+  }
+ },
+ "rule": {
+  "py": {
+   "k": 0.9809
+  },
+  "ty": {
+   "k": 0.9163
+  },
+  "ry": {
+   "a": 0.9571,
+   "b": -3.894
+  },
+  "rec": {
+   "a": 0.9746,
+   "b": 0.154
+  },
+  "ptd": {
+   "t1": 0.95,
+   "t2": 2.3
   }
  },
  "overs_2025": {
   "py": {
    "n": 508,
-   "over_pct": 46.1
+   "over_pct": 46.9
   },
   "ty": {
    "n": 2612,
-   "over_pct": 43.4
+   "over_pct": 43.5
   },
   "ry": {
    "n": 1574,
-   "over_pct": 46.3
+   "over_pct": 48.3
   },
   "rec": {
    "n": 2665,
-   "over_pct": 46.4
+   "over_pct": 41.4
+  },
+  "ptd": {
+   "n": 508,
+   "over_pct": 46.3
   }
  },
- "k": {
-  "py": 0.989,
-  "ty": 0.919,
-  "ry": 0.862,
-  "rec": 0.95
+ "ptd_lines_2025": {
+  "0.5": {
+   "n": 11,
+   "over_pct": 72.7
+  },
+  "1.5": {
+   "n": 497,
+   "over_pct": 45.7
+  }
  },
  "picks_2025": {
   "gap_10": {
    "overs": {
     "n": 1088,
-    "hit_pct": 48.5
+    "hit_pct": 46.6
    },
    "unders_all": {
-    "n": 2271,
-    "hit_pct": 56.8
+    "n": 2521,
+    "hit_pct": 57.8
    },
    "unders_yards": {
     "n": 1511,
-    "hit_pct": 57.2,
+    "hit_pct": 56.1,
     "by": {
-     "py": 58.4,
-     "ty": 57.3,
-     "ry": 56.5
+     "py": 58.0,
+     "ty": 57.2,
+     "ry": 53.7
     }
    },
-   "every_yards_under": 55.1
+   "unders_by_stat": {
+    "py": {
+     "n": 250,
+     "hit_pct": 58.0
+    },
+    "ty": {
+     "n": 719,
+     "hit_pct": 57.2
+    },
+    "ry": {
+     "n": 542,
+     "hit_pct": 53.7
+    },
+    "rec": {
+     "n": 760,
+     "hit_pct": 60.8
+    },
+    "ptd": {
+     "n": 250,
+     "hit_pct": 59.6
+    }
+   },
+   "overs_by_stat": {
+    "py": {
+     "n": 0,
+     "hit_pct": NaN
+    },
+    "ty": {
+     "n": 458,
+     "hit_pct": 45.9
+    },
+    "ry": {
+     "n": 218,
+     "hit_pct": 51.4
+    },
+    "rec": {
+     "n": 412,
+     "hit_pct": 44.9
+    },
+    "ptd": {
+     "n": 0,
+     "hit_pct": NaN
+    }
+   },
+   "every_yards_under": 54.4
   },
   "gap_15": {
    "overs": {
     "n": 756,
-    "hit_pct": 47.4
+    "hit_pct": 45.4
    },
    "unders_all": {
-    "n": 1368,
-    "hit_pct": 57.0
+    "n": 1508,
+    "hit_pct": 57.9
    },
    "unders_yards": {
     "n": 909,
-    "hit_pct": 57.5,
+    "hit_pct": 56.2,
     "by": {
-     "py": 64.3,
-     "ty": 55.3,
-     "ry": 57.7
+     "py": 63.6,
+     "ty": 55.0,
+     "ry": 54.7
     }
    },
-   "every_yards_under": 55.1
+   "unders_by_stat": {
+    "py": {
+     "n": 140,
+     "hit_pct": 63.6
+    },
+    "ty": {
+     "n": 436,
+     "hit_pct": 55.0
+    },
+    "ry": {
+     "n": 333,
+     "hit_pct": 54.7
+    },
+    "rec": {
+     "n": 459,
+     "hit_pct": 59.7
+    },
+    "ptd": {
+     "n": 140,
+     "hit_pct": 62.9
+    }
+   },
+   "overs_by_stat": {
+    "py": {
+     "n": 0,
+     "hit_pct": NaN
+    },
+    "ty": {
+     "n": 323,
+     "hit_pct": 44.3
+    },
+    "ry": {
+     "n": 160,
+     "hit_pct": 51.2
+    },
+    "rec": {
+     "n": 273,
+     "hit_pct": 43.2
+    },
+    "ptd": {
+     "n": 0,
+     "hit_pct": NaN
+    }
+   },
+   "every_yards_under": 54.4
+  }
+ },
+ "hold": {
+  "py": {
+   "n": 250,
+   "pct_below_line": 0.015,
+   "curve": {
+    "0.000": 0.58,
+    "0.005": 0.572,
+    "0.010": 0.568,
+    "0.015": 0.556,
+    "0.020": 0.548
+   }
+  },
+  "ty": {
+   "n": 719,
+   "pct_below_line": 0.045,
+   "curve": {
+    "0.000": 0.572,
+    "0.005": 0.572,
+    "0.010": 0.572,
+    "0.015": 0.567,
+    "0.020": 0.565,
+    "0.025": 0.563,
+    "0.030": 0.561,
+    "0.035": 0.559,
+    "0.040": 0.558,
+    "0.045": 0.556,
+    "0.050": 0.549
+   }
+  },
+  "ry": {
+   "n": 542,
+   "pct_below_line": 0.0,
+   "curve": {
+    "0.000": 0.537
+   }
   }
  },
  "over_rate_2025": {
   "py": {
    "below": {
     "n": 250,
-    "over": 0.416
+    "over": 0.42
    },
    "level": {
     "n": 188,
-    "over": 0.527
+    "over": 0.532
    }
   },
   "ty": {
    "below": {
     "n": 719,
-    "over": 0.427
+    "over": 0.428
    },
    "level": {
     "n": 1055,
-    "over": 0.435
+    "over": 0.436
    },
    "above": {
     "n": 458,
@@ -141,30 +396,74 @@
   "ry": {
    "below": {
     "n": 542,
-    "over": 0.435
+    "over": 0.463
    },
    "level": {
     "n": 590,
-    "over": 0.478
+    "over": 0.486
    },
    "above": {
     "n": 218,
-    "over": 0.491
+    "over": 0.514
    }
   },
   "rec": {
    "below": {
     "n": 760,
-    "over": 0.439
+    "over": 0.392
    },
    "level": {
     "n": 1108,
-    "over": 0.457
+    "over": 0.415
    },
    "above": {
     "n": 412,
-    "over": 0.512
+    "over": 0.449
    }
+  },
+  "ptd": {
+   "below": {
+    "n": 250,
+    "over": 0.404
+   },
+   "level": {
+    "n": 188,
+    "over": 0.537
+   }
+  }
+ },
+ "over_rate_2025_ptd_by_line": {
+  "0.5": {
+   "below": {
+    "n": 6,
+    "over": 0.833
+   }
+  },
+  "1.5": {
+   "below": {
+    "n": 244,
+    "over": 0.393
+   },
+   "level": {
+    "n": 188,
+    "over": 0.537
+   }
+  }
+ },
+ "ptd_scale": {
+  "below": {
+   "n": 250,
+   "scale": 0.873,
+   "over": 0.404
+  },
+  "level": {
+   "n": 188,
+   "scale": 1.094,
+   "over": 0.537
+  },
+  "books_rate_alone": {
+   "predicted_over": 0.479,
+   "actual_over": 0.461
   }
  }
 }

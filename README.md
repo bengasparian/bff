@@ -19,6 +19,40 @@ last good version, so the published site never breaks.
   (rankings), **Trade values** (the rest-of-season BFF value chart, tiered, for your league settings), **Start/sit**
   (cheat sheet) and **Favorites**. Every player has a card with projections, usage, game logs, schedule, VORP, news
   and this week's prop lines. Old links to the Week and Players tabs open Home.
+- **New on BFF:** on wide screens the home page's left side spotlights what the site does that others don't (Spin
+  Draft, kickers and defenses, prop lines that track the books, Ask BFF, linking any league, the graded weekly calls),
+  one card at a time in the spotlight; on narrower screens and phones it is a strip under the top story. The numbers on
+  the cards come from the data (the prop-line accuracy, this week's top defense), so they stay true as things change.
+- **Kickers and team defenses (`ff_kdst.py`):** Players has **K** and **D/ST** buttons with this week's ranks, the season's
+  points, the last three games and the rest-of-season projection; each has its own card (game log, road ahead, how it
+  is scored and projected). Leagues keep them: ESPN (kicker ids, D/ST ids), Sleeper (DEF team codes, kicker ids),
+  typed or copied rosters ("Bills D/ST", a kicker's name) and screenshots. Your lineup fills the league's K and D/ST
+  spots, and power rankings count them when the league starts them. Live points come from ESPN's box score (field
+  goals by distance from the scoring plays; sacks, takeaways, return touchdowns, safeties and points allowed), with the
+  official numbers once the data job posts them. Ask BFF answers "best kickers this week", "should I start the
+  Texans defense" or a kicker by name. They stay out of BFF's trade values, buy/sell calls, waiver targets and prop
+  lines, so nothing in the skill-player rankings changes. **Scoring** (Yahoo's default settings, which Sleeper's
+  follow): field goals 0-39 yards 3, 40-49 yards 4, 50+ yards 5, extra points 1; D/ST sack 1, interception 2, fumble
+  recovery 2, touchdown 6, safety 2, blocked kick 2, points allowed 0: 10, 1-6: 7, 7-13: 4, 14-20: 1, 21-27: 0,
+  28-34: -1, 35+: -4, where points allowed leave out touchdowns the other defense scores off this team's offense
+  (interception and fumble returns, blocked field goals), safeties and defensive two-point returns, as Yahoo counts
+  them. **Projections** (research/bt_kdst.py, fit on 2015-22 and tested on 2023-25 games they never saw): D/ST from the
+  opponent's Vegas implied points, the defense's sacks and takeaways so far, the opponent offense's sacks and giveaways
+  so far and home field (average miss 4.4 points, correlation 0.33 with what happened; the league average missed by 4.5
+  with 0.08); kickers from the team's implied points, his points per game so far and indoor games (3.6 and 0.16 against
+  3.7 and 0.04: a kicker's week is mostly luck, and the page says so). The D/ST counts match nflverse's own team stats
+  for 2023-25 (interceptions, safeties and blocked kicks exactly; sacks within 1%, since play-by-play also counts the
+  team sacks no player is credited with).
+- **Spin Draft (`game_build.py`, Draft > Spin Draft game):** spin a slot machine for a random NFL team and season since
+  1999, draft one of that team's real fantasy scorers into an open spot (QB, RB, RB, WR, WR, TE, FLEX), and build the
+  highest-scoring lineup in seven spins, with two re-spins. The end screen shows your total, how close you came to the
+  best lineup your spins allowed (every order tried), your best score, and a result to copy and share. **Daily
+  challenge** gives everyone the same spins that day; PPR, half PPR or standard. Points are each player's
+  regular-season total for that team that season from nflverse's weekly stats (a player traded midseason counts for
+  each team with the points he scored there), with the franchise named as it was then (St. Louis Rams to 2015, San
+  Diego Chargers to 2016, Oakland Raiders to 2019). Checked: every weekly row of every season re-adds to its points with
+  the stated rules, and famous seasons match their published totals (Cooper Kupp 2021: 439.5 PPR; Christian McCaffrey
+  2023: 391.3). `game.json` is built once and rebuilt only when a season finishes.
 - **Live:** the games and scores in the middle (each with its photo: the featured game on top, then every game of the
   week, with your lineup live above them), the week's **top performers** on the left and **leaders by position** on the
   right (under the games on phones and narrower screens). Before kickoff both lists show projections. Tap a game
@@ -44,9 +78,15 @@ last good version, so the published site never breaks.
 - **My League:** link your league for your best lineup, waiver targets, trade ideas and a matchup simulator.
   **ESPN:** paste the league's link (or ID) and the page reads every team, roster, record, lineup spot and the scoring
   straight from ESPN's league service, then refreshes the rosters on its own (at most every 3 hours, paused after you
-  edit rosters by hand; "Update now" any time). Checked in October 2026 that ESPN's service answers this site from the
-  browser: public leagues for anyone, private ones when the visitor is signed in to ESPN in the same browser (some
-  browsers block that; then the league manager can make the league viewable to the public, or use the page copy below).
+  edit rosters by hand; "Update now" any time). A My Team link (it has `teamId=`) also picks your team. ESPN's service
+  answers this site for public leagues. A private league needs your ESPN sign-in, which browsers keep to ESPN's own
+  pages, so ESPN answers other sites as if you were signed out (a reader's private league failed this way in October
+  2026, although he was signed in). For those, **Private league?** under ESPN has three steps: open your league's data
+  on ESPN (BFF builds the link from your league ID), copy everything, paste it and Import. On a computer there is also a
+  one-click bookmark: drag "BFF: import from ESPN" to the bookmarks bar, open your league on ESPN and click it; it reads
+  the league on ESPN's page and opens BFF with it after the `#` in the address (that part never leaves the browser), and
+  finds your team from your ESPN sign-in. BFF asks before a bookmark replaces a different saved league. A private league
+  doesn't refresh on its own: bring it in again after trades (the power rankings say so and link to the steps).
   **Sleeper:** type your username (pick a league if you have several; your team is found for you) or the league ID.
   **Yahoo, NFL.com, CBS and the rest:** Yahoo's data needs an approved app login and does not answer websites (checked),
   so these are read from what you copy: select all on a team's roster page (or a page with every roster), copy, paste,
@@ -310,8 +350,13 @@ label, lead story while fresh, their own panel, a Home card, and on each mention
 full-screen reader with linked players, a byline, the time, update notes and sources, and has its own link
 (`#news/a/<id>`).
 
-Written like a newsletter: a lede, how the game went, what it means for fantasy managers, with the numbers woven into
-sentences (no stat dumps), a scoreboard that opens the game center, and linked players.
+Written like an analyst, not a stat sheet: each player's game opens with the verdict ("stole the show", "was a
+letdown", "did his job"), then the line in plain words ("caught all four of his targets for 130 yards and a
+touchdown"), then what it means (the points against BFF's projection, a season high, a bell-cow workload or a
+committee, a true number-one target share). Scoring plays read as sentences ("a 43-yard field goal by Cairo Santos",
+"Caleb Williams' 24-yard touchdown pass to Luther Burden III"), and previews explain the Vegas line in words (a
+double-digit favorite, a low total that points to a grind, a shootout-level total) instead of listing it. Every number
+is still the data's own. A writer change rewrites the articles still in their window (writer version 7).
 
 | Article (Eastern time) | When it publishes |
 |---|---|
@@ -371,6 +416,15 @@ sentences (no stat dumps), a scoreboard that opens the game center, and linked p
   half of ESPN and Yahoo leagues.
 
 ## Look and pictures
+- **Street art at night:** night mode is the default (the theme button still offers day mode or your device's
+  setting): a brick wall behind the page, two club spotlights sweeping slowly across it, a big faded BFF tag sprayed
+  on the wall, spray-paint underlines on section titles that paint in when a tab opens, neon glow on buttons, the
+  active tab and cards under the pointer, a light sweeping across the top story, the home title flickering on like a
+  neon sign, and marker-style tags ("New", "Updated") on the feature cards. All of it stops for anyone who asks their
+  device for less motion, and the heavy parts stay off on phones and low-power devices.
+- **The whole screen, calmer rails:** on big monitors the pages widen to 1840 pixels (Home gets a left rail for New on
+  BFF), the side rails are narrower (268 pixels) with smaller thumbnails, three-line headlines and at most six
+  headlines, and Live's side lists sit beside a wider games grid with names on one line.
 - Every tab reads like the News tab: a cover story on the tab's own artwork with picture headlines beside it, a headline
   rail on wide screens (headlines under the page on smaller ones).
 - **News that fits the tab:** every headline gets a relevance score for each tab (your players on My League; top
@@ -453,26 +507,33 @@ allows.
   if the live feed is a few minutes behind; a week's late games (Monday night) keep their lines until then.
 
 ## Predicted prop lines (`ff_lines.py`)
-- **Set where the market sets them (October 2026).** Books' prop lines track the public projections, so every passing,
-  receiving and rushing yards and receptions line comes from the average of ESPN's and Sleeper's projections for that
-  stat (`site_stats.py`), scaled to where books put their lines: passing yards x 0.989, receiving x 0.919, rushing
-  x 0.862 (fit on 122 real week-7 2026 lines read from a public props page), receptions x 0.95 (no real receptions
-  lines in the sample; this gives the same over rate as the others). BFF's own model stays out of the line so the
-  picks can test it. Why the change: the old lines aimed at the typical outcome, which sits below where books set
-  yardage lines and squeezed the best and worst players toward the middle (Bo Nix 209.5 passing yards against a real
-  224.5; Justin Jefferson 51.5 receiving against 72.5).
-- **How close (research/bt_lines.py):** on the real week-7 lines, each scored on players the fit did not use, the
-  average gap fell to 3.4 receiving yards (was 6.9), 5.5 rushing (was 9.1) and 9.6 passing (was 13.3), and BFF now
-  has a line for 48 of the 49 real rushing lines (was 31). In 2025, overs at lines built this way hit 43-46%, about
-  what real prop overs do.
-- **Picks:** an under on passing, receiving or rushing yards when BFF's own model projects the player at least 10%
-  below ESPN and Sleeper: 57.2% of 1,511 in 2025 at lines built this way (passing 58%, receiving 57%, rushing 57%).
-  Taking every yardage under hit 55.1%, and overs where BFF was higher hit only 48.5%, so no overs are picked from
-  these lines. "Chance" on each line is how often that side hit in 2025 for that stat and that gap. The test used lines
-  built from ESPN and Sleeper, not real book lines, and real prices carry a fee, so expect real results to run lower.
-- **Passing touchdowns, and players neither site projects,** keep the opportunity model: expected targets, carries or
-  pass attempts times efficiency, adjusted for the Vegas team total and the defense (tuned on 2024, tested on 2025;
-  passing-TD picks won 58%).
+- **Set where the market sets them (refit October 25, 2026).** Books' prop lines track the public projections, so every
+  line comes from the average of ESPN's and Sleeper's projection for that stat (`site_stats.py`), put through a rule fit
+  to real posted lines: passing yards 0.981 x, receiving yards 0.916 x, rushing yards 0.957 x - 3.9, receptions
+  0.975 x + 0.15 (rounded down to .5), and passing touchdowns 0.5 below a projection of 0.95, 2.5 from 2.3, else 1.5.
+  Books post 0.5 passing TDs for low-scoring passers (Cam Ward, Daniel Jones, Malik Willis, J.J. McCarthy in week 7);
+  the old model-based TD lines said 1.5 for them. BFF's own model stays out of the line so the picks can test it.
+- **How close (research/bt_lines.py):** two samples of real week-7 lines: a public props page (Oct 21-23) and
+  scoresandodds.com on Sunday morning (every player's lowest and highest line across books: 28 passing, 84 receiving,
+  86 rushing, 85 receptions, 28 passing-TD lines with odds). Each rule scored on players it never saw, against Sunday's
+  lines: 3.3 receiving yards from the books' line on average (the books themselves sit 3.3 apart), 4.0 rushing (books
+  2.8; was 4.6), 0.25 receptions (books 0.38; was 0.29), 11 passing yards (books 7.2; unchanged), and passing-TD lines
+  match 26 of 28 (was 21 of 25). Nothing else tried closed more of the gap (BFF's own model, its gap to the sites, the
+  Vegas team total): what is left is the books' own information.
+- **Picks:** an under on passing or receiving yards when BFF's own model projects the player at least 10% below ESPN
+  and Sleeper: 57.4% of 969 in 2025 at lines built this way (passing 58.0%, receiving 57.2%; every yardage under 54.4%).
+  Rushing unders hit only 53.7% at the refit lines and overs where BFF was higher 46.6%, so neither is a pick. Receptions
+  and passing-TD unders hit often, but books charge -150 to -200 for those, so a high chance there is not an edge and
+  they get no picks. Each pick says how far down it holds (2025: still 55%+ down to 1.5% below our line for passing
+  yards, 4.5% for receiving), because a real book's line can sit lower than ours; Ask BFF's "best bets" lists only
+  these picks. "Chance" on each line is how often the over hit in 2025 for that stat and gap; passing TDs use the books'
+  expected touchdowns read from real odds (0.578 + 0.676 x the projection), scaled to 2025 for the gap, as a Poisson
+  count. "Our projection" = the sites' average scaled by BFF's model against theirs. A line you type in (your book's)
+  gets its chance by shifting ours by the usual spread of outcomes between the two lines. The test used lines built from
+  ESPN and Sleeper, not real book lines, and real prices carry a fee, so expect real results to run lower.
+- **Players neither site projects** keep the opportunity model (expected targets, carries or pass attempts times
+  efficiency, adjusted for the Vegas team total and the defense; tuned on 2024, tested on 2025), with a chance but no
+  pick.
 - **Updates every 10 minutes:** the scores workflow re-reads ESPN's and Sleeper's projections, the current ESPN odds and
   the news; a line moves when the sites' projections, the Vegas total or a role changes, and is pulled when a player is
   reported out. Each line keeps its opening number and the reason for every move. `site_stats.json` is saved only when
@@ -488,7 +549,7 @@ If Claude has access to your repository it pushes updates itself. To do it by ha
 `template.html`, `app.css`, `index.html`, the `art/` folder, `brain.json`, `kb.json`, `articles.py`, `ff_build2.py`,
 `ff_feat.py`, `ff_model.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`,
 `parlay_update.py`, `calls_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `proj_compare.py`, `ff_stack.py`, `site_stats.py`,
-`sync_sleeper.py`, `health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `.nojekyll`, `README.md`, the
+`ff_kdst.py`, `game_build.py`, `game.json`, `sync_sleeper.py`, `health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `.nojekyll`, `README.md`, the
 `research/` folder (the accuracy tests and Ask BFF's training; optional, never run by the workflows), and both workflow
 files in `.github/workflows/` (`update.yml`, `scores.yml`). `calls_backfill.py` is retired and can be deleted. Leave
 your `*_history.json`, `lines.json`, `parlays.json`, `bet_inputs.json`, `articles.json`, `news.json`, `news_state.json`,
@@ -544,4 +605,8 @@ Optional: add the `ANTHROPIC_API_KEY` secret for Claude-written articles (see **
   listed above.
 - BFF Originals are written from the data above; when the optional key is set, Claude rewrites them through the
   [Claude API (Messages)](https://docs.claude.com/en/api/messages).
+- Kicker and D/ST scoring: [Yahoo default league settings](https://help.yahoo.com/kb/SLN6489.html) and
+  [scoring categories](https://help.yahoo.com/kb/SLN6442.html) (what counts as points allowed). Spin Draft and kicker/D/ST
+  history: nflverse weekly player stats, team stats and play-by-play. Real prop lines used to fit and check BFF's lines
+  (read by hand, Oct 2026): a public props page and [scoresandodds.com](https://www.scoresandodds.com/nfl/props).
 - BFF is not affiliated with the NFL, its teams, or any source listed here.

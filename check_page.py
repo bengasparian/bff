@@ -44,7 +44,11 @@ def check_page():
         if n < 300: raise ValueError(f'only {n} players in the data')
         for k in ('asof', 'sched', 'dvp', 'model'):
             if k not in D: raise ValueError(f'data is missing "{k}"')
-        js = h[h.rindex('<script>') + 8:h.rindex('</script>')]
+        a = h.rindex('<script>') + 8; js = h[a:h.index('</script>', a)]   # the page's own script (the Spin Draft data follows it)
+        g0 = h.find('<script type="application/json" id="sdgame">')
+        if g0 >= 0:
+            G = json.loads(h[g0 + 44:h.index('</script>', g0)].replace('<\\/', '</'))
+            if not G.get('t') or len(G['t']) < 20: raise ValueError('Spin Draft data looks incomplete')
         node = shutil.which('node')
         if node:
             with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as t: t.write(js)

@@ -4,8 +4,8 @@
 Each run:
   1. Reads this week's lines and picks (lines.json) and player game logs (ff_data.json in the data job,
      bet_inputs.json in the 10-minute job).
-  2. Builds the best 2-, 3- and 5-pick parlays from tested picks only (55%+ chance: unders where BFF's model is 10%+
-     below ESPN and Sleeper, and passing-TD picks; never quarterback rushing), one leg per game and per player, at most
+  2. Builds the best 2-, 3- and 5-pick parlays from tested picks only (55%+ chance: passing- and receiving-yard unders
+     where BFF's model is 10%+ below ESPN and Sleeper), one leg per game and per player, at most
      2 of one stat, no questionable players.
      They follow the lines until the week's first kickoff, then lock.
   3. Grades every locked parlay from official box scores: a leg is a hit, a miss, or void if the player did not play.

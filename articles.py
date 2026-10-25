@@ -64,6 +64,31 @@ def ordn(n): return f"{n}{'th' if 11 <= n % 100 <= 13 else {1: 'st', 2: 'nd', 3:
 WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']
 def numw(n): return WORDS[n] if 0 <= n < len(WORDS) else str(n)
 def cap(s): return s[:1].upper() + s[1:]
+# ---- the analyst voice: counts as words, numbers with the right article, scoring plays told as sentences
+def cnt(n, w, pl=None):
+    """'two touchdowns', 'one catch', '12 targets' (whole numbers; words up to ten)"""
+    n = int(round(float(n or 0))); return f"{numw(n) if 0 <= n <= 10 else n} {w if n == 1 else (pl or w + 's')}"
+def one(n, w, pl=None):
+    """'a touchdown', 'an interception', 'two touchdowns'"""
+    n = int(round(float(n or 0))); return (('an ' if w[:1] in 'aeiou' else 'a ') + w) if n == 1 else cnt(n, w, pl)
+def an_n(x):
+    """'an 11.9' / 'a 12.3': the article a number takes when read aloud"""
+    k = int(float(x)); d = str(k)
+    return 'an' if d.startswith('8') or k in (11, 18) or 11000 <= k < 12000 or 18000 <= k < 19000 else 'a'
+QW = {1: 'first', 2: 'second', 3: 'third', 4: 'fourth'}
+def qtr(q): q = int(q or 1); return f"the {QW[q]} quarter" if q in QW else 'overtime'
+def play_txt(t):
+    """ESPN's scoring-play text as a phrase: 'a 43-yard field goal by Cairo Santos', 'Caleb Williams' 24-yard touchdown pass to Luther Burden III'"""
+    t = re.sub(r'\s+', ' ', str(t or '')).strip().rstrip('.')
+    m = re.match(r"^(.+?) (\d+) Yd Field Goal", t)
+    if m: return f"a {m.group(2)}-yard field goal by {m.group(1)}"
+    m = re.match(r"^(.+?) (\d+) Yd pass from (.+?)(?: \(.*\))?$", t)
+    if m: return f"{poss(m.group(3))} {m.group(2)}-yard touchdown pass to {m.group(1)}"
+    m = re.match(r"^(.+?) (\d+) Yd Rush(?: \(.*\))?$", t)
+    if m: return f"{poss(m.group(1))} {m.group(2)}-yard touchdown run"
+    m = re.match(r"^(.+?) (\d+) Yd (Interception|Fumble|Punt|Kickoff|Blocked Punt|Blocked Field Goal|Missed Field Goal) Return(?: \(.*\))?$", t)
+    if m: return f"{poss(m.group(1))} {m.group(2)}-yard {m.group(3).lower()} return for a touchdown"
+    return t
 TEAMS = {'ARI': 'Cardinals', 'ATL': 'Falcons', 'BAL': 'Ravens', 'BUF': 'Bills', 'CAR': 'Panthers', 'CHI': 'Bears', 'CIN': 'Bengals', 'CLE': 'Browns', 'DAL': 'Cowboys', 'DEN': 'Broncos',
          'DET': 'Lions', 'GB': 'Packers', 'HOU': 'Texans', 'IND': 'Colts', 'JAX': 'Jaguars', 'KC': 'Chiefs', 'LA': 'Rams', 'LAC': 'Chargers', 'LV': 'Raiders', 'MIA': 'Dolphins',
          'MIN': 'Vikings', 'NE': 'Patriots', 'NO': 'Saints', 'NYG': 'Giants', 'NYJ': 'Jets', 'PHI': 'Eagles', 'PIT': 'Steelers', 'SEA': 'Seahawks', 'SF': '49ers', 'TB': 'Buccaneers',
@@ -317,7 +342,7 @@ def lede_recap(G, key):
     elif G.margin >= 17: s = pick([f"The {W} rolled past the {L}, {sc}.", f"It was never close: the {W} beat the {L} {sc}.", f"The {W} handled the {L} {sc}."], key, 'bl')
     elif G.margin <= 3: s = pick([f"The {W} survived the {L}, {sc}{ot}.", f"The {W} edged the {L} {sc}{ot} in a game that came down to the end.", f"The {W} held on to beat the {L} {sc}{ot}."], key, 'cl')
     else: s = pick([f"The {W} beat the {L} {sc}{ot}.", f"The {W} took care of the {L}, {sc}{ot}.", f"The {W} pulled away from the {L} for a {sc} win{ot}."], key, 'md')
-    s += f" The {W} are {rw}; the {L} fall to {rl}."
+    s += ' ' + pick([f"The {W} move to {rw}, while the {L} fall to {rl}.", f"That puts the {W} at {rw}; the {L} drop to {rl}.", f"The {W} are now {rw}, and the {L} slip to {rl}."], key, 'rec')
     if g['ou']:
         diff = G.total - g['ou']
         if diff >= 10: s += f" The {G.total} combined points blew past the {fnum(g['ou'])}-point total, the kind of game fantasy managers dream about."
@@ -330,7 +355,7 @@ def flow_paragraph(G, key):
         if G.half: return f"{The(g['away'])} led {G.half[0]}-{G.half[1]} at halftime." if G.half[0] > G.half[1] else (f"{The(g['home'])} led {G.half[1]}-{G.half[0]} at halftime." if G.half[1] > G.half[0] else f"It was tied {G.half[0]}-{G.half[1]} at halftime.")
         return ''
     out = []; first = pl[0]
-    out.append(f"{The(first[2])} struck first in the {ordn(int(first[0] or 1))} quarter: {first[4].rstrip('.')}.")
+    out.append(pick([f"{The(first[2])} struck first in {qtr(first[0])} on {play_txt(first[4])}.", f"{The(first[2])} got on the board first, in {qtr(first[0])}, on {play_txt(first[4])}."], key, 'f1'))
     lead = None; changes = 0; decisive = None
     for x in pl:
         a, h = x[5] or 0, x[6] or 0; now = g['home'] if h > a else g['away'] if a > h else None
@@ -338,38 +363,49 @@ def flow_paragraph(G, key):
             if lead is not None: changes += 1
             lead = now; decisive = x
     tdl = [x for x in pl if (x[3] or '').upper() == 'TD' or 'touchdown' in (x[4] or '').lower()]
-    if changes >= 2: out.append(f"The lead changed hands {numw(changes) if changes <= 10 else changes} times.")
+    if changes >= 2: out.append(pick([f"From there it was a back-and-forth affair: the lead changed hands {numw(changes) if changes <= 10 else changes} times.", f"Neither side could pull away; the lead changed hands {numw(changes) if changes <= 10 else changes} times."], key, 'lc'))
     if decisive and decisive is not first:
         q = int(decisive[0] or 4)
         when = f"with {decisive[1]} left in the {ordn(q)} quarter" if decisive[1] and q <= 4 else ('in overtime' if q > 4 else '')
-        out.append(f"The go-ahead score for good came {when}: {decisive[4].rstrip('.')}.")
-    if len(tdl) >= 4 and changes < 2: out.append(f"In all there were {len(tdl)} touchdowns.")
+        out.append(f"The score that decided it came {when}: {play_txt(decisive[4])}.")
+    if len(tdl) >= 4 and changes < 2: out.append(pick([f"The offenses traded blows all day: {numw(len(tdl)) if len(tdl) <= 10 else len(tdl)} touchdowns in all, which is exactly what fantasy managers want to see.", f"In all there were {numw(len(tdl)) if len(tdl) <= 10 else len(tdl)} touchdowns, a good day for anyone with a piece of this game."], key, 'td'))
     return ' '.join(out)
 
 
 def player_note(p, r, pts, w, key):
-    """one player's game in a sentence, with what BFF expected"""
-    n = p['n']; pj = proj_then(p, w); prev = [x[1] for x in season_games(p, w)]
+    """one player's game in an analyst's words: the verdict first, then the line, then what it means (the same facts as
+    the box score and BFF's projection)"""
+    n = p['n']; pj = proj_then(p, w); prev = [x[1] for x in season_games(p, w)]; d = (pts - pj) if pj else 0
+    i = lambda v: int(round(float(v or 0)))
     if p['p'] == 'QB' and r.get('pa'):
-        s = f"{n} completed {r.get('pc', 0)} of {r['pa']} passes for {yd(r.get('py', 0))}"
-        bits = []
-        if r.get('ptd'): bits.append(plural(r['ptd'], 'touchdown'))
-        if r.get('int'): bits.append(plural(r['int'], 'interception'))
-        s += (' with ' + andj(bits) if bits else '')
-        run_ = ([f"{yd(r['ry'])} on the ground"] if (r.get('ry') or 0) >= 20 else []) + ([plural(r['rtd'], 'rushing score')] if r.get('rtd') else [])
-        if run_: s += ', adding ' + andj(run_)
+        line = f"{i(r.get('pc'))} of {i(r['pa'])} for {yd(i(r.get('py')))}"
+        tds_, ints_ = i(r.get('ptd')), i(r.get('int'))
+        line += (f" and {one(tds_, 'touchdown')}" if tds_ else '') + (f", with {one(ints_, 'interception')}" if ints_ else '')
+        run_ = ([f"{yd(i(r['ry']))} on the ground"] if (r.get('ry') or 0) >= 20 else []) + ([one(i(r['rtd']), 'rushing score')] if r.get('rtd') else [])
+        if run_: line += ', plus ' + andj(run_)
+        verb = pick(['went', 'finished', 'was'], key, n, 'qbv')
+        core = f"{verb} {line}"
     elif p['p'] == 'RB' or (r.get('ra') or 0) >= 6:
-        s = f"{n} ran {plural(r.get('ra', 0), 'time')} for {yd(r.get('ry', 0))}" + (f" and {plural(r['rtd'], 'touchdown')}" if r.get('rtd') else '')
-        if r.get('rec'): s += f", plus {plural(r.get('rec', 0), 'catch', 'catches')} for {yd(r.get('ty', 0))}" + (" and a receiving score" if r.get('rectd') else '')
+        core = f"carried {cnt(i(r.get('ra')), 'time')} for {yd(i(r.get('ry')))}" + (f" and {one(i(r['rtd']), 'touchdown')}" if r.get('rtd') else '')
+        if r.get('rec'): core += f", adding {cnt(i(r['rec']), 'catch', 'catches')} for {yd(i(r.get('ty')))}" + (" and a receiving score" if r.get('rectd') else '')
     else:
-        s = f"{n} caught {r.get('rec', 0)} of {plural(r.get('tg', 0), 'target')} for {yd(r.get('ty', 0))}" + (f" and {plural(r['rectd'], 'touchdown')}" if r.get('rectd') else '')
-    s += f" ({f1(pts)} PPR points"
+        rc, tg = i(r.get('rec')), i(r.get('tg'))
+        core = (f"caught all {numw(rc) if rc <= 10 else rc} of his targets" if rc == tg and rc >= 2 else f"caught {numw(rc) if rc <= 10 else rc} of {cnt(tg, 'target')}") + f" for {yd(i(r.get('ty')))}" + (f" and {one(i(r['rectd']), 'touchdown')}" if r.get('rectd') else '')
+    if pj and d >= 8: lead = pick([f"{n} stole the show:", f"{n} was the story:", f"{n} broke out:", f"Nobody did more damage than {n}, who"], key, n, 'big')
+    elif pj and d >= 2.5: lead = pick([f"{n} delivered:", f"{n} came through:", f"{n} paid off for his managers:"], key, n, 'good')
+    elif pj and d <= -2.5 and pj >= 8: lead = pick([f"{n} was a letdown:", f"It was a quiet day for {n}, who", f"{n} never got going:"], key, n, 'bad')
+    else: lead = pick([f"{n} did his job:", f"{n} was steady:", f"{n}"], key, n, 'flat')
+    lead = lead if lead.endswith((':', 'who')) else lead
+    s = f"{lead} {'he ' if lead.endswith(':') else ''}{core}."
     if pj:
-        d = pts - pj
-        s += (f", {f1(d)} above our {f1(pj)} projection" if d >= 2.5 else f", {f1(-d)} below our {f1(pj)} projection" if d <= -2.5 else f", right around our {f1(pj)} projection") + ')'
-    else: s += ')'
-    if len(prev) >= 2 and pts > max(prev) + .5 and pts >= 12: s += pick([', his best game of the season', ', a season high', ', easily his top game of the year'], key, n)
-    return s + '.'
+        if d >= 8: tail = pick([f"That's {f1(pts)} PPR points, {'more than double' if pts >= 2 * pj else 'well above'} the {f1(pj)} we projected.", f"Good for {f1(pts)} PPR points against {an_n(pj)} {f1(pj)} projection."], key, n, 't1')
+        elif d >= 2.5: tail = f"That's {f1(pts)} PPR points, {f1(d)} better than our {f1(pj)} projection."
+        elif d <= -2.5: tail = pick([f"Just {f1(pts)} PPR points, {f1(-d)} short of our {f1(pj)} projection.", f"That added up to {f1(pts)} PPR points against {an_n(pj)} {f1(pj)} projection."], key, n, 't3')
+        else: tail = f"That's {f1(pts)} PPR points, right around the {f1(pj)} we expected."
+    else: tail = f"That's {f1(pts)} PPR points."
+    s += ' ' + tail
+    if len(prev) >= 2 and pts > max(prev) + .5 and pts >= 12: s = s.rstrip('.') + pick(['; a new season high.', ', his best game of the season.', ', easily his top game of the year.'], key, n, 'hi')
+    return s
 
 
 def team_breakdown(G, tm, key):
@@ -385,8 +421,8 @@ def team_breakdown(G, tm, key):
         p, r, _, pts = rbs[0]; s = player_note(p, r, pts, w, key)
         if rb_car >= 8 and r.get('ra'):
             sh = r['ra'] / rb_car
-            s += ' ' + (pick([f"That was {round(sh * 100)}% of the backfield carries, a true workhorse share.", f"He handled {round(sh * 100)}% of the running back carries; that kind of volume holds up."], key, 'wh') if sh >= .7
-                        else f"He split the work, taking {round(sh * 100)}% of the running back carries." if sh <= .55 else f"He took {round(sh * 100)}% of the running back carries.")
+            s += ' ' + (pick([f"The bigger story is the workload: {round(sh * 100)}% of the backfield carries, a true bell-cow share.", f"He handled {round(sh * 100)}% of the running back carries, and that kind of volume travels week to week."], key, 'wh') if sh >= .7
+                        else pick([f"It's still a committee, though: he took {round(sh * 100)}% of the running back carries.", f"Don't read too much into it yet; he split the work, taking {round(sh * 100)}% of the running back carries."], key, 'sp') if sh <= .55 else f"He took {round(sh * 100)}% of the running back carries, the lead role but not all of it.")
         out.append(s)
         if len(rbs) > 1 and (rbs[1][1].get('ra') or 0) + (rbs[1][1].get('tg') or 0) >= 7: out.append(player_note(rbs[1][0], rbs[1][1], rbs[1][3], w, key))
     rec = sorted([x for x in R if x[0]['p'] in ('WR', 'TE', 'RB') and (x[1].get('tg') or 0) >= 4 and x not in rbs[:2]], key=lambda x: -((x[1].get('tg') or 0) * 2 + x[3]))
@@ -394,7 +430,7 @@ def team_breakdown(G, tm, key):
         s = player_note(p, r, pts, w, key)
         if i == 0 and tg_tot >= 15 and r.get('tg'):
             sh = r['tg'] / tg_tot
-            if sh >= .28: s += f" He drew {round(sh * 100)}% of the team's targets, the volume of a true number one."
+            if sh >= .28: s += ' ' + pick([f"He commanded {round(sh * 100)}% of the targets, the kind of volume a true number one gets.", f"With {round(sh * 100)}% of the team's targets, he is clearly the first read."], key, 'ts')
         out.append(s)
     return out
 
@@ -409,14 +445,14 @@ def stock_lists(G_list, key):
             if pts - pj >= 7 and pts >= 14 and NOW > G.g['kick']:
                 why = (f"{plural(r.get('tg', 0), 'target')} is real volume" if (r.get('tg') or 0) >= 8 else f"{r.get('ra', 0)} carries is a featured role" if (r.get('ra') or 0) >= 16
                        else 'a big arm day' if p['p'] == 'QB' and (r.get('py') or 0) >= 300 else 'the touchdowns did the heavy lifting, so temper expectations' if td_heavy else 'the role is growing')
-                up.append((pts - pj, p, f"{p['n']} ({p['p']}, {t}): {f1(pts)} points" + (f" vs a {f1(pj)} projection" if pj >= 1 else " out of nowhere") + f"; {why}."))
+                up.append((pts - pj, p, f"{p['n']} ({p['p']}, {t}): {f1(pts)} points" + (f" against {an_n(pj)} {f1(pj)} projection" if pj >= 1 else " out of nowhere") + f"; {why}."))
             elif pj >= 9 and pj - pts >= 6:
                 why = ((f"{plural(r.get('tg', 0), 'target')} but only {r.get('rec', 0)} for {yd(r.get('ty', 0))}" if (r.get('tg') or 0) >= 7 else f"only {plural(r.get('tg', 0), 'target')}") if p['p'] in ('WR', 'TE')
                        else (f"{r.get('ra', 0)} carries went for just {yd(r.get('ry', 0))}" if (r.get('ra') or 0) >= 14 else f"only {plural(r.get('ra', 0), 'carry', 'carries')}") if p['p'] == 'RB' else 'a rough day through the air')
                 sn = low_snap(p, G.w)
                 if p.get('inj') == 'IR' or 'for the season' in (p.get('injn') or ''): why += f"; he has since been {'placed on injured reserve' if p.get('inj') == 'IR' else 'ruled out for the season'}"
                 elif sn is not None: why += f"; he played just {round(sn * 100)}% of the snaps, which often points to an injury, so watch this week's injury report"
-                down.append((pj - pts, p, f"{p['n']} ({p['p']}, {t}): {f1(pts)} points on a {f1(pj)} projection, {why}."))
+                down.append((pj - pts, p, f"{p['n']} ({p['p']}, {t}): {f1(pts)} points on {an_n(pj)} {f1(pj)} projection, {why}."))
             if OWN(p) is not None and OWN(p) < 50 and (pts >= 12 or (r.get('tg') or 0) >= 7 or (r.get('ra') or 0) >= 13) and p['p'] != 'QB':
                 wav.append((pts + vol, p, f"{p['n']} ({p['p']}, {t}, rostered in {OWN(p)}% of leagues): {f1(pts)} points on {andj([plural(r['tg'], 'target') if r.get('tg') else '', plural(r['ra'], 'carry', 'carries') if r.get('ra') else ''])}." + (" The volume is worth chasing." if vol >= 10 else " One week is not a role, so check his snaps first.")))
     srt = lambda L: [x[2] for x in sorted(L, key=lambda x: -x[0])[:4]]
@@ -538,20 +574,22 @@ def team_outlook(g, tm, key, deep=True):
     qb = qb_of(tm)
     if qb and proj_wk(qb, w) > 0:
         r = wk_rank(qb, w); mw = matchup_words(opp, 'QB')
-        out.append(f"{qb['n']} projects for {f1(proj_wk(qb, w))} points" + (f", QB{r} this week" if r else '') + vs(mw) + '.')
+        out.append(pick([f"{qb['n']} projects for {f1(proj_wk(qb, w))} points" + (f" (QB{r} this week)" if r else '') + vs(mw) + '.', f"Under center, {qb['n']} is at {f1(proj_wk(qb, w))} projected points" + (f", QB{r} on the week" if r else '') + vs(mw) + '.'], key, qb['id']))
     elif qb is None or proj_wk(qb, w) <= 0:
         q2 = next((q for q in P if q['t'] == tm and q['p'] == 'QB' and q.get('qbs')), None)
         if q2: out.append(f"{q2['n']} is expected to start at quarterback.")
     rbs = team_players(tm, w, 2, ('RB',))
     if rbs:
         p = rbs[0]; cs = p.get('cs'); mw = matchup_words(opp, 'RB')
-        s = f"{p['n']} leads the backfield" + (f" with {round(cs * 100)}% of the carries this season" if cs else '') + f" and projects for {f1(proj_wk(p, w))}" + vs(mw) + '.'
+        s = pick([f"{p['n']} leads the backfield" + (f" with {round(cs * 100)}% of the carries this season" if cs else '') + f" and projects for {f1(proj_wk(p, w))}" + vs(mw) + '.',
+                  f"The backfield belongs to {p['n']}" + (f", who has taken {round(cs * 100)}% of the carries" if cs else '') + f"; he projects for {f1(proj_wk(p, w))}" + vs(mw) + '.'], key, p['id'])
         if len(rbs) > 1 and proj_wk(rbs[1], w) >= 7: s += f" {rbs[1]['n']} ({f1(proj_wk(rbs[1], w))}) is involved enough to flex in deeper leagues."
         out.append(s)
     rec = team_players(tm, w, 3, ('WR', 'TE'))
     if rec:
         p = rec[0]; ts = p.get('ts'); mw = matchup_words(opp, p['p'])
-        s = f"{p['n']} is the top target" + (f", drawing {round(ts * 100)}% of the targets" if ts else '') + f"; he projects for {f1(proj_wk(p, w))}" + vs(mw) + '.'
+        s = pick([f"{p['n']} is the top target" + (f", drawing {round(ts * 100)}% of the looks" if ts else '') + f"; he projects for {f1(proj_wk(p, w))}" + vs(mw) + '.',
+                  f"In the passing game, {p['n']} is the go-to option" + (f" ({round(ts * 100)}% target share)" if ts else '') + f" at {f1(proj_wk(p, w))} projected points" + vs(mw) + '.'], key, p['id'])
         if len(rec) > 1: s += ' ' + andj([f"{q['n']} ({f1(proj_wk(q, w))})" for q in rec[1:]]) + ' round out the passing game.'
         out.append(s)
     if deep and it:
@@ -585,13 +623,11 @@ def write_outlook(gs, key, label):
         body.append(GH(g))
         ra, rh = record(g['away'], w - 1), record(g['home'], w - 1)
         lede = pick([f"The {tm_name(g['away'])} ({ra}) visit the {tm_name(g['home'])} ({rh}) {gdaytime(g)}.", f"{tm_name(g['away'])} ({ra}) at {tm_name(g['home'])} ({rh}) kicks off {gdaytime(g)}."], key, g['home'])
-        if vegas(g): lede += f" Vegas has {vegas(g)}, which implies about {fnum(round(g['ia'] or 0))} points for {the(g['away'])} and {fnum(round(g['ih'] or 0))} for {the(g['home'])}." if g['ia'] and g['ih'] else f" Vegas has {vegas(g)}."
+        if vegas(g): lede += ' ' + line_story(g, key) + (f" Translated into points, the books expect about {fnum(round(g['ia'] or 0))} from {the(g['away'])} and {fnum(round(g['ih'] or 0))} from {the(g['home'])}." if g['ia'] and g['ih'] else '')
         ra_, rh_ = result_words(g['away'], w), result_words(g['home'], w)
         if ra_ and rh_: lede += f" The {tm_name(g['home'])} {rh_}; the {tm_name(g['away'])} {ra_}."
         hh = hot_hand({g['home'], g['away']}, w)
-        if hh: lede += f" {hh[0]['n']} comes in hot after a {f1(hh[1])}-point game."
-        if g['ou'] and g['ou'] >= 50: lede += ' That total is one of the week\'s highest, so this is a game to target.'
-        elif g['ou'] and g['ou'] <= 40: lede += ' That low total caps the ceiling for everyone involved.'
+        if hh: lede += ' ' + pick([f"{hh[0]['n']} comes in hot after {an_n(hh[1])} {f1(hh[1])}-point game.", f"Watch {hh[0]['n']}, who is coming off {an_n(hh[1])} {f1(hh[1])}-point outing."], key, 'hh')
         body.append(P_(lede))
         body.append(H_(f"{tm_name(g['away'])} outlook")); body.append(P_(team_outlook(g, g['away'], key)))
         body.append(H_(f"{tm_name(g['home'])} outlook")); body.append(P_(team_outlook(g, g['home'], key)))
@@ -620,17 +656,31 @@ def write_outlook(gs, key, label):
                 img={'k': 'game', 'away': g0['away'], 'home': g0['home'], 'gid': g0.get('gid')}), facts_digest([PI[i] for i in uniq(ment)], gs)
 
 
+def line_story(g, key):
+    """what the Vegas line says about a game, as an analyst would put it (the same spread and total, in words)"""
+    if g['sp'] is None or g['ou'] is None: return ''
+    fav, sp = fav_of(g); ou = g['ou']; F = tm_name(fav) if fav else None
+    if not fav: s = pick([f"Vegas can't split these two: it's a pick'em", f"The books see a true coin flip, a pick'em"], key, 'ls0')
+    elif sp >= 10: s = pick([f"The {F} are double-digit favorites ({fnum(sp)} points)", f"Vegas makes the {F} {fnum(sp)}-point favorites, a mismatch on paper"], key, 'ls1')
+    elif sp >= 6.5: s = pick([f"The {F} are favored by {fnum(sp)}, more than a touchdown", f"The {F} are solid {fnum(sp)}-point favorites"], key, 'ls2')
+    elif sp >= 3: s = pick([f"The {F} are {fnum(sp)}-point favorites", f"Vegas leans the {F}' way by {fnum(sp)}"], key, 'ls3')
+    else: s = pick([f"The {F} are slim {fnum(sp)}-point favorites, so expect a close one", f"It's close to a coin flip, with the {F} favored by just {fnum(sp)}"], key, 'ls4')
+    if ou >= 50: t = pick([f", and the {fnum(ou)} total says shootout: start your guys with confidence.", f" in a game totaled at {fnum(ou)}, one of the best fantasy environments of the week."], key, 'lt1')
+    elif ou >= 46: t = f", with a healthy {fnum(ou)} total."
+    elif ou <= 39.5: t = pick([f", and a {fnum(ou)} total points to a low-scoring grind, so temper expectations.", f", but the {fnum(ou)} total is one of the lowest you'll see: think field goals and punts."], key, 'lt2')
+    else: t = f", with a middle-of-the-road {fnum(ou)} total."
+    return s + t
 def capsule(g, key):
     """a few sentences on one game: the line, the best play, one more angle, who is out"""
-    w = g['wk']; s = f"Kickoff is {gtime(g)}" + (f", and Vegas has {vegas(g)}" if vegas(g) else '') + '.'
+    w = g['wk']; ls_ = line_story(g, key); s = (ls_ + ' ' if ls_ else '') + f"Kickoff is {gtime(g)}."
     tops = sorted(team_players(g['away'], w, 4) + team_players(g['home'], w, 4), key=lambda p: -proj_wk(p, w))
     if tops:
         p = tops[0]; opp = g['home'] if p['t'] == g['away'] else g['away']; mw = matchup_words(opp, p['p'])
-        s += ' ' + pick([f"{p['n']} is the top play here at {f1(proj_wk(p, w))} projected points", f"The headliner is {p['n']}, projected for {f1(proj_wk(p, w))}"], key, g['home']) + vs(mw) + '.'
+        s += ' ' + pick([f"{p['n']} is the play to build around here ({f1(proj_wk(p, w))} projected)", f"The headliner is {p['n']}, projected for {f1(proj_wk(p, w))}", f"Everything runs through {p['n']}, who projects for {f1(proj_wk(p, w))}"], key, g['home']) + vs(mw) + '.'
     angle = None
     for p in tops[1:]:
         wr, ur = wk_rank(p, w), usual_rank(p)
-        if wr and ur and wr + 8 <= ur: angle = f"{p['n']} ({p['p']}{wr} this week, usually {p['p']}{ur}) is a sneaky start."; break
+        if wr and ur and wr + 8 <= ur: angle = pick([f"The sneaky play is {p['n']}: he ranks {p['p']}{wr} this week, well above his usual {p['p']}{ur}.", f"Keep an eye on {p['n']}, who jumps to {p['p']}{wr} this week from his usual {p['p']}{ur}."], key, p['id']); break
     if not angle:
         x = (picks_for({g['home'], g['away']}, w) or [None])[0]
         if x: angle = f"Our favorite prop: {PI[x['pid']]['n']} {'over' if x['po'] >= .5 else 'under'} {x['line']} {SNAME.get(x['k'], x['k'])} ({round(max(x['po'], 1 - x['po']) * 100)}%)."
@@ -650,7 +700,7 @@ def write_sunday_outlook(gs, key):
     its = sorted([(g['ih'], g['home'], g) for g in gs if g['ih']] + [(g['ia'], g['away'], g) for g in gs if g['ia']], key=lambda x: -x[0])
     byes = sorted({t for t in (D.get('sched') or {}) if not any(x[0] == w and x[1] for x in D['sched'][t])})
     outs = injured({t for g in gs for t in (g['home'], g['away'])}, w, ('Out', 'IR', 'Doubtful'))
-    intro = pick([f"Sunday brings {plural(len(gs), 'game')}, from the early window through the night game.", f"Week {w}'s Sunday slate has {plural(len(gs), 'game')}, and plenty of lineup decisions."], key, 'i')
+    intro = pick([f"Sunday brings {plural(len(gs), 'game')}, from the early window through the night game, and a handful of lineup decisions that will swing matchups.", f"Week {w}'s Sunday slate has {plural(len(gs), 'game')}. Here is where the points should be, and where they probably won't."], key, 'i')
     if hi: intro += f" {tm_name(hi['away'])} at {tm_name(hi['home'])} carries the highest total ({fnum(hi['ou'])})"
     if its: intro += f", and {the(its[0][1])} have the biggest implied team total at {f1(its[0][0])} points." if hi else f" {The(its[0][1])} have the biggest implied team total at {f1(its[0][0])} points."
     elif hi: intro += '.'
@@ -658,7 +708,7 @@ def write_sunday_outlook(gs, key):
     body.append(P_(intro))
     things = []
     if outs: things.append(f"Key absences: {andj([p['n'] + ' (' + p['t'] + ')' for p in outs[:5]])}. Every projection below already accounts for them.")
-    if lo and hi and lo is not hi: things.append(f"Lowest total: {tm_name(lo['away'])} at {tm_name(lo['home'])} ({fnum(lo['ou'])}). Lower your expectations for everyone in that one.")
+    if lo and hi and lo is not hi: things.append(f"Lowest total: {tm_name(lo['away'])} at {tm_name(lo['home'])} ({fnum(lo['ou'])}). Vegas expects a slog, so lower your expectations for everyone in that one.")
     if its and len(its) > 1: things.append(f"Best offensive environments: {andj([f'{tm_name(t)} ({f1(v)})' for v, t, _ in its[:3]])}.")
     st, sit = start_sit(gs, w)
     if things: body.append(H_('Things to know')); body.append(UL(things))
@@ -822,9 +872,16 @@ def write_breaking(p, ev, key):
                   'traded': [f"{n} traded: what it means for fantasy", f"Fantasy fallout from the {n} trade"],
                   'released': [f"{n} released: the fantasy fallout", f"{n} cut: who benefits"],
                   'activated': [f"{n} back from injured reserve: the fantasy outlook", f"{n} activated off IR: start him or wait?"]}[kind], key)
-    body = [P_(f"{what}{(' (' + ev['why'] + ')') if ev.get('why') else ''}." + (f" It was first reported by {ev['src']}." if ev.get('src') else ''))]
+    body = [P_(f"{what}{(' (' + ev['why'] + ')') if ev.get('why') else ''}" + (f", according to {ev['src']}." if ev.get('src') else '.')
+               + ' ' + pick({'season': ["It's a gut punch for his fantasy managers, and it reshapes the depth chart for the rest of the year.", "That changes the outlook for the whole offense the rest of the way."],
+                              'ir': ["That means at least four games on the shelf, so plan for life without him for a while.", "Fantasy managers need a plan for the next month at least."],
+                              'out': ["Managers with him in their lineup need to pivot now.", "If he is in your lineup, it's time to make a change."],
+                              'doubtful': ["Doubtful players rarely suit up, so treat this as an absence and set your lineup accordingly.", "Plan as if he will sit."],
+                              'traded': ["A new team means a new role, and the ripple effects reach both depth charts.", "Here is how the move shakes out for fantasy."],
+                              'released': ["His fantasy value now depends on where he lands, and his old team's depth chart shifts today.", "Here is who picks up the slack."],
+                              'activated': ["Good news for his managers, though first games back often come with a pitch count.", "He is back, but ease him in if you can."]}[kind], key, 'bl'))]
     ur = usual_rank(p); g_ = p.get('g') or 0
-    s = f"{ln} has averaged {f1(p.get('fpg') or 0)} PPR points over {plural(g_, 'game')} this season" if g_ else f"{ln} has not played this season"
+    s = f"{ln} has averaged {f1(p.get('fpg') or 0)} PPR points over {cnt(g_, 'game')} this season" if g_ else f"{ln} has not played this season"
     if ur and ur <= 60: s += f" and ranks as a {p['p']}{ur} in BFF's per-game rest-of-season projection when healthy"
     s += '.'
     if kind == 'ir' and p.get('ret'):
@@ -964,7 +1021,7 @@ def claude_rewrite(art, facts):
 #    a starter who barely played his last game is flagged as a possible injury (landscape fallers, recap stock down)
 #    5: season-ending news is its own kind of breaking story (not "ruled out for week N"), with the diagnosis; recaps
 #       note a player since ruled out for the season or placed on injured reserve
-WV = 6
+WV = 7   # 7: the analyst voice (verdict-first player notes, scoring plays told as sentences, the line explained in words)
 def publish(aid, key, made, once=False):
     art, digest = made
     if not art: return False

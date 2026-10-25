@@ -55,6 +55,12 @@ jobs:
       - name: Build projections and collect news
         id: produce
         run: python ff_produce.py
+      - name: Kickers and team defenses (points, projections, ranks)
+        id: kdst
+        run: python ff_kdst.py
+      - name: Spin Draft data (rebuilt only when a season has finished)
+        id: game
+        run: python game_build.py
       - name: Sync Sleeper league (optional)
         id: sleeper
         env:
@@ -100,7 +106,7 @@ jobs:
         run: |
           git config user.name "gridiron-fantasy-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in index.html art proj_history.json parlay_history.json calls_history.json bet_inputs.json lines.json parlays.json news.json news_state.json articles.json proj_compare.json site_stats.json; do if [ -e "$f" ]; then git add -A "$f"; fi; done
+          for f in index.html art game.json proj_history.json parlay_history.json calls_history.json bet_inputs.json lines.json parlays.json news.json news_state.json articles.json proj_compare.json site_stats.json; do if [ -e "$f" ]; then git add -A "$f"; fi; done
           if git diff --cached --quiet; then echo "No changes to save"; exit 0; fi
           git commit -m "Data update $(date -u +%F-%H%M)"
           for i in 1 2 3; do
@@ -113,6 +119,8 @@ jobs:
         env:
           STEP_FETCH: ${{ steps.fetch.outcome }}
           STEP_PRODUCE: ${{ steps.produce.outcome }}
+          STEP_KDST: ${{ steps.kdst.outcome }}
+          STEP_GAME: ${{ steps.game.outcome }}
           STEP_LINES: ${{ steps.lines.outcome }}
           STEP_CALLS: ${{ steps.calls.outcome }}
           STEP_PAGE: ${{ steps.page.outcome }}

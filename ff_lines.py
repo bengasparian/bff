@@ -1,20 +1,27 @@
 #!/usr/bin/env python3
 """Predicted prop lines for BFF: what PrizePicks, Underdog and sportsbooks are expected to post this week.
 
-MARKET LINES (October 2026): books' lines track the public projections. Each passing, rushing and receiving yards and
-receptions line is set from the average of ESPN's and Sleeper's projections for that stat (site_stats.py, refreshed every
-10 minutes), scaled to where books set their lines: passing yards x 0.989, receiving yards x 0.919, rushing yards x 0.862
-(fit on the real week-7 2026 lines), receptions x 0.95 (no real receptions lines in the sample; this gives the same over rate
-as the other calibrated lines, 46% in 2025). Against the real week-7 lines, scored on players the fit did not use: average
-gap 3.4 receiving yards (was 6.9), 5.5 rushing yards (was 9.1), 9.6 passing yards (was 13.3), and lines for 48 of 49 real
-rushing lines (was 31) (research/bt_lines.py). BFF's own model stays out of the line, so the picks can test it.
-PICKS (October 2026): an under on passing, receiving or rushing yards when BFF's own model projects the player at least 10%
-below ESPN and Sleeper. In 2025, against lines built this way, those unders hit 57.2% (1,511 picks; taking every yardage
-under hit 55.1%), while overs where BFF was higher hit only 48.5%, so BFF picks no overs from them. "Chance" for every line
-is how often the over hit in 2025 for that stat and that gap between BFF and the sites. Passing touchdowns keep the
-model's own 0.5 / 1.5 / 2.5 lines and tested picks (below). A player neither site projects gets the model's line (below).
+MARKET LINES (refit Oct 25 2026 on 2 samples of real week-7 lines, research/bt_lines.py): books' lines track the public
+projections. Every line is set from the average of ESPN's and Sleeper's projection for that stat (site_stats.py,
+refreshed every 10 minutes), put through a rule fit to real posted lines:
+  passing yards 0.981 x the market, receiving yards 0.916 x, rushing yards 0.957 x - 3.9, receptions 0.975 x + 0.15
+  (rounded down to .5); passing touchdowns 0.5 below a market projection of 0.95, 2.5 from 2.3, else 1.5 (books post
+  0.5 for low-scoring passers such as Cam Ward, Daniel Jones or Malik Willis).
+Scored on players each fit did not use, against the books' lines read Sunday Oct 25 (scoresandodds.com): average gap
+3.3 receiving yards (the books themselves spread 3.3 apart), 4.0 rushing yards (books 2.8; was 4.6), 0.25 receptions
+(books 0.38; was 0.29), 11 passing yards (books 7.2; unchanged); passing-TD lines match 26 of 28 real lines (was 21 of 25).
+BFF's own model stays out of the line, so the picks can test it.
+PICKS: an under on passing or receiving yards when BFF's own model projects the player at least 10% below ESPN and
+Sleeper. In 2025, at lines built this way, those unders hit 57.4% (969 picks: passing 58.0%, receiving 57.2%; every
+yardage under 54.4%). Rushing-yard unders hit only 53.7% at the refit lines and overs where BFF was higher 46.6%, so neither
+is a pick. Receptions and passing TDs get no picks: books price those unders well above even money (often -150 to -200),
+so a high chance there is not an edge. Each pick says how far below our line it still holds (2025: passing 1.5%, receiving
+4.5%), because a real book's line can sit lower than ours. "Chance" for every line is how often the over hit in 2025 for
+that stat and that gap between BFF and the sites; passing TDs: the books' expected touchdowns read from real odds
+(0.578 + 0.676 x the market), scaled to match 2025 for that gap, through a Poisson count. A player neither site projects
+gets the model's line (below).
 
-MODEL LINES (the fallback, and passing touchdowns) are built the way books build them, from OPPORTUNITY:
+MODEL LINES (the fallback when neither site projects a player) are built the way books build them, from OPPORTUNITY:
   expected volume (targets, carries or pass attempts; recent games count more, last season counts like 1-3 games,
   injury-shortened games are left out) x the player's efficiency (catch rate, yards per target / carry / attempt,
   touchdowns per attempt; shrunk toward the position average) x this game (Vegas implied team total, the defense).
@@ -25,9 +32,9 @@ Settings were tuned on 2024 and tested on every 2025 game they had never seen: o
 they stay balanced for players whose role rose or fell, rookies, players returning from partial games, and at every line
 height (very high or low projections are pulled back toward typical, as books do).
 
-Picks: our projection model against each line. In the 2025 test, picks shown at 55%+ won 59.6% (1,080 picks).
-Receiving-yard picks did not beat their lines, so receiving yards get lines but never picks; quarterback rushing
-lines were not part of the pick test, so they get no picks either.
+Model lines carry a chance (our projection against the line, blended 50/50 with the line and kept within 38-62%) but
+no picks since Oct 25 2026: they were tested against model lines, not lines like the books', and the few players on them
+are the ones the books are least likely to price the same way.
 
 Two ways to run:
   python ff_lines.py            data job: reads ff_data.json + last season's stats, writes bet_inputs.json, lines.json
@@ -57,21 +64,30 @@ PAR = {'rec': dict(d=.75, Wv=2, pw=.5, k=30, a=0, b=.25, kb=0, pp=.7, nf=1, c=.8
 VOL = {'rec': 'tg', 'ty': 'tg', 'ry': 'car', 'ryq': 'car', 'py': 'att', 'ptd': 'att'}
 EFF = {'rec': ('rec', 'tg'), 'ty': ('ty', 'tg'), 'ry': ('ry', 'car'), 'ryq': ('ry', 'car'), 'py': ('py', 'att'), 'ptd': ('ptd', 'att')}
 GLI = {'att': 2, 'py': 3, 'ptd': 4, 'car': 6, 'ry': 7, 'rec': 9, 'tg': 10, 'ty': 11}       # columns of a game-log row
-PICKS = {'rec', 'ry', 'py', 'ptd'}; PICK_MIN = .55
-# market lines (see the docstring and research/results_lines.json)
-KMK = {'py': .989, 'ty': .919, 'ry': .862, 'ryq': .862, 'rec': .95}
+PICK_MIN = .55   # the pick bar the page quotes (market picks: 2025 hit rates above it)
+# market lines (see the docstring; every number below is research/results_lines.json, checked by tests/linetest.py)
+MKR = {'py': {'k': .9809}, 'ty': {'k': .9163}, 'ry': {'a': .9571, 'b': -3.894}, 'rec': {'a': .9746, 'b': .154}}   # 'rule'
+MKR['ryq'] = MKR['ry']
+PTD = {'t1': .95, 't2': 2.3, 'a': .578, 'b': .676, 'scale': {'below': .873, 'level': 1.094, 'above': 1.094}}   # 'above': no 2025 QBs; level's
 MKMIN = {'py': 150, 'ty': 15, 'ry': 7, 'ryq': 10, 'rec': 1.5}   # the smallest market projection that gets a line (books post down to about these)
-OVR = {'py': {'below': .416, 'level': .527, 'above': .527}, 'ty': {'below': .427, 'level': .435, 'above': .459},
-       'ry': {'below': .435, 'level': .478, 'above': .491}, 'rec': {'below': .439, 'level': .457, 'above': .512}}   # 2025: share of overs that hit
-MK_PICKS = {'py', 'ty', 'ry'}
-BT_MKT = {'source': 'real week-7 2026 lines from a public props page', 'gap_before': {'py': 13.3, 'ty': 6.9, 'ry': 9.1}, 'gap_after': {'py': 9.6, 'ty': 3.4, 'ry': 5.5},
-          'rush_lines': [31, 48, 49], 'over_2025': {'py': 46.1, 'ty': 43.4, 'ry': 46.3, 'rec': 46.4},
-          'picks': {'n': 1511, 'won': .572, 'by': {'py': .584, 'ty': .573, 'ry': .565}, 'every_under': .551, 'overs': .485}}
+OVR = {'py': {'below': .42, 'level': .532, 'above': .532}, 'ty': {'below': .428, 'level': .436, 'above': .459},
+       'ry': {'below': .463, 'level': .486, 'above': .514}, 'rec': {'below': .392, 'level': .415, 'above': .449}}   # 2025: share of overs that hit ('above' py: none in 2025, level's)
+MK_PICKS = {'py', 'ty'}                 # unders when BFF is 10%+ below the sites
+HOLD = {'py': .015, 'ty': .045}         # an under pick still holds (55%+ in 2025) down to this far below our line
+BT_MKT = {'source': "real week-7 2026 lines: a public props page (Oct 21-23) and scoresandodds.com on Sunday Oct 25 (each player's lowest and highest line across books)",
+          'gap': {'py': 11.2, 'ty': 3.3, 'ry': 4.0, 'rec': .25}, 'gap_was': {'py': 11.1, 'ty': 3.3, 'ry': 4.6, 'rec': .29}, 'books': {'py': 7.2, 'ty': 3.3, 'ry': 2.8, 'rec': .38},
+          'ptd': {'n': 28, 'match': 26, 'was': [21, 25]}, 'over_2025': {'py': 46.9, 'ty': 43.5, 'ry': 48.3, 'rec': 41.4, 'ptd': 46.3},
+          'picks': {'n': 969, 'won': .574, 'by': {'py': .58, 'ty': .572}, 'ry': .537, 'every_under': .544, 'overs': .466}, 'hold': HOLD}
 BT = {'season': 2025, 'tuned_on': 2024,
       'lines': {'rec': {'n': 2159, 'mae': 1.67, 'over': 46.8}, 'ty': {'n': 2159, 'mae': 21.9, 'over': 44.4}, 'ry': {'n': 658, 'mae': 26.4, 'over': 49.1},
                 'ryq': {'n': 293, 'mae': 13.7, 'over': 50.2}, 'py': {'n': 487, 'mae': 64.5, 'over': 50.0}, 'ptd': {'n': 502, 'mae': 1.00, 'over': 47.2}},
       'picks': {'thr': .55, 'n': 1080, 'won': .596, 'by': {'ptd': .582, 'py': .597, 'rec': .603, 'ry': .538}, 'ty': .46}}
 TEAMFIX = {'WSH': 'WAS', 'LAR': 'LA', 'JAC': 'JAX'}
+LV = 2   # line rules version: lines from an older version reopen instead of counting as moves (2 = the Oct 25 2026 refit)
+
+def pover(lam, line):
+    """chance of more than `line` (a .5 line) when the count arrives at rate lam (Poisson)"""
+    lam = max(float(lam), .01); return 1 - sum(math.exp(-lam) * lam ** i / math.factorial(i) for i in range(int(line) + 1))
 
 def cdf(q, x):
     if x < q[0]: return max(0, .05 * (1 - (q[0] - x) / (max(q[1] - q[0], .05) * 3)))
@@ -263,30 +279,36 @@ def build_lines(I, wk=None, teams=None):
             res = mean_for(r, k)
             if not res: continue
             m, vol, eff = res
-            mk = mk_(k) if k != 'ptd' else None
+            mk = mk_(k)
             if k == 'ryq':
                 base_ry = (sum(x[7] for x in r['F']) + (r['pr'] or {}).get('ry', 0)) / max(1, len(r['F']) + (r['pr'] or {}).get('n', 0))
                 if base_ry < 12 and not has('ryq'): continue
-            mm = None
+            mm = None; hold = None
             if PAR[k].get('sh') and CEN.get((k, pos)) is not None: m = CEN[(k, pos)] + PAR[k]['sh'] * (m - CEN[(k, pos)])
             kk = 'ry' if k == 'ryq' else k
             if mk is not None and mk > 0:   # market line: where books are expected to set it
-                line = math.floor(KMK[k] * mk) + .5
-                if k == 'py' and line < 150.5: continue
-                mm = m * (1 + (sn - 1) * .7)
-                po = OVR[kk][gb]; pick = bool(k in MK_PICKS and gb == 'below' and not (pos == 'QB' and kk == 'ry'))
+                if k == 'ptd':
+                    line = .5 if mk < PTD['t1'] else 2.5 if mk >= PTD['t2'] else 1.5
+                    mm = (PTD['a'] + PTD['b'] * mk) * PTD['scale'][gb]                 # expected touchdowns
+                    po = pover(mm, line); pick = False
+                else:
+                    R_ = MKR[k]; line = max(.5, math.floor(R_['k'] * mk if 'k' in R_ else R_['a'] * mk + R_['b']) + .5)
+                    if k == 'py' and line < 150.5: continue
+                    mm = mk * (max(.5, min(1.5, gr)) if gr else 1.0)                 # the sites' projection, scaled by BFF's model vs theirs
+                    po = OVR[kk][gb]; pick = bool(k in MK_PICKS and gb == 'below')
+                    if pick: hold = math.floor(line * (1 - HOLD[k])) + .5
                 src = 'mkt'
-            else:                           # model line
+            else:                           # model line (neither site projects him): a chance, no pick
                 raw = m * PAR[k]['c']
                 line = (.5 if m < .70 else 1.5 if m < 2.55 else 2.5) if k == 'ptd' else math.floor(raw) + .5   # passing-TD cutoffs tuned on 2024
                 if k == 'py' and line < 150.5: continue
                 mm = m * (sn if k == 'ptd' else 1 + (sn - 1) * .7)
-                if k == 'ptd': pm = 1 - sum(math.exp(-mm) * mm ** i / math.factorial(i) for i in range(int(line) + 1))
+                if k == 'ptd': pm = pover(mm, line)
                 else: pm = 1 - cdf(QS[QK(pos, k)], (line + 1e-4) / max(mm, .05))
-                po = min(.62, max(.38, .5 * pm + .25)); pick = bool(k in PICKS and max(po, 1 - po) >= PICK_MIN)
+                po = min(.62, max(.38, .5 * pm + .25)); pick = False
                 src = 'bff'
             lines.append({'pid': p['id'], 'wk': FW, 't': p['t'], 'opp': r['opp'], 'k': kk, 'line': line, 'mm': round(float(mm), 2), 'po': round(float(po), 3),
-                          'pick': pick, 'kick': r['kick'], 'q': bool(p.get('inj') == 'Questionable'), 'src': src, 'mk': round(float(mk), 1) if src == 'mkt' else None,
+                          'pick': pick, 'hold': hold, 'v': LV, 'kick': r['kick'], 'q': bool(p.get('inj') == 'Questionable'), 'src': src, 'mk': round(float(mk), 2 if k == 'ptd' else 1) if src == 'mkt' else None,
                           'gap': gr if src == 'mkt' else None,
                           'vol': round(float(vol), 1), 'eff': round(float(eff), 3), 'it': round(float(r['it']), 1), 'its': r['it_src'], 'bmp': round(float(r['bmp']), 1), 'pp': bool(r['last_part'])})
     return lines
@@ -294,7 +316,7 @@ def build_lines(I, wk=None, teams=None):
 # ------------------------------------------------------------------ history: opening line and every move, with the reason
 def why(old, new):
     R = []
-    if old.get('mk') and new.get('mk') and abs(new['mk'] - old['mk']) >= max(1, .03 * old['mk']): R.append(f"ESPN and Sleeper projections {old['mk']} → {new['mk']}")
+    if old.get('mk') and new.get('mk') and abs(new['mk'] - old['mk']) >= (.1 if new.get('k') == 'ptd' else max(1, .03 * old['mk'])): R.append(f"ESPN and Sleeper projections {old['mk']} → {new['mk']}")
     if old.get('src') != new.get('src') and new.get('src'): R.append('set from ESPN and Sleeper' if new['src'] == 'mkt' else 'set from BFF\'s model (sites not projecting him)')
     if abs((old.get('it') or 0) - (new.get('it') or 0)) >= .5: R.append(f"Vegas team total {old.get('it')} → {new.get('it')}")
     if abs((old.get('bmp') or 0) - (new.get('bmp') or 0)) >= .3: R.append('teammate injury news' if (new.get('bmp') or 0) > (old.get('bmp') or 0) else 'teammate returning')
@@ -318,7 +340,7 @@ def merge_history(new_lines, fw):
     moves = list(old.get('moves') or [])
     for l in new_lines:
         o = prev.get(key(l))
-        if o and 'src' not in o: o = None   # a line from before the market lines (Oct 2026): it reopens rather than counting as a move
+        if o and o.get('v') != LV: o = None   # a line from older rules (before the Oct 25 2026 refit): it reopens rather than counting as a move
         if not o:
             l['open'] = l['line']; l['opened'] = STAMP; l['mv'] = []
             continue
@@ -330,7 +352,7 @@ def merge_history(new_lines, fw):
     for kk_ in [k_ for k_ in prev if k_ not in now_keys]:
         pid, k, wk_ = kk_; o_ = prev[kk_]
         if o_.get('kick') and _dt(o_['kick']) and _dt(o_['kick']) <= NOW: continue   # the game started: not a pulled line
-        if 'src' not in o_: continue   # a line from before the market lines: not a pulled line
+        if o_.get('v') != LV: continue   # a line from older rules: not a pulled line
         n_ = PULLED.get(pid); w_ = f"pulled: {n_[1]} ({n_[2]})" if n_ else 'line pulled (injury report or role change)'
         moves.append({'pid': pid, 'k': k, 'from': o_['line'], 'to': None, 'at': STAMP, 'why': w_})
     sig = lambda L: sorted((l['pid'], l['k'], l['line'], round(l['po'], 2), l['q']) for l in L)

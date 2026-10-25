@@ -653,7 +653,7 @@ def _other_sites():
             v_=got[k_].get(p.get(idk)) if p.get(idk) else None
             if v_ is not None: n_[k_][0]+=1
             elif k_ in saved.get(p['id'],{}): v_=saved[p['id']][k_]; n_[k_][1]+=1
-            if v_ is not None and v_>0: d_[k_]=float(v_)
+            if v_ is not None and v_>=.05: d_[k_]=float(v_)   # a projection that rounds to 0.0 counts as none (zeros are missing)
         if d_: OTH[p['id']]=d_; p['pe']=r(d_['e'],1) if 'e' in d_ else None; p['ps']=r(d_['s'],1) if 's' in d_ else None
     print(f"other sites, week {NEXT}: ESPN {n_['e'][0]} fetched + {n_['e'][1]} saved, Sleeper {n_['s'][0]} fetched + {n_['s'][1]} saved")
 _other_sites()

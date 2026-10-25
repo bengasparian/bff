@@ -30,7 +30,7 @@ def accounts():
 
 
 t = open("template.html").read()
-assert t.count("__CSS__") == 1 and t.count("__DATA__") == 1
+assert t.count("__CSS__") == 1 and t.count("__DATA__") == 1 and t.count("__SDGAME__") == 1
 D = json.load(open("ff_data.json"))
 A = accounts()
 if A: D["auth"] = A
@@ -72,5 +72,10 @@ if os.environ.get("BFF_INLINE_ART") != "1":
     css = re.sub(r"""url\(["']?data:image/(webp|png|jpeg|svg\+xml);base64,([A-Za-z0-9+/=]{8000,})["']?\)""", _ext, css)
     for f in os.listdir("art"):
         if f"art/{f}" not in keep: os.remove(f"art/{f}")   # artwork no longer used
-open("index.html", "w").write(t.replace("__CSS__", css).replace("__DATA__", data))
+# Spin Draft (game_build.py): every team's fantasy scorers since 1999, parsed only when the game opens
+sdg = ""
+if os.path.exists("game.json"):
+    try: sdg = '<script type="application/json" id="sdgame">' + json.dumps(json.load(open("game.json")), separators=(",", ":")).replace("</", "<\\/") + "</script>"
+    except Exception as e: print("game.json could not be read:", e)
+open("index.html", "w").write(t.replace("__CSS__", css).replace("__DATA__", data).replace("__SDGAME__", sdg))
 print("index.html written")
