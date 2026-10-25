@@ -20,6 +20,8 @@
   "calls": "success",
   "check": "success",
   "fetch": "success",
+  "game": "success",
+  "kdst": "success",
   "lines": "success",
   "page": "success",
   "produce": "success",
