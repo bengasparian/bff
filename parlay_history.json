@@ -192,7 +192,8 @@
       "book": "bff",
       "n": "Cam Ward",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 0
      },
      {
       "pid": "00-0039923",
@@ -205,10 +206,11 @@
       "book": "bff",
       "n": "J.J. McCarthy",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 0
      }
     ],
-    "status": "pending"
+    "status": "won"
    },
    {
     "type": "bal",
@@ -225,7 +227,8 @@
       "book": "bff",
       "n": "Cam Ward",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 0
      },
      {
       "pid": "00-0039923",
@@ -238,7 +241,8 @@
       "book": "bff",
       "n": "J.J. McCarthy",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 0
      },
      {
       "pid": "00-0035228",
@@ -251,10 +255,11 @@
       "book": "bff",
       "n": "Kyler Murray",
       "pos": "QB",
-      "res": "pending"
+      "res": "miss",
+      "act": 150
      }
     ],
-    "status": "pending"
+    "status": "lost"
    },
    {
     "type": "long",
@@ -271,7 +276,8 @@
       "book": "bff",
       "n": "Cam Ward",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 0
      },
      {
       "pid": "00-0039923",
@@ -284,7 +290,8 @@
       "book": "bff",
       "n": "J.J. McCarthy",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 0
      },
      {
       "pid": "00-0035228",
@@ -297,7 +304,8 @@
       "book": "bff",
       "n": "Kyler Murray",
       "pos": "QB",
-      "res": "pending"
+      "res": "miss",
+      "act": 150
      },
      {
       "pid": "00-0039732",
@@ -326,7 +334,7 @@
       "res": "pending"
      }
     ],
-    "status": "pending"
+    "status": "lost"
    }
   ]
  }
