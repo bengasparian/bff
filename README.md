@@ -116,9 +116,18 @@ last good version, so the published site never breaks.
   catch), 6-point passing touchdowns, points per carry or first down, interception and fumble penalties, and the
   rest. Every projection, ranking, BFF value, trade value, draft pick and waiver target re-scores for it. A linked
   Sleeper league's scoring is read automatically.
-- **Ask BFF, powered by BFF Brain, in Ben's voice:** the chat button on every page (in the header on phones). BFF Brain
-  is BFF's own question model, trained here and running inside the page (no outside AI anywhere in Ask BFF: no Claude,
-  no ChatGPT, no key): a logistic-regression intent model over words, word pairs and letter groups (so typos still work),
+- **Ask BFF AI:** Ask BFF now talks like a person: any wording, follow-ups ("what about him next week?"), comparisons,
+  "why", small talk, all from BFF's numbers. An open AI model writes the replies (no Claude): on **BFF's AI server**
+  (OpenAI's open-weight gpt-oss-120b on Cloudflare's free tier, once you switch it on: see **Ask BFF AI** below), or the
+  **on-device AI** a visitor can turn on (an open Qwen3 model run in the browser). The page hands the model the facts
+  for the question (the players and teams asked about, with this week's projection and range, matchup, injuries, stats,
+  rest of season, trade value, prop lines, news and where they sit in your league; teams' schedules, results and
+  injuries; rankings, waiver targets, scores, your roster and best lineup, and the classic answer below), and **every
+  number in a reply is checked against those facts** before it shows: a made-up number gets one retry, then the
+  classic answer. When the AI is not available (not switched on, its free daily allowance used up, the claude.ai copy,
+  or "Classic answers only" in AI settings), the classic Ask BFF answers.
+- **Classic Ask BFF, powered by BFF Brain, in Ben's voice:** BFF Brain is BFF's own question model, trained here and
+  running inside the page (no outside AI and no key): a logistic-regression intent model over words, word pairs and letter groups (so typos still work),
   trained on about 16,200 football questions (`research/brain/`), that sorts a question into 28 kinds (start/sit,
   outlook, trade, trade value, keep or drop, waivers, rankings, league leaders, stats, injury status, news, team,
   defense matchups, game predictions, props, parlays, touchdown scorers, lineup, roster help, weekly calls, how BFF
@@ -544,14 +553,43 @@ allows.
   questionable players), locks them at the week's first kickoff, and grades them from official box scores.
 - For entertainment, 21+ where legal. Gambling problem? Call or text 1-800-GAMBLER.
 
+## Ask BFF AI (optional; about 10 minutes, free)
+Ask BFF's smartest mode runs on **BFF's AI server**: a small program (`ai/worker.js`) on Cloudflare's free tier that runs
+an open AI model with Cloudflare Workers AI. No Claude, no OpenAI account, no cost: Cloudflare's free plan includes
+10,000 "Neurons" a day (reset at 00:00 UTC), roughly 50 to 90 questions a day with gpt-oss-120b. When they are used up
+the server says so and Ask BFF gives classic answers until the reset; nothing is ever charged on the free plan.
+1. Create a free account at [dash.cloudflare.com](https://dash.cloudflare.com/sign-up) and open **Workers & Pages**
+   once (that gives the account its `workers.dev` address).
+2. Copy your **Account ID**: on Workers & Pages, under **Account Details**, press the copy button next to Account ID
+   (or search the dashboard for "Copy account ID").
+3. Make an API token: your profile, **API Tokens**, **Create Token**, the **Edit Cloudflare Workers** template, then
+   create it and copy it.
+4. In your GitHub repository: **Settings**, **Secrets and variables**, **Actions**, **New repository secret**: add
+   `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` with the two values.
+5. **Actions**, **BFF AI server**, **Run workflow**. It deploys the server, checks that it answers, saves its address in
+   `ai.json` and rebuilds the page. Ask BFF's header then says "BFF AI".
+
+How it is kept safe and cheap: only your site's own pages may call the server (it reads the site address from the
+repository, plus `CNAME` if you use your own domain), the server adds BFF's rules itself (football only, facts only;
+the page can't change them), each address gets 12 requests a minute, messages are size-capped, and nothing is stored.
+To answer more questions a day, swap `MODEL` and `FALLBACK_MODEL` in `ai/wrangler.toml` (Qwen3 30B fits about four
+times as many) and run the workflow again. To switch the server off, delete `ai.json` (or the Worker in Cloudflare).
+**On-device AI** needs no setup: in Ask BFF's AI settings a visitor can turn it on; the browser downloads an open Qwen3
+model once (about 1 GB on phones and smaller computers, about 2.5 GB on bigger ones) and runs it with WebGPU (recent
+Chrome or Edge on a computer, Chrome on Android, Safari 26 and later). It is used when the server is not available.
+Tested: `tests/aiworker.mjs` (the server with a stand-in for Cloudflare: origins, limits, the free allowance, the
+fallback model, reply shapes) and `tests/aitest.py` (the page with a stand-in server and engine: the facts sent, the
+number check, lookups, follow-ups, the league, the fallbacks, escaping, the device check). The real models answer only
+on your site once it is switched on.
+
 ## Updating an existing site to this version
 If Claude has access to your repository it pushes updates itself. To do it by hand, upload (replace) these files:
 `template.html`, `app.css`, `index.html`, the `art/` folder, `brain.json`, `kb.json`, `articles.py`, `ff_build2.py`,
 `ff_feat.py`, `ff_model.py`, `ff_produce.py`, `fetch_data.py`, `assemble.py`, `check_page.py`, `ff_lines.py`,
 `parlay_update.py`, `calls_update.py`, `ff_news.py`, `news_update.py`, `live_update.py`, `proj_compare.py`, `ff_stack.py`, `site_stats.py`,
 `ff_kdst.py`, `game_build.py`, `game.json`, `sync_sleeper.py`, `health.py`, `requirements.txt`, `firestore.rules`, `.gitignore`, `.nojekyll`, `README.md`, the
-`research/` folder (the accuracy tests and Ask BFF's training; optional, never run by the workflows), and both workflow
-files in `.github/workflows/` (`update.yml`, `scores.yml`). `calls_backfill.py` is retired and can be deleted. Leave
+`research/` folder (the accuracy tests and Ask BFF's training; optional, never run by the workflows), the `ai/` folder
+(BFF's AI server), and the three workflow files in `.github/workflows/` (`update.yml`, `scores.yml`, `ai.yml`). `calls_backfill.py` is retired and can be deleted. Leave
 your `*_history.json`, `lines.json`, `parlays.json`, `bet_inputs.json`, `articles.json`, `news.json`, `news_state.json`,
 `live.json`, `site_stats.json` and `proj_compare.json` alone; your workflows keep those up to date. Then run **Update Gridiron Fantasy** once (the first
 run builds the model's 13-season feature tables, about 6 extra minutes).
@@ -609,4 +647,7 @@ Optional: add the `ANTHROPIC_API_KEY` secret for Claude-written articles (see **
   [scoring categories](https://help.yahoo.com/kb/SLN6442.html) (what counts as points allowed). Spin Draft and kicker/D/ST
   history: nflverse weekly player stats, team stats and play-by-play. Real prop lines used to fit and check BFF's lines
   (read by hand, Oct 2026): a public props page and [scoresandodds.com](https://www.scoresandodds.com/nfl/props).
+- Ask BFF AI: [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/) ([free allowance and prices](https://developers.cloudflare.com/workers-ai/platform/pricing/))
+  running OpenAI's open-weight [gpt-oss-120b](https://developers.cloudflare.com/workers-ai/models/gpt-oss-120b/) (and Qwen3 30B);
+  on the device, [WebLLM](https://github.com/mlc-ai/web-llm) 0.2.86 with Qwen3 4B or 1.7B.
 - BFF is not affiliated with the NFL, its teams, or any source listed here.

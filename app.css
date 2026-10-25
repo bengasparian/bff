@@ -936,6 +936,15 @@ body.boton .botfab{opacity:0;pointer-events:none}
 .botsug{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}.botsug button{font:600 .76rem Inter,sans-serif;padding:6px 10px;border-radius:99px;border:1px solid var(--line2);background:var(--solid);color:var(--ink);cursor:pointer;text-align:left}.botsug button:hover{border-color:var(--acc2);color:var(--acc2)}
 .botin{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}.botin input{flex:1;min-width:0;border-radius:12px}.botin .btn,.botin .ghost{flex:none}
 .botfine{margin:0;padding:0 14px 10px;font-size:.66rem;color:var(--mute)}
+/* BFF AI: the reply tag, thinking dots, on-device draft, notes and the AI settings fold */
+.aitag{display:block;margin-top:6px;font-size:.66rem;color:var(--mute);letter-spacing:.01em}
+.ainote{margin:0 0 6px!important;font-size:.76rem;color:var(--mute)}
+.aithink{display:flex;align-items:center;gap:4px;color:var(--mute);font-size:.8rem}.aithink i{width:6px;height:6px;border-radius:50%;background:var(--acc2);animation:aidot 1s infinite ease-in-out}.aithink i:nth-child(2){animation-delay:.15s}.aithink i:nth-child(3){animation-delay:.3s;margin-right:4px}
+@keyframes aidot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.aidraft{opacity:.7}
+.aiopt{margin:0 14px 8px;font-size:.72rem;color:var(--mute)}.aiopt>summary{cursor:pointer;font-weight:700;color:var(--ink2,var(--mute));padding:2px 0}.aiopt .aibody{max-height:min(32vh,240px);overflow:auto;overscroll-behavior:contain;padding:6px 2px 2px}.aiopt p{margin:0 0 6px}.aiopt p.m{font-size:.68rem}.aiopt .ghost{padding:3px 10px;font-size:.7rem;margin-left:4px}
+.aibar{height:5px;border-radius:9px;background:var(--line);overflow:hidden;margin:0 0 8px}.aibar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s}
+.aichk{display:flex!important;gap:6px;align-items:center;justify-content:flex-start;margin:0 0 6px;cursor:pointer;font-size:.72rem;text-transform:none;letter-spacing:0}.aichk input{width:auto!important;min-width:0;height:auto;margin:0;flex:none;accent-color:var(--acc)}
 
 /* ---- phone header search button (hidden on computers) */
 .qsbtn{display:none}
@@ -970,7 +979,7 @@ body.boton .botfab{opacity:0;pointer-events:none}
  .totop,body.nbon .totop{display:none}
  .toasts,body.nbon .toasts{bottom:calc(58px + 34px + 74px + env(safe-area-inset-bottom,0px))}
 }
-@media(prefers-reduced-motion:reduce){body::before,.nkick.brk,.gcard,.botmsg,.bot{animation:none}.gcbar i.run{animation:none;width:100%}}
+@media(prefers-reduced-motion:reduce){body::before,.nkick.brk,.gcard,.botmsg,.bot,.aithink i{animation:none}.gcbar i.run{animation:none;width:100%}}
 
 /* ===== v26: trade values chart ===== */
 .vhead,.vrow{display:grid;grid-template-columns:42px minmax(0,1.7fr) minmax(130px,1fr) minmax(0,1fr);gap:12px;align-items:center}

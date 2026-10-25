@@ -167,7 +167,7 @@
 <div class="bot" id="bot" hidden role="dialog" aria-label="Ask BFF"><div class="both"><span class="botav" aria-hidden="true"></span><div class="botti"><b>Ask BFF</b><span id="botst" class="botst"></span></div><button type="button" class="botx" data-botclose aria-label="Close Ask BFF">&times;</button></div>
 <div class="botlog" id="botlog" aria-live="polite"></div><div class="botsug" id="botsug"></div>
 <form class="botin" id="botform" autocomplete="off"><input id="botin" type="text" placeholder="Ask about players, trades, lineups or BFF" aria-label="Ask BFF" maxlength="400"><button class="btn" id="botsend" type="submit">Ask</button></form>
-<p class="botfine">Ask anything about football or BFF. Answers use BFF's projections and data: estimates, not guarantees.</p></div>
+<p class="botfine">Ask anything about football or BFF. Answers use BFF's projections and data: estimates, not guarantees.</p><details class="aiopt" id="aiopt"><summary>AI settings</summary><div class="aibody"></div></details></div>
 <nav class="btabs" id="btabs" aria-label="Sections"><button type="button" data-bt2="players"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>Home</button><button type="button" data-bt2="live"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M8.8 8.8a4.5 4.5 0 0 0 0 6.4M15.2 8.8a4.5 4.5 0 0 1 0 6.4"/></svg>Live</button><button type="button" data-bt2="news"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 9h8M8 12.5h8M8 16h5"/></svg>News</button><button type="button" data-bt2="help"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18l5-6 4 3 7-9"/><path d="M15 6h5v5"/></svg>Help</button><button type="button" data-bt2="more"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>More</button></nav>
 <div class="sheet" id="more" hidden role="dialog" aria-modal="true" aria-label="More"><div class="sheetbg" data-closemore></div><div class="sheetbox"><div class="sheetgrab"></div>
 <div class="sheettiles"><button type="button" class="sheetacc" id="sheetacc" data-openacc=""><b>Sign in</b><span>Save leagues &amp; favorites</span></button><button type="button" data-more="league"><b>My League</b><span>Lineup, trades, matchup</span></button><button type="button" data-more="draft"><b>Draft</b><span>Mock draft &amp; draft guide</span></button><button type="button" data-more="learn"><b>Learn</b><span>Accuracy &amp; sources</span></button></div>
@@ -566,7 +566,7 @@ async function loadMedia(x){if(!CAN_LIVE||!PHOTOS||!x||!/^\d+$/.test(String(x.id
 // On your own site: email + password accounts with Google Firebase (free plan; switched on by the site owner, see README).
 // On claude.ai: your Claude sign-in is the account, saved with this page's own storage.
 // Everything also stays saved on the device, so the site works the same with or without an account.
-const TERMS_V='2026-10-15',ACC_KEYS=['ff_league','ff_mine','ff_favs','ff_fmt','ff_score','ff_theme','ff_photos','ff_opp','ff_lv'];
+const TERMS_V='2026-10-25',ACC_KEYS=['ff_league','ff_mine','ff_favs','ff_fmt','ff_score','ff_theme','ff_photos','ff_opp','ff_lv'];
 const ACFG=D.auth||{},FBC=ACFG.firebase&&ACFG.firebase.apiKey&&ACFG.firebase.projectId?ACFG.firebase:null;
 const ACC={mode:ON_CLAUDE?'claude':FBC?'firebase':'none',user:null,view:'main',msg:'',err:'',busy:false,at:null,needTerms:false,cl:null};
 const accLS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}};
@@ -700,6 +700,7 @@ function privacyHtml(){const fb=ACC.mode==='firebase'||ACC.mode==='none';return 
 <h3>What an account stores</h3><p>${ACC.mode==='claude'?'On this claude.ai copy: an anonymous account id from your Claude sign-in (your display name is shown to you but not stored)':'Your email address, a securely hashed password (handled by Google Firebase Authentication; BFF never sees it) and the name you choose'}, plus what you save in BFF: linked leagues and your team in them, favorite players, scoring format, theme and display settings, the date you accepted these terms and when your data was last saved.</p>
 <h3>What it is used for</h3><p>Only to sign you in and give your saved data back to you on any device. BFF does not sell or rent your information, show ads, or share it except with the service providers that run accounts (${fb?'Google Firebase':'Anthropic’s claude.ai'}) or when the law requires it.</p>
 <h3>On your device</h3><p>The site saves your settings in your browser's local storage so it works without an account. Signing in also keeps a sign-in token there. BFF does not use advertising or tracking cookies. Pictures and live scores load directly from their publishers (such as ESPN), who may log those requests under their own policies.</p>
+<h3>Ask BFF's AI</h3><p>When BFF's AI server is on, a question you type in Ask BFF is sent, with the BFF data it needs (projections, stats, news and, if you linked one, your league's rosters), to BFF's AI server on Cloudflare, which runs an open AI model to write the reply. BFF's server keeps no copy; Cloudflare handles the request under its own policies. Your account details are never sent. If you turn on the on-device AI, the model is downloaded once (the code from jsDelivr, the model files from Hugging Face and GitHub) and runs in your browser, so your questions stay on your device. You can choose classic answers only in Ask BFF's AI settings.</p>
 <h3>Children</h3><p>Accounts are not for children under 13, and we do not knowingly keep data about them. If you believe a child under 13 has an account, contact us and we will delete it.</p>
 <h3>Your choices</h3><p>You can see your saved data on the site, change it any time, and delete your account and all of its saved data from the account menu. You can also sign out and remove the copy on a device. To ask anything about your data, contact us through ${CONTACT}.</p>
 <h3>Security and changes</h3><p>Sign-in and storage are handled by ${fb?'Google Firebase over encrypted connections, with rules that let each account read and write only its own data':'claude.ai, where each person’s saved data is private to them'}. No system is perfectly secure. If this policy changes, the version date changes and you will be asked to accept it again.</p>`}
@@ -2464,8 +2465,8 @@ const BOTOFF=/\b(recipe|cook|weather|stock|crypto|bitcoin|homework|essay|math|eq
 const BOTPOS=t=>{const m=/\b(qbs?|quarterbacks?|rbs?|running backs?|wrs?|wide receivers?|receivers?|tes?|tight ends?)\b/i.exec(t);if(!m)return null;const x=m[1].toLowerCase();return x.startsWith('q')?'QB':x.startsWith('r')&&!x.startsWith('rec')?'RB':x.startsWith('w')||x.startsWith('rec')?'WR':'TE'};
 const BOTDOMAIN=/fantasy|football|nfl|over ?\/? ?under|\bo\/u\b|tonight|game|matchup|\bwin\b|winner|score|touchdown|\btd\b|ncaa|college|super ?bowl|pro ?bowl|playoff|postseason|wild ?card|conference|afc|nfc|division|standings|record|coach|kicker|punter|field goal|extra point|two[- ]point|safety|sack|intercept|fumble|penalt|referee|overtime|stadium|rookie|veteran|contract|free agen|combine|mvp|heisman|hall of fame|depth chart|backup|starter|roster|squad|my (team|guys|players)|start|sit\b|bench|flex|lineup|trad(e|ing)|mock|waiver|faab|keeper|dynasty|best ball|redraft|adp|zero rb|handcuff|stack|dst|d\/st|pick ?up|drop|draft|rank|projection|proj|points|ppr|league|sleeper|espn|yahoo|matchup|defen[cs]e|qb|rb|wr|\bte\b|quarterback|running back|receiver|tight end|injur|questionable|doubtful|\bout\b|bye|playoff|schedule|odds|\bline|prop|parlay|bet|spread|touchdown|\btds?\b|yards|reception|target|snap|usage|buy low|sell high|bust|boom|weekly call|must start|must sit|favorite|bff|site|website|tab|game|score|live|news|coach|roster|season|week|stream|handcuff|ceiling|floor|upside|keeper|dynasty|super ?flex/i;
 // ---------- data the answers are built from
-function botWeekLine(p){const v=pw(p),r=D.model.range[p.p]||[.5,1.5],lo=v*r[0],hi=v*r[1],o=oppW(p),gr=grade(p.p,o),bb=boomBust(p,v),k=(schW(p,FW)||[])[5];
- return{v,lo,hi,o,home:homeW(p),gr,bb,kick:k,inj:p.nw===FW?p.inj:(p.inj==='IR'?'IR':null),bye:!o}}
+function botWeekLine(p){const v=pw(p),r=D.model.range[p.p]||[.5,1.5],lo=v*r[0],hi=v*r[1],o=oppW(p),gr=grade(p.p,o),bb=boomBust(p,v),k=(schW(p,FW)||[])[5],played=!o&&!!(sch(p.t,FW)||[])[1];
+ return{v,lo,hi,o,home:homeW(p),gr,bb,kick:k,inj:p.nw===FW?p.inj:(p.inj==='IR'?'IR':null),bye:!o&&!played,done:played}}   // done: his team already played this week
 function botCompare(L,need){const ros=need==='ros';const R=L.map(p=>{const W=botWeekLine(p);return{p,W,score:ros?rosTot(p,FW):need==='ceiling'?W.hi:need==='floor'?W.lo:W.v}}).sort((a,b)=>b.score-a.score);return R}
 // a second opinion only when it disagrees with the verdict: q = (what you get) / (what you give) by that measure
 const tradeNote=(q,d,who)=>{if(q==null||(q<=1.3&&q>=1/1.3))return'';if(Math.abs(d)>.1&&(q>1)===(d>0))return'';return ` ${who} rate ${q>1?'what you get':'what you give'} well above the other side${Math.abs(d)<=.1?', so expect pushback':''}.`};
@@ -2738,7 +2739,7 @@ const BOTHELP=[
 // ---------- instant answers
 const bchip=p=>`<a href="#" class="chipp" data-pl="${p.id}">${avatar(p,20)}${esc(p.n)}</a>`;
 const bgo=(go,lab)=>go?`<button type="button" class="ghost botgo" data-goto="${go}">${lab} &rarr;</button>`:'';
-function botWhy(p){const W=botWeekLine(p),R=[];if(W.bye)return['on bye this week'];R.push(`${f1(W.v)} projected (range ${f1(W.lo)} to ${f1(W.hi)})`);if(W.o)R.push(`${W.gr.lab.toLowerCase()} matchup ${W.home?'vs':'@'} ${W.o}${W.gr.rk?` (${W.gr.rk} of 32)`:''}`);
+function botWhy(p){const W=botWeekLine(p),R=[];if(W.bye)return['on bye this week'];if(W.done)return[`already played in week ${FW}; next: week ${p.nw}${p.opp?` ${p.home?'vs':'@'} ${p.opp}`:''}, ${f1(proj(p))} projected`];R.push(`${f1(W.v)} projected (range ${f1(W.lo)} to ${f1(W.hi)})`);if(W.o)R.push(`${W.gr.lab.toLowerCase()} matchup ${W.home?'vs':'@'} ${W.o}${W.gr.rk?` (${W.gr.rk} of 32)`:''}`);
  if(W.bb)R.push(`boom ${pc(W.bb.boom)}, bust ${pc(W.bb.bust)}`);if(itW(p)!=null)R.push(`team total ${f1(itW(p))}`);if(p.p!=='QB'&&p.xfpg)R.push(`usage worth ${f1(p.xfpg)} a game`);if(W.inj)R.push(`listed ${W.inj}`);return R}
 // ---------- BFF Brain: BFF's own question model, trained on football questions and running right here in the page (no
 // outside AI). An intent model (logistic regression on words, word pairs and letter groups, so typos still work) trained
@@ -2808,7 +2809,7 @@ function brainStats(p,lo){const G=p.gl||[],n=G.length;if(!n)return{html:`<p>${bc
  const tot=[0,sum(1),sum(2),sum(3),sum(4),sum(5),sum(6),sum(7),sum(8),sum(9),sum(10),sum(11),sum(12)];
  return{html:`<p>${bchip(p)} ${p.p} · ${esc(p.t)} · <b>${f1(p.fpg)} PPR points a game</b> over ${n} game${n>1?'s':''}${p.xfpg!=null?` (usage worth ${f1(p.xfpg)})`:''}.</p><ul><li>Season: ${line(tot)}</li><li>Last game (week ${last[0]}${lw?` vs ${esc(lw[6])}`:''}): ${line(last)}${lw?` · ${f1(lw[1])} points`:''}</li>${p.snap!=null?`<li>Snap share ${pc(p.snap)}${p.ts!=null&&p.p!=='QB'?`, target share ${pc(p.ts)}`:''}${p.cs!=null&&p.p==='RB'?`, carry share ${pc(p.cs)}`:''}</li>`:''}</ul><button type="button" class="ghost botgo" data-pl="${p.id}">Full game log on his card &rarr;</button>`,ok:true,intent:'stats'}}
 function brainInjury(p){const W=botWeekLine(p),N=favNews(p),st=p.inj;
- const head=st==='IR'?`<b>${esc(p.n)} is on ${esc(p.rsv||'injured reserve')}.</b>${p.ret?` BFF expects him back around week ${p.ret>18?'(not this season)':p.ret}.`:''}`:st?`<b>${esc(p.n)} is listed ${esc(st)} for week ${FW}.</b>${st==='Out'||st==='Doubtful'?' BFF projects him for 0 this week.':` Questionable players played 61% of the time in 2021-2025; his projection is ${f1(W.v)}.`}`:W.bye?`<b>${esc(p.n)} has no injury designation; ${esc(TNAME[p.t]||p.t)} are on a bye in week ${FW}.</b> He projects ${f1(p.proj)} points in week ${p.nw}.`:`<b>${esc(p.n)} has no injury designation for week ${FW}.</b> He projects ${f1(W.v)} points.`;
+ const head=st==='IR'?`<b>${esc(p.n)} is on ${esc(p.rsv||'injured reserve')}.</b>${p.ret?` BFF expects him back around week ${p.ret>18?'(not this season)':p.ret}.`:''}`:st?`<b>${esc(p.n)} is listed ${esc(st)} for week ${FW}.</b>${st==='Out'||st==='Doubtful'?' BFF projects him for 0 this week.':` Questionable players played 61% of the time in 2021-2025; his projection is ${f1(W.v)}.`}`:W.bye?`<b>${esc(p.n)} has no injury designation; ${esc(TNAME[p.t]||p.t)} are on a bye in week ${FW}.</b> He projects ${f1(p.proj)} points in week ${p.nw}.`:W.done?`<b>${esc(p.n)} has no injury designation; the ${esc(TNAME[p.t]||p.t)} already played in week ${FW}.</b> He projects ${f1(proj(p))} points in week ${p.nw}.`:`<b>${esc(p.n)} has no injury designation for week ${FW}.</b> He projects ${f1(W.v)} points.`;
  return{html:`<p>${bchip(p)} ${head}</p>${p.injn?`<p class="m">${esc(p.injn)}${p.injs?` (${esc(p.injs)})`:''}</p>`:''}${p.prac?`<p class="m">Practice: ${esc(p.prac)}</p>`:''}${N?`<p class="m">Latest: ${esc(N.h)} (${esc(N.s)})</p>`:''}${bgo('news:inj','Injury report')}`,ok:true,intent:'injury',mood:st==='IR'||st==='Out'||st==='Doubtful'?'bad':st?'q':'good'}}
 function brainNews(p){const N=favNews(p),A=ART.filter(a=>(a.players||[]).includes(p.id)).slice(0,2);
  return{html:`<p>${bchip(p)} ${p.inj?`listed <b>${esc(p.inj)}</b>. `:''}${N?`Latest: <b>${esc(N.h)}</b> (${esc(N.s)})`:'No new headlines about him in the last few days.'}</p>${A.length?`<p>BFF Originals: ${A.map(a=>`<a href="#" data-art2="${esc(a.id)}">${esc(a.title)}</a>`).join(' · ')}</p>`:''}<button type="button" class="ghost botgo" data-pl="${p.id}">Open his card &rarr;</button>`,ok:true,intent:'news'}}
@@ -2920,12 +2921,12 @@ function botAnswer(text,B){B=B||{};const s=String(text||'').trim(),lo=s.toLowerC
    return{html:`<p><b>${keep?'Keep':'Fine to drop'} ${esc(p.n)}.</b> He ranks ${p.p}${rr} for the rest of the season (${f1(rosTot(p,FW))} points)${p.inj&&p.inj!=='IR'?`, listed ${p.inj}`:''}.${p.inj==='IR'?` He is on injured reserve${p.ret&&p.ret<=18?` with a return expected around week ${p.ret}`:p.ret>18?' and not expected back this season':''}; ${p.ret&&p.ret<=18&&keep?'stash him in an IR slot if your league has one.':'his points left already count the missed games.'}`:''}${!keep?' Check the waiver targets for someone with more upside.':''}</p>${bgo('help:tg','Waiver targets')}`,ok:true,intent:'drop'}}
   const sig=botSig(p);
   const N=favNews(p),Lp=propLines().filter(x=>x.pid===p.id);
-  return{html:`<p>${bchip(p)} ${p.p} · ${esc(p.t)} · <b>${W.bye?`bye in week ${FW}`:`${vd.lab} in week ${FW}`}</b></p><ul>${botWhy(p).map(x=>`<li>${x}</li>`).join('')}<li>${p.p}${PR[p.id]||'–'} this week · season ${p.fpg!=null?f1(adj(p,p.fpg)):'–'} points a game over ${p.g} games</li>${Lp.length?`<li>Props: ${Lp.map(x=>`${SNAME[x.k]} ${x.line}${x.pick?` (${x.po>=.5?'over':'under'})`:''}`).join(', ')}</li>`:''}</ul>${sig.map(x=>`<p>${x}</p>`).join('')}${N?`<p class="m">Latest: ${esc(N.h)} (${esc(N.s)})</p>`:''}<button type="button" class="ghost botgo" data-pl="${p.id}">Open his card &rarr;</button>`,ok:true,intent:'player'}}
+  return{html:`<p>${bchip(p)} ${p.p} · ${esc(p.t)} · <b>${W.bye?`bye in week ${FW}`:W.done?`already played in week ${FW}`:`${vd.lab} in week ${FW}`}</b></p><ul>${botWhy(p).map(x=>`<li>${x}</li>`).join('')}<li>${p.p}${PR[p.id]||'–'} this week · season ${p.fpg!=null?f1(adj(p,p.fpg)):'–'} points a game over ${p.g} games</li>${Lp.length?`<li>Props: ${Lp.map(x=>`${SNAME[x.k]} ${x.line}${x.pick?` (${x.po>=.5?'over':'under'})`:''}`).join(', ')}</li>`:''}</ul>${sig.map(x=>`<p>${x}</p>`).join('')}${N?`<p class="m">Latest: ${esc(N.h)} (${esc(N.s)})</p>`:''}<button type="button" class="ghost botgo" data-pl="${p.id}">Open his card &rarr;</button>`,ok:true,intent:'player'}}
  if(T.length&&!L.length){const tm=T[0],q=pos;if(q||/defen[cs]e|dst|against|allow/i.test(lo)){const Q=q||'WR',d=(D.dvp[tm]||{})[Q];if(!d)return{html:`<p>No defense data for ${tm} yet.</p>`,ok:true};
    return{html:`<p>The ${tm} defense allows <b>${f1(d[0])}</b> PPR points a game to ${Q}s (${d[1]} games), ${Math.round((d[2]-1)*100)>=0?'+':''}${Math.round((d[2]-1)*100)}% vs league average. It ranks ${d[3]} of 32 against ${Q}s (32 = easiest), a <b>${grade(Q,tm).lab.toLowerCase()}</b> matchup.</p>${bgo('help:matchups/def','Defense vs position')}`,ok:true,intent:'defense'}}
   const s_=sch(tm,FW);if(s_&&s_[1]){const W_=gcWatch({away:s_[2]?s_[1]:tm,home:s_[2]?tm:s_[1],wk:FW});return{html:`<p>Week ${FW}: ${tm} ${s_[2]?'vs':'@'} ${s_[1]}${s_[5]?`, ${kickTxt(s_[5])}`:''}. ${fav(s_[6],s_[2]?tm:s_[1],s_[2]?s_[1]:tm)||''}${s_[7]!=null?` · O/U ${s_[7]}`:''}. Implied team total ${f1(s_[3])}.</p>${W_.length?`<p>Players to watch: ${W_.map(p=>`${bchip(p)} ${f1(pw(p))}`).join(' ')}</p>`:''}`,ok:true,intent:'team'}}}
  // no players named
- if(bi==='waiver'||/waiver|pick ?up|free agent|stream|who should i add|add\b/i.test(lo)){const W_=waiverPool().filter(x=>!pos||x.p.p===pos).slice(0,6);return{html:`<p>Top waiver targets${pos?` at ${pos}`:''} for most leagues (usually unrostered in 12-team leagues):</p><ul>${W_.map(x=>`<li>${bchip(x.p)} ${x.p.p} · ${esc(x.p.t)} · ${pw(x.p)>0?f1(pw(x.p))+' this week':'on bye this week'}, ${f1(rosTot(x.p,FW))} rest of season</li>`).join('')}</ul>${bgo('help:tg','All waiver targets')}`,ok:true,intent:'waiver'}}
+ if(bi==='waiver'||/waiver|pick ?up|free agent|stream|who should i add|add\b/i.test(lo)){const W_=waiverPool().filter(x=>!pos||x.p.p===pos).slice(0,6);return{html:`<p>Top waiver targets${pos?` at ${pos}`:''} for most leagues (usually unrostered in 12-team leagues):</p><ul>${W_.map(x=>`<li>${bchip(x.p)} ${x.p.p} · ${esc(x.p.t)} · ${pw(x.p)>0?f1(pw(x.p))+' this week':botWeekLine(x.p).done?'already played this week':'on bye this week'}, ${f1(rosTot(x.p,FW))} rest of season</li>`).join('')}</ul>${bgo('help:tg','All waiver targets')}`,ok:true,intent:'waiver'}}
  if(bi==='lineup'||/my (team|lineup|roster|guys)|who should i (start|play)|set my lineup|optimal lineup/i.test(lo)){const me=mine();if(!me)return{html:'<p>Link your league in <b>My League</b> and pick your team, and I can set your best lineup. Meanwhile the cheat sheet has this week\'s must starts and sits.</p>'+bgo('league:set','Link a league'),ok:true};
   const Lu=lineup(me.players,null,lwVal);return{html:`<p>Your best week ${lineupWeek()} lineup projects <b>${f1(Lu.tot)}</b>:</p><ul>${Lu.st.map(x=>`<li>${x.slot}: ${bchip(PI[x.id])} ${f1(x.v)}</li>`).join('')}</ul>${Lu.bench.length?`<p class="m">Top bench: ${Lu.bench.slice(0,3).map(x=>`${esc(PI[x.id].n)} ${f1(x.v)}`).join(', ')}</p>`:''}${bgo('league:lu','Lineup & waivers')}`,ok:true,intent:'lineup'}}
  if(/must start|must sit|this week'?s? (calls|starts|sits)|who (are|is) (the )?must/i.test(lo)){const C=wcData(),cw=C&&C.weeks[C.cw];if(!cw)return{html:'<p>This week\'s calls appear after the next data update.</p>',ok:true};const Q=pos?[pos]:POS;
@@ -2949,12 +2950,215 @@ function botHead(){const st=g('botst');if(st)st.innerHTML=`<i class="botdot"></i
 function botScroll(){const L=g('botlog');if(L)L.scrollTop=L.scrollHeight}
 function botAdd(who,html){const L=g('botlog');const d=document.createElement('div');d.className='botmsg '+(who==='me'?'fm':'fb');d.innerHTML=html;L.append(d);botScroll();return d}
 function botOpen(o=true){const b=g('bot');if(!b)return;BOT.open=o;b.hidden=!o;g('botfab').setAttribute('aria-expanded',o);document.body.classList.toggle('boton',o);
- if(o){if(!g('botlog').children.length){botAdd('bot',`<p>${(VOX&&VOX.intro)||"<b>Hey, it's Ben.</b> Ask me anything football: who to start, whether a trade is fair, who to pick up, a player, a team, the rules, or how BFF works."}</p>`);g('botsug').innerHTML=BOTSUG().map(q=>`<button type="button" data-botq="${esc(q)}">${esc(q)}</button>`).join('')}botHead();setTimeout(()=>g('botin').focus(),50)}}
+ if(o){if(!g('botlog').children.length){botAdd('bot',`<p>${(VOX&&VOX.intro)||"<b>Hey, it's Ben.</b> Ask me anything football: who to start, whether a trade is fair, who to pick up, a player, a team, the rules, or how BFF works."}</p>${aiOn()&&!aiSrvOK()&&HOSTED&&navigator.gpu&&ls('ff_aidev')!=='1'?`<p class="m ainote">Want answers that understand any wording and keep up a conversation? Turn on <a href="#" data-aiopen>BFF's on-device AI</a>.</p>`:''}`);g('botsug').innerHTML=BOTSUG().map(q=>`<button type="button" data-botq="${esc(q)}">${esc(q)}</button>`).join('')}botHead();aiPaint();if(ls('ff_aidev')==='1'&&!AIM.dev&&!AIM.devLoading&&!AIM.devErr&&aiOn())aiDevLoad().catch(()=>{});setTimeout(()=>g('botin').focus(),50)}}
+// ---------- BFF AI (Oct 25 2026): Ask BFF's conversational brain, on top of the classic Ask BFF below. Smartest first:
+//  1. BFF's AI server: ai/worker.js on Cloudflare's free tier runs a large open model (no Claude); on when the AI workflow
+//     has deployed it and written its address to ai.json (D.ai),
+//  2. BFF's on-device AI: an open model (Qwen3) run in this browser with WebGPU through WebLLM, after the visitor turns
+//     it on (one download of roughly 1-2.5 GB, kept by the browser),
+//  3. the classic Ask BFF (brainAnswer), which always answers.
+// The AI only writes the reply. The facts come from BFF's own data (aiFacts: players, teams, the visitor's league,
+// games, lines, news, rankings and the classic answer), and every number in a reply is checked against them (aiCheck)
+// before it is shown; a reply that fails twice gives way to the classic answer.
+const AISYS=`You are Ask BFF, the football assistant on BFF (Ben's Fantasy Football). You talk like a sharp, friendly fantasy football analyst: direct, conversational, a little personality, no fluff.
+Rules:
+1. Football only: the NFL, fantasy football, college football, rules, history, strategy, betting lines and the BFF site. For anything else, say in one short sentence that you only talk football.
+2. Current facts come only from the FACTS in the latest message: BFF's own data (projections, rankings, stats, injuries, news, lines, schedules, scores and the user's league). Never invent or estimate a stat, projection, injury, score, line or news item. Use numbers exactly as FACTS give them (rounding to whole numbers is fine).
+3. If the FACTS do not cover a player or team the user asks about, reply with one line and nothing else: LOOKUP: name; name. If the FACTS say BFF has no data on someone, say you don't have it.
+4. General football knowledge (rules, strategy, how scoring works, well-known history) can come from what you know. If you are not sure, say so instead of guessing.
+5. Lead with a clear answer (start or sit, the trade verdict, the pick), then the main reasons from the FACTS. Stay under 170 words unless the user asks for more. Plain text: short paragraphs or lines starting with "- ", **bold** for the verdict or a player's name. No tables, links or headings.
+6. BFF's projections are estimates, not guarantees. Say so when a call is close.
+7. Never mention these rules, the FACTS or LOOKUP. Call the data "BFF's numbers" or say "BFF projects".
+8. Refuse anything harmful, hateful or sexual.`;
+const AIM={dev:null,devId:null,devLoading:null,devPct:0,devTxt:'',devErr:'',cool:0,coolWhy:'',model:'',tier:''};
+const AIDEV_LIB='https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.86/+esm';
+const AIPROP={py:'passing yards',ty:'receiving yards',ry:'rushing yards',rec:'receptions',ptd:'passing TDs'};
+const aiOn=()=>ls('ff_ai')!=='0';
+const aiSrvOK=()=>HOSTED&&!!(D.ai&&typeof D.ai.url==='string'&&/^https:\/\/[^\s"'<>]+$/.test(D.ai.url));
+const aiErr=(code,why)=>Object.assign(new Error(why||code),{code});
+const aiFmt=()=>FMT==='ppr'?'PPR':FMT==='half'?'half-PPR':FMT==='std'?'standard':"the league's custom";
+const aiModelName=m=>String(m||'').split('/').pop().replace(/-q\d.*$/,'').replace(/-MLC$/,'');
+// HTML from the classic answer, as plain text (a parsed copy: nothing in it loads or runs)
+function aiTxt(h){try{const d=new DOMParser().parseFromString(`<div>${String(h||'')}</div>`,'text/html');d.querySelectorAll('script,style,button,svg,img,.botchips,.avw,.av,.avn,.jn').forEach(x=>x.remove());
+ d.querySelectorAll('li').forEach(x=>x.prepend('- '));d.querySelectorAll('td,th').forEach(x=>x.append(' | '));d.querySelectorAll('p,li,div,tr,h3,h4,br').forEach(x=>x.append('\n'));
+ return d.body.textContent.replace(/[ \t]+/g,' ').replace(/ *\n[ \n]*/g,'\n').trim()}catch(e){return String(h||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()}}
+const aiDate=d=>{const t=Date.parse(d||'');if(!t)return'';try{return ETF({month:'short',day:'numeric'}).format(new Date(t))}catch(e){return''}};
+// ---- the fact sheet
+function aiPlayer(p,short){const o=[],W=botWeekLine(p),tm=TNAME[p.t]||p.t;
+ o.push(`${p.n}: ${p.p}, ${tm} (${p.t})${p.role?`, ${p.role} on the depth chart`:''}${p.age?`, age ${Math.floor(p.age)}`:''}${p.bye?`, bye week ${p.bye}`:''}.`);
+ if(W.bye)o.push(`Week ${FW}: bye, no game.`);
+ else if(W.done){const s=sch(p.t,FW),op=sch(s[1],FW),wr=(p.wk||[]).find(r=>r[0]===FW);o.push(`Week ${FW}: his game is over${s[4]!=null&&op[4]!=null?` (${tm} ${s[4]}, ${TNAME[s[1]]||s[1]} ${op[4]}, final)`:''}${wr?`; he scored ${f1(wr[1])} PPR points`:''}. Next game: week ${p.nw}${p.opp?` ${p.home?'home vs':'at'} ${TNAME[p.opp]||p.opp}`:''}; BFF projects ${f1(proj(p))} points in ${aiFmt()} scoring.`)}
+ else o.push(`Week ${FW}: ${W.home?'home vs':'at'} ${TNAME[W.o]||W.o}${W.kick?`, ${kickTxt(W.kick)}`:''}. BFF projects ${f1(W.v)} points in ${aiFmt()} scoring (likely range ${f1(W.lo)} to ${f1(W.hi)})${p.nw===FW&&PR[p.id]?`, ${p.p}${PR[p.id]} this week, BFF's call: ${verdict(p).lab}`:''}.`
+  +(W.gr&&W.gr.rk?` Matchup: ${W.gr.lab.toLowerCase()} (${TNAME[W.o]||W.o} rank ${W.gr.rk} of 32 in fantasy points allowed to ${p.p}s; 32 allows the most).`:'')
+  +(W.bb?` Boom chance ${pc(W.bb.boom)}, bust chance ${pc(W.bb.bust)}.`:'')+(itW(p)!=null?` ${tm} implied team total ${f1(itW(p))} points.`:''));
+ const lv=aiLive(p);if(lv)o.push(lv);
+ o.push(p.inj?`Injury: ${p.inj}${p.injd?` (${p.injd})`:''}${p.injn?`. ${p.injn}`:''}${p.prac?`. Practice: ${p.prac}`:''}${p.inj==='IR'&&p.ret?(p.ret>18?'. Not expected back this season':`. BFF expects him back around week ${p.ret}`):''}.`:'Injury: none listed.');
+ if(short)return o.join(' ');
+ const G=p.gl||[];if(G.length){const s=i=>G.reduce((a,r)=>a+(+r[i]||0),0),q=[];
+  if(p.p==='QB'||s(2))q.push(`${s(1)} of ${s(2)} passing, ${s(3)} passing yards, ${s(4)} passing TD, ${s(5)} INT`);if(s(6))q.push(`${s(6)} carries, ${s(7)} rushing yards, ${s(8)} rushing TD`);
+  if(p.p!=='QB'||s(9))q.push(`${s(9)} catches on ${s(10)} targets, ${s(11)} receiving yards, ${s(12)} receiving TD`);
+  o.push(`${D.asof.season} season: ${G.length} game${G.length>1?'s':''}, ${f1(p.fpg)} PPR points a game${p.xfpg!=null?` (his usage is worth ${f1(p.xfpg)} a game)`:''}; ${q.join('; ')}.${p.prev?` Last season: ${f1(p.prev)} PPR points a game.`:''}`)}
+ else o.push(`${D.asof.season} season: no games played yet.${p.prev?` Last season: ${f1(p.prev)} PPR points a game.`:''}`);
+ const WK=(p.wk||[]).slice(-3);if(WK.length)o.push(`Recent games, PPR points: ${WK.map(r=>`week ${r[0]} vs ${r[6]} ${f1(r[1])}`).join(', ')}.`);
+ if(p.snap!=null)o.push(`Usage: ${pc(p.snap)} of snaps${p.ts!=null&&p.p!=='QB'?`, ${pc(p.ts)} of targets`:''}${p.cs&&p.p==='RB'?`, ${pc(p.cs)} of carries`:''}.`);
+ const nx=(p.ros||[]).filter(r=>r[0]>FW).slice(0,4);o.push(`Rest of season (weeks ${FW}-17): BFF projects ${f1(rosTot(p,FW))} points${nx.length?`; next: ${nx.map(r=>`week ${r[0]} vs ${r[1]} ${f1(wkProj(p,r[0]))}`).join(', ')}`:''}.`);
+ const V=tvCache().V[p.id];if(V&&V.tv){const same=P.filter(q=>q.p===p.p).sort((a,b)=>tradeVal(b)-tradeVal(a));o.push(`Trade value on BFF's chart: ${f1(V.tv)} (${p.p}${same.indexOf(p)+1} by trade value)${V.vorp!=null?`, ${f1(V.vorp)} over a waiver-level ${p.p}`:''}.`)}
+ const sig=botSig(p).map(aiTxt);if(sig.length)o.push(sig.join(' '));
+ const PL=propLines().filter(x=>x.pid===p.id);if(PL.length)o.push(`BFF's prop lines for week ${PL[0].wk||FW}: ${PL.map(x=>`${AIPROP[x.k]||x.k} ${x.line} (BFF's over chance ${pc(x.po)}${x.pick?`; BFF pick: ${x.po<.5?'under':'over'}${x.hold!=null?`, holds down to ${x.hold}`:''}`:''})`).join('; ')}.`);
+ const N=NEWSH.filter(h=>(h.p||[]).includes(p.id)).slice(0,2);if(N.length)o.push(`News: ${N.map(h=>`"${h.h}" (${h.s||'news'}${aiDate(h.d)?', '+aiDate(h.d):''})`).join('; ')}.`);
+ else{const n=(D.news||[]).find(d=>d.id===p.id);if(n&&n.x)o.push(`Official report: ${n.x}.`)}
+ if(LG){const own=ownerOf(p.id),me=mine();o.push(own?(me&&own===me?`In the user's league: on the user's team.`:`In the user's league: on ${own.name}${own.owner?` (${own.owner})`:''}.`):`In the user's league: not on any roster (available).`)}
+ return o.join(' ')}
+function aiLive(p){const x=LIVE.games.find(y=>(y.home===p.t||y.away===p.t)&&y.state&&y.state!=='pre');if(!x)return'';const B=boxOf(x.id).players,r=B.find(r=>findP(r)===p);
+ return `Week ${(D.live||{}).week||NW} game ${x.state==='post'?'(final)':`(in progress, ${x.detail||'live'})`}: ${x.away} ${x.as} at ${x.home} ${x.hs}. ${r?`${p.n} in it: ${f1(fpts(r,p))} points in ${aiFmt()} scoring (${statLine(r)}).`:B.length?`${p.n} has no stats in it so far.`:''}`}
+function aiTeam(tm){const nm=TNAME[tm]||tm,S=D.sched[tm]||[],o=[`${nm} (${tm}): record ${teamRec(tm,99)}.`];
+ const res=r=>{const q=sch(r[1],r[0]);return q[4]==null||r[4]==null?'':`week ${r[0]} ${r[4]>q[4]?'W':r[4]<q[4]?'L':'T'} ${r[4]}-${q[4]} ${r[2]?'vs':'at'} ${TNAME[r[1]]||r[1]}`};
+ const past=S.filter(r=>r[1]&&r[4]!=null&&r[0]<=FW).slice(-3).map(res).filter(Boolean);if(past.length)o.push(`Latest results: ${past.join(', ')}.`);
+ const x=S.find(r=>r[0]>=FW&&r[1]&&r[4]==null);
+ if(!S.some(r=>r[0]===FW&&r[1]))o.push(`Week ${FW}: bye.`);
+ if(x){o.push(`Next game: week ${x[0]} ${x[2]?'home vs':'at'} ${TNAME[x[1]]||x[1]}${x[5]?`, ${kickTxt(x[5])}`:''}${x[6]!=null?`, point spread ${x[6]>0?'+':''}${x[6]}${x[6]<0?` (favored by ${-x[6]})`:x[6]>0?` (underdog by ${x[6]})`:''}`:''}${x[7]!=null?`, over/under ${x[7]}`:''}${x[3]!=null?`, implied ${f1(x[3])} points`:''}.`);
+  const ps=P.filter(p=>p.t===tm&&!out(p)),top=(q,n)=>ps.filter(p=>p.p===q).sort((a,b)=>wkProj(b,x[0])-wkProj(a,x[0])).slice(0,n).map(p=>`${p.n} ${f1(wkProj(p,x[0]))}`).join(', ');
+  o.push(`BFF's week ${x[0]} projections: QB ${top('QB',1)||'none'}; RB ${top('RB',2)||'none'}; WR ${top('WR',3)||'none'}; TE ${top('TE',1)||'none'}.`)}
+ const inj=P.filter(p=>p.t===tm&&p.inj&&p.inj!=='IR').slice(0,8),ir=P.filter(p=>p.t===tm&&p.inj==='IR').slice(0,6);
+ if(inj.length||ir.length)o.push(`Injuries: ${inj.map(p=>`${p.n} (${p.p}) ${p.inj}`).concat(ir.map(p=>`${p.n} (${p.p}) on IR`)).join(', ')}.`);
+ const lg=LIVE.games.find(y=>(y.home===tm||y.away===tm));if(lg&&lg.state!=='pre')o.push(`Week ${(D.live||{}).week||NW} game ${lg.state==='post'?'(final)':'(in progress, '+(lg.detail||'live')+')'}: ${lg.away} ${lg.as} at ${lg.home} ${lg.hs}.${lg.rhl?` Recap headline: ${lg.rhl}.`:''}`);
+ const d=D.dvp[tm];if(d)o.push(`${nm} defense, fantasy points allowed per game: ${POS.filter(q=>d[q]).map(q=>`${q}s ${f1(d[q][0])} (rank ${d[q][3]} of 32; 32 allows the most)`).join(', ')}.`);
+ return o.join(' ')}
+function aiPosList(pos,n,ros){const L=P.filter(p=>p.p===pos&&(ros?p.inj!=='IR':avail(p))).sort((a,b)=>ros?rosTot(b,FW)-rosTot(a,FW):pw(b)-pw(a)).slice(0,n);
+ return ros?`BFF's top ${pos}s for the rest of the season (weeks ${FW}-17, ${aiFmt()} points): ${L.map((p,i)=>`${i+1}. ${p.n} (${p.t}) ${f1(rosTot(p,FW))}`).join('; ')}.`
+  :`BFF's top ${pos}s for week ${FW} (${aiFmt()} points): ${L.map((p,i)=>`${i+1}. ${p.n} (${p.t}${oppW(p)?`, ${homeW(p)?'vs':'at'} ${oppW(p)}`:''}) ${f1(pw(p))}`).join('; ')}.`}
+function aiMine(){if(!LG)return"The user has not linked a league on BFF.";const S=slots(),me=mine();
+ let o=`The user's league: ${LG.name||'their league'}, ${LG.teams.length} teams, ${aiFmt()} scoring, starting ${Object.entries(S).filter(([,v])=>v).map(([k,v])=>`${v} ${k}`).join(', ')}.`;
+ if(!me)return o+' The user has not said which team is theirs.';
+ const L=lineup(me.players,FW),r=me.rec;
+ o+=` The user's team: ${me.name}${r?` (record ${r.w}-${r.l}${r.t?'-'+r.t:''})`:''}. BFF's best week ${FW} lineup: ${L.st.map(x=>`${x.slot} ${PI[x.id].n} ${f1(x.v)}`).join(', ')} (total ${f1(L.tot)}). Bench: ${L.bench.map(x=>`${PI[x.id].n} (${PI[x.id].p}${PI[x.id].inj?', '+PI[x.id].inj:''}) ${f1(x.v)}`).join(', ')||'nobody'}.`;
+ const kd=(me.kd||[]).map(id=>KDI[id]).filter(Boolean);if(kd.length)o+=` Kickers and defenses: ${kd.map(x=>`${x.n} ${x.proj!=null?f1(x.proj):'no game'}`).join(', ')}.`;
+ return o}
+function aiWaivers(pos){const me=LG&&mine();if(me){try{const W=waivers(me).filter(w=>!pos||w.c.p===pos).slice(0,6);if(W.length)return `BFF's waiver targets for the user's team: ${W.map(w=>`${w.c.n} (${w.c.p}, ${w.c.t}) ${f1(rosTot(w.c,FW))} rest-of-season points${w.drop?`, drop ${PI[w.drop].n}`:''}`).join('; ')}.`}catch(e){}}
+ const L=P.filter(p=>(!pos||p.p===pos)&&p.own!=null&&p.own<40&&!out(p)&&p.inj!=='IR').sort((a,b)=>rosTot(b,FW)-rosTot(a,FW)).slice(0,8);
+ return L.length?`Players rostered in under 40% of leagues with the most rest-of-season points (BFF): ${L.map(p=>`${p.n} (${p.p}, ${p.t}, rostered in ${Math.round(p.own)}%) ${f1(rosTot(p,FW))}`).join('; ')}.`:''}
+function aiGames(){const G=LIVE.games;if(!G.length)return'';
+ return `Week ${(D.live||{}).week||NW} games: ${G.map(x=>x.state==='pre'?`${x.away} at ${x.home}, ${kickTxt(x.kick)}`:`${x.away} ${x.as} at ${x.home} ${x.hs} (${x.state==='post'?'final':x.detail||'in progress'})`).join('; ')}.`}
+function aiNow(){let t='';try{t=ETF({weekday:'long',month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date())+' ET'}catch(e){t=new Date().toString()}
+ return `Now: ${t}. NFL season ${D.asof.season}; BFF's current week: ${FW}. Scoring BFF is using: ${aiFmt()}.`}
+// which players the question is about: named ones, or the last ones talked about when it is a follow-up
+function aiEnts(s){let L=botPlayers(s).L.slice(0,6);const T=botTeams(s).slice(0,3);
+ const follow=/\b(he|him|his|they|them|their|both|either|that guy|this guy)\b/i.test(s)||/^(and|what about|how about|why|what if|ok|okay|so|but|then|also|is that|should i|would you|really)\b/i.test(s.trim());
+ if(!L.length&&!T.length&&BOT.ctx.ids.length&&(follow||s.length<70))L=BOT.ctx.ids.map(id=>PI[id]).filter(Boolean);
+ return{L,T}}
+function aiFacts(s,C,lim){const{L,T}=aiEnts(s),lo=s.toLowerCase(),sec=[],add=(pri,txt)=>{if(txt)sec.push({pri,txt})};
+ add(0,aiNow());
+ L.forEach((p,i)=>add(i<3?1:3,aiPlayer(p,i>=3)));
+ T.forEach(t=>add(2,aiTeam(t)));
+ if(C&&C.html&&!['offtopic','greeting','thanks'].includes(C.intent))add(2,`BFF's classic answer to this question (BFF's numbers; it may have misread the question): ${aiTxt(C.html).slice(0,1600)}`);
+ const kd=kdLineHits(s).slice(0,2).map(id=>KDI[id]).filter(Boolean);kd.forEach(x=>add(2,`${x.n} (${x.p==='K'?'kicker':'team defense'}): week ${FW} ${x.opp?`${x.home?'vs':'at'} ${x.opp}, BFF projects ${f1(x.proj)} points, rank ${x.rk} this week`:'no game'}; season ${x.tot} points${x.fpg!=null?`, ${f1(x.fpg)} a game`:''}.`));
+ const pos=BOTPOS(s),ros=/rest of (the )?season|\bros\b|dynasty|keeper|long[- ]term|trade/i.test(lo);
+ if(pos&&L.length<2)add(2,aiPosList(pos,15,ros));
+ else if(!L.length&&!T.length&&/\b(rank|best|top|who should i start|sleeper|must start)\b/i.test(lo))POS.forEach(q=>add(4,aiPosList(q,8,ros)));
+ if(/\b(my|me|i|i'm|im|our|mine)\b/i.test(lo)||/lineup|roster|bench|start|sit|trade|waiver|pick ?up|drop|league|matchup/i.test(lo))add(2,aiMine());
+ if(/waiver|pick ?up|free agent|stream|add\b|sleeper|deep league/i.test(lo))add(3,aiWaivers(pos));
+ if(!L.length||/score|game|tonight|today|won|win|beat|lost|final|live|playing|monday|sunday|thursday/i.test(lo))add(3,aiGames());
+ if(!L.length&&!T.length){const K=kbFind(s);if(K&&K.sim>=.3)add(3,`Football reference (BFF's knowledge base): ${aiTxt(K.html)}`)}
+ if(!L.length&&BP_UNK(s).length)add(2,`BFF has no data on: ${BP_UNK(s).join(', ')} (not in BFF's ${D.asof.season} player pool).`);
+ sec.sort((a,b)=>a.pri-b.pri);let out='';for(const x of sec){const t=x.txt.trim();if(out.length+t.length+1>lim){if(x.pri<=1)out+=t.slice(0,Math.max(0,lim-out.length-1))+'\n';continue}out+=t+'\n'}
+ return{txt:out.trim(),L,T}}
+const BP_UNK=s=>{try{return botPlayers(s).unk||[]}catch(e){return[]}};
+// ---- the number check: a number in a reply must be in the facts, the question or the conversation so far (rounded is
+// fine). Small counts (10 or less) and years pass; numbers glued to letters (WR2, 49ers, 4th, Q3) and clock times are skipped.
+const AIMON=/(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*$/i;
+function aiNums(t){const out=[],re=/(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)/g;let m;t=String(t||'');
+ while((m=re.exec(t))){const a=m.index,b=a+m[0].length,pv=t[a-1]||' ',nx=t[b]||' ',pre=t.slice(Math.max(0,a-8),a),post=t.slice(b,b+6);
+  if(/[A-Za-z0-9_:]/.test(pv)||/[A-Za-z0-9_:]/.test(nx)||AIMON.test(pre))continue;
+  out.push({v:+m[0].replace(/,/g,''),s:m[0],pct:nx==='%',dec:m[0].includes('.'),wk:/\b(weeks?|wk)\s*$/i.test(pre)||/^-(team|man|week)\b/i.test(post),top:/\btop\s*$/i.test(pre)})}return out}
+const AIFREE=new Set([.5,.1,.04]);
+function aiCheck(ans,known){const K=aiNums(known).map(x=>x.v),bad=[];
+ aiNums(ans).forEach(x=>{const v=x.v;if(!x.dec&&!x.pct&&(v<=10||(v>=1920&&v<=2035)||(x.wk&&v<=22)||(x.top&&v<=60)))return;if(x.dec&&AIFREE.has(v))return;
+  if(!K.some(k=>x.dec?Math.abs(k-v)<=.051:Math.abs(k-v)<=.5)&&!bad.includes(x.s))bad.push(x.s)});return bad}
+// ---- calling the brains
+const aiNextReset=()=>{const d=new Date();d.setUTCHours(24,0,0,0);return d.getTime()};   // Cloudflare's free allowance resets at 00:00 UTC
+async function aiSrvCall(msgs){const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),35000);let r,j=null;
+ try{r=await fetch(String(D.ai.url).replace(/\/+$/,'')+'/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({v:1,m:msgs}),signal:ctl.signal,cache:'no-store'})}
+ catch(e){AIM.cool=Date.now()+120e3;AIM.coolWhy='down';throw aiErr('down')}finally{clearTimeout(tm)}
+ try{j=await r.json()}catch(e){j=null}
+ if(r.status===429&&j&&j.e==='quota'){AIM.cool=aiNextReset();AIM.coolWhy='quota';throw aiErr('quota')}
+ if(r.status===429){AIM.cool=Date.now()+60e3;AIM.coolWhy='busy';throw aiErr('busy')}
+ if(!r.ok||!j||typeof j.a!=='string'||!j.a.trim()){AIM.cool=Date.now()+120e3;AIM.coolWhy='down';throw aiErr('down')}
+ AIM.model=j.model||AIM.model;return j.a}
+async function aiDevCall(msgs,onTok){const E=AIM.dev;if(!E)throw aiErr('nodev');
+ const it=await E.chat.completions.create({messages:[{role:'system',content:AISYS}].concat(msgs),temperature:.3,max_tokens:450,stream:true,extra_body:{enable_thinking:false}});
+ let t='';for await(const ch of it){const d=ch&&ch.choices&&ch.choices[0]&&ch.choices[0].delta&&ch.choices[0].delta.content;if(d){t+=d;if(onTok)onTok(t)}}
+ return aiClean(t)}
+const aiClean=t=>String(t||'').replace(/<think>[\s\S]*?<\/think>/gi,'').replace(/^\s*(assistant|ask bff)\s*:\s*/i,'').trim();
+function aiTier(){if(!aiOn())return'';if(aiSrvOK()&&Date.now()>AIM.cool)return'srv';if(AIM.dev)return'dev';return''}
+// one question: facts, the reply, a lookup if the AI asks for one, the number check (one retry), or the classic answer
+async function aiAnswer(q,C,tier,onTok){const lim=tier==='srv'?12000:5200,F=aiFacts(q,C,lim),hist=BOT.turns.slice(tier==='srv'?-6:-2).map(m=>({role:m.role,content:String(m.content).slice(0,tier==='srv'?700:400)}));
+ let facts=F.txt,known=facts+'\n'+q+'\n'+BOT.turns.map(m=>m.content).join('\n');
+ const ask=async msgs=>tier==='srv'?aiClean(await aiSrvCall(msgs)):await aiDevCall(msgs,onTok);
+ let msgs=hist.concat([{role:'user',content:`FACTS:\n${facts}\n\nQUESTION: ${q}`}]),a=await ask(msgs),looked=false;
+ const lk=/^\s*LOOKUP:\s*(.+)$/im.exec(a);
+ if(lk&&a.trim().split('\n').length<=2){looked=true;const add=[];lk[1].split(/[;,]/).map(x=>x.trim()).filter(Boolean).slice(0,4).forEach(nm=>{const p=botPlayers(nm).L[0],t=botTeams(nm)[0];
+   if(p&&!F.L.includes(p)){add.push(aiPlayer(p,false));F.L.push(p)}else if(t&&!F.T.includes(t)){add.push(aiTeam(t));F.T.push(t)}else if(!p&&!t)add.push(`BFF has no data on ${nm}.`)});
+  facts+='\n'+(add.join('\n')||'BFF has nothing more on that.');known+='\n'+add.join('\n');
+  msgs=hist.concat([{role:'user',content:`FACTS:\n${facts}\n\nQUESTION: ${q}\n(Answer now from these FACTS; no more lookups.)`}]);a=await ask(msgs)}
+ if(/^\s*LOOKUP:/im.test(a))throw aiErr('nofacts');
+ let bad=aiCheck(a,known);
+ if(bad.length){msgs=msgs.concat([{role:'assistant',content:a},{role:'user',content:`These numbers are not in the FACTS: ${bad.join(', ')}. Rewrite the answer using only numbers that appear in the FACTS (or no numbers).`}]);a=await ask(msgs);bad=aiCheck(a,known)}
+ if(bad.length||!a.trim())throw aiErr('unchecked',bad.join(', '));
+ return{a,ents:F.L,looked}}
+// ---- the reply on screen: escaped text, **bold**, "- " lists, and a chip for every player it names
+function aiHtml(t,ents){const lines=esc(String(t).trim()).replace(/\*\*([^*\n]{1,140})\*\*/g,'<b>$1</b>').split('\n');let h='',ul=false;
+ lines.forEach(l=>{const m=/^\s*(?:[-*•]|\d+[.)])\s+(.*)$/.exec(l);if(m){if(!ul){h+='<ul>';ul=true}h+=`<li>${m[1]}</li>`}else{if(ul){h+='</ul>';ul=false}if(l.trim())h+=`<p>${l.trim()}</p>`}});if(ul)h+='</ul>';
+ const named=P.filter(p=>p.n.length>5&&h.includes(esc(p.n))).sort((a,b)=>b.n.length-a.n.length).slice(0,8),ids=[...new Set(ents.map(p=>p.id).concat(named.map(p=>p.id)))].map(id=>PI[id]).filter(p=>h.includes(esc(p.n)));
+ const tok=[];ids.forEach((p,i)=>{const k=`\u0001${i}\u0001`,n=esc(p.n),j=h.indexOf(n);if(j>=0){h=h.slice(0,j)+k+h.slice(j+n.length);tok.push([k,p])}});tok.forEach(([k,p])=>{h=h.replace(k,bchip(p))});
+ return h}
+function aiTag(tier){const m=tier==='srv'?`BFF AI · ${esc(aiModelName(AIM.model||(D.ai||{}).model||'open model'))} on BFF's server`:`On-device AI · ${esc(aiModelName(AIM.devId))}`;return `<span class="aitag">${m} · checked against BFF's numbers</span>`}
+const AIWHY={quota:"BFF AI has used today's free allowance; it's back at {t}. Classic answer:",busy:'BFF AI is busy for a minute. Classic answer:',down:"BFF AI isn't answering right now. Classic answer:",nodev:'',unchecked:"BFF AI's reply couldn't be backed up by BFF's numbers, so here is the classic answer:",nofacts:'',nodata:''};
+function aiWhy(e){const c=e&&e.code||'down';let w=AIWHY[c]!=null?AIWHY[c]:AIWHY.down;if(c==='quota'){let t='';try{t=new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(new Date(aiNextReset()))}catch(x){t='midnight UTC'}w=w.replace('{t}',t)}return w?`<p class="m ainote">${esc(w)}</p>`:''}
+// ---- on-device AI (WebLLM): checked, sized to the device, loaded in a worker only after the visitor turns it on
+async function aiDevCheck(){if(!HOSTED)return{ok:false,why:"This copy of BFF can't download the on-device AI. Open BFF on its website."};
+ if(!navigator.gpu)return{ok:false,why:"This browser can't run AI on the device: it needs WebGPU (recent Chrome or Edge on a computer, Chrome on Android, or Safari 26 and later)."};
+ let a=null;try{a=await navigator.gpu.requestAdapter({powerPreference:'high-performance'})}catch(e){a=null}if(!a)return{ok:false,why:"This device's graphics chip isn't available to the browser for AI."};
+ const f16=!!(a.features&&a.features.has&&a.features.has('shader-f16')),mem=+navigator.deviceMemory||0,phone=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<820,big=!phone&&(mem===0||mem>=8);
+ return{ok:true,id:`Qwen3-${big?'4B':'1.7B'}-${f16?'q4f16_1':'q4f32_1'}-MLC`,size:big?'roughly 2.5 GB':'roughly 1 GB',big}}
+async function aiDevLoad(){if(AIM.dev)return AIM.dev;if(AIM.devLoading)return AIM.devLoading;
+ AIM.devLoading=(async()=>{const c=await aiDevCheck();if(!c.ok)throw aiErr('nodev',c.why);AIM.devId=c.id;AIM.devErr='';AIM.devPct=0;AIM.devTxt='Starting…';aiPaint();
+  const W=window.__BFF_WEBLLM||await import(AIDEV_LIB);let wk=null;
+  if(!window.__BFF_WEBLLM){const src=`import{WebWorkerMLCEngineHandler}from"${AIDEV_LIB}";const h=new WebWorkerMLCEngineHandler();self.onmessage=e=>h.onmessage(e);`;wk=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})),{type:'module'})}
+  const E=await W.CreateWebWorkerMLCEngine(wk,c.id,{initProgressCallback:r=>{AIM.devPct=+(r&&r.progress)||0;AIM.devTxt=String((r&&r.text)||'');aiPaint()}});AIM.dev=E;aiPaint();return E})();
+ try{return await AIM.devLoading}catch(e){AIM.devErr=e.code==='nodev'?e.message:`The on-device AI could not start here (${String(e&&e.message||e).slice(0,140)}).`;ls('ff_aidev','0');throw aiErr('nodev',AIM.devErr)}finally{AIM.devLoading=null;aiPaint()}}
+// ---- the AI panel at the bottom of Ask BFF
+function aiPaint(){const el=g('aiopt');if(!el)return;const st=g('botst');
+ const srv=!aiSrvOK()?`<p><b>BFF AI server:</b> not switched on for this copy of BFF yet${HOSTED?' (the site owner turns it on with a free Cloudflare account; see the README)':''}.</p>`
+  :Date.now()<=AIM.cool&&AIM.coolWhy==='quota'?`<p><b>BFF AI server:</b> today's free allowance is used up; back at ${esc((()=>{try{return new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(new Date(aiNextReset()))}catch(e){return'midnight UTC'}})())}.</p>`
+  :`<p><b>BFF AI server:</b> on. A large open AI model (${esc(aiModelName(AIM.model||(D.ai||{}).model||''))||'open model'}) on BFF's own server writes the replies from BFF's numbers.</p>`;
+ const dv=AIM.dev?`<p><b>On-device AI:</b> on (${esc(aiModelName(AIM.devId))}, running in this browser). <button type="button" class="ghost" data-aidev="off">Turn off</button></p>`
+  :AIM.devLoading?`<p><b>On-device AI:</b> loading ${Math.round(AIM.devPct*100)}%… <span class="m">${esc(AIM.devTxt.slice(0,90))}</span></p><div class="aibar"><i style="width:${Math.round(AIM.devPct*100)}%"></i></div>`
+  :AIM.devErr?`<p><b>On-device AI:</b> ${esc(AIM.devErr)}</p>`
+  :HOSTED?`<p><b>On-device AI:</b> off. Turn it on to run an open AI model on this device when the server is not available: it downloads once (roughly 1 GB on phones and smaller computers, 2.5 GB on bigger ones; use Wi-Fi) and then answers right here. <button type="button" class="ghost" data-aidev="on">Turn on</button></p>`:'';
+ el.querySelector('.aibody').innerHTML=srv+dv+`<label class="aichk"><input type="checkbox" data-aiclassic ${aiOn()?'':'checked'}> Classic answers only (no AI)</label><p class="m">AI replies are written from BFF's numbers and every number in them is checked against BFF's data, but the AI can still word things wrong. Projections are estimates, not guarantees.</p>`;
+ if(st){const t=aiTier();st.innerHTML=`<i class="botdot"></i>${t==='srv'?'BFF AI · open model on BFF\'s server':t==='dev'?'On-device AI · '+esc(aiModelName(AIM.devId)):AIM.devLoading?'On-device AI loading '+Math.round(AIM.devPct*100)+'%':esc((VOX&&VOX.status)||"Ben's football brain · BFF's own model, no outside chatbot")}`}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-aidev]');if(b){if(b.dataset.aidev==='on'){ls('ff_aidev','1');AIM.devErr='';aiDevLoad().catch(()=>{});aiPaint()}else{ls('ff_aidev','0');const E=AIM.dev;AIM.dev=null;try{if(E&&E.unload)E.unload()}catch(x){}aiPaint()}}});
+document.addEventListener('change',e=>{if(e.target.matches('[data-aiclassic]')){ls('ff_ai',e.target.checked?'0':'1');aiPaint()}});
+document.addEventListener('click',e=>{if(e.target.closest('[data-aiopen]')){e.preventDefault();const d=g('aiopt');if(d){d.open=true;aiPaint();d.scrollIntoView({block:'nearest'})}}});
 function botSend(q){q=String(q||'').trim();if(!q||BOT.busy)return;g('botin').value='';g('botsug').hidden=true;botAdd('me',esc(q));
  {const Lq=botPlayers(q).L;if(Lq.length)BOT.ctx.ids=Lq.map(p=>p.id)}
- const r=botVoice(brainAnswer(q),q),bubble=botAdd('bot','');
+ const r=botVoice(brainAnswer(q),q);
  if(r.intent&&r.intent!=='clarify')BOT.ctx.it=r.intent;
- bubble.innerHTML=r.html;BOT.turns.push({role:'user',content:q},{role:'assistant',content:bubble.textContent.slice(0,600)})}
+ const tier=r.intent==='clarify'?'':aiTier();
+ if(tier){botAI(q,r,tier);return}
+ if(!AIM.dev&&!AIM.devLoading&&!AIM.devErr&&ls('ff_aidev')==='1')aiDevLoad().catch(()=>{});
+ const bubble=botAdd('bot','');bubble.innerHTML=r.html+(AIM.devLoading&&aiOn()?`<p class="m ainote">On-device AI is still loading (${Math.round(AIM.devPct*100)}%), so this is the classic answer.</p>`:'');
+ BOT.turns.push({role:'user',content:q},{role:'assistant',content:bubble.textContent.slice(0,600)})}
+// an AI reply: thinking dots (or the on-device draft as it is written), then the checked reply; if the server can't
+// answer, the on-device AI (when it is on), then the classic answer with the reason
+async function botAI(q,C,tier){BOT.busy=true;const sb=g('botsend');if(sb)sb.disabled=true;
+ const bubble=botAdd('bot',`<p class="aithink" role="status"><i></i><i></i><i></i> ${tier==='srv'?'Thinking…':'Thinking on this device…'}</p>`);
+ const onTok=t=>{bubble.innerHTML=`<div class="aidraft">${aiHtml(aiClean(t),[])}</div>`;botScroll()};
+ const done=(R,tr)=>{bubble.innerHTML=aiHtml(R.a,R.ents)+aiTag(tr);if(R.ents.length)BOT.ctx.ids=R.ents.slice(0,4).map(p=>p.id);BOT.turns.push({role:'user',content:q},{role:'assistant',content:R.a.slice(0,700)})};
+ try{done(await aiAnswer(q,C,tier,tier==='dev'?onTok:null),tier)}
+ catch(e){let ok=false,err=e;if(tier==='srv'&&!['unchecked','nofacts'].includes(e.code)&&AIM.dev){try{done(await aiAnswer(q,C,'dev',onTok),'dev');ok=true}catch(e2){err=e2}}
+  if(!ok){bubble.innerHTML=aiWhy(err)+C.html;BOT.turns.push({role:'user',content:q},{role:'assistant',content:bubble.textContent.slice(0,600)})}}
+ finally{BOT.busy=false;if(sb)sb.disabled=false;aiPaint();botScroll()}}
 document.addEventListener('click',e=>{if(e.target.closest('#botfab,#askbtn')){botOpen(!BOT.open);return}if(e.target.closest('[data-botclose]')){botOpen(false);g('botfab').focus();return}
  const q=e.target.closest('[data-botq]');if(q){botSend(q.dataset.botq);return}
  if(BOT.open&&e.target.closest('#bot [data-pl],#bot [data-goto]')&&matchMedia('(max-width:760px)').matches)botOpen(false)});
@@ -3043,6 +3247,8 @@ function renderSources(){const el=g('srclist');if(!el)return;const NS=((D.headli
  ${row('Tesseract.js (open-source text reading)','https://github.com/naptha/tesseract.js','Reads roster screenshots in your browser when you link a Yahoo or other league from screenshots. Loaded from jsDelivr only when used; the pictures never leave your device.','only when you use it')}
  ${row('Yahoo Fantasy default scoring','https://help.yahoo.com/kb/SLN6489.html','The scoring BFF uses for kickers and team defenses (field goals by distance, extra points; sacks, takeaways, return touchdowns, safeties, blocked kicks and points allowed, counted as Yahoo counts them).','fixed rules')}
  ${row('nflverse team stats and play-by-play (history)','https://github.com/nflverse/nflverse-data','Kicker and D/ST points every week, their projection tests (2015-2025), and the Spin Draft game: every team\'s fantasy scorers since 1999.','every 3 hours (history once a season)')}
+ ${row('Cloudflare Workers AI (BFF AI server)','https://developers.cloudflare.com/workers-ai/','When the site owner has turned it on: an open AI model (OpenAI\'s gpt-oss-120b, with Qwen3 30B as backup) on Cloudflare\'s free tier writes Ask BFF\'s replies from BFF\'s numbers; every number in a reply is checked against BFF\'s data before it is shown.','when you ask Ask BFF')}
+ ${row('WebLLM and Qwen3 (on-device AI)','https://github.com/mlc-ai/web-llm','When you turn on the on-device AI: WebLLM runs an open Qwen3 model (4B or 1.7B, by device) in your browser with WebGPU, downloaded once from jsDelivr, Hugging Face and GitHub. Your questions stay on your device.','when you ask Ask BFF')}
  ${row('Real prop lines (read by hand)','https://www.scoresandodds.com/nfl/props','Samples of the lines sportsbooks posted, read by hand to fit and check BFF\'s predicted lines (October 2026). BFF never scrapes sportsbooks.','when the line rules are refit')}
  </table></div>
  <h3>News</h3><div class="scroll"><table class="bx srct"><tr><th>Source</th><th>Status at the last update</th><th>Link</th></tr>${(NS.length?NS:[{s:'ESPN',home:'https://www.espn.com/nfl/',ok:true,n:NEWSH.length}]).map(s=>`<tr><td><b>${esc(s.s)}</b></td><td class="sub">${s.ok?`working · ${s.n} item${s.n===1?'':'s'}`:'unavailable this run (its last good stories are kept)'}</td><td>${s.home?`<a href="${esc(s.home)}" target="_blank" rel="noopener">${esc(s.home.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,''))}</a>`:''}</td></tr>`).join('')}</table></div>
