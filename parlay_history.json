@@ -342,44 +342,10 @@
  },
  "8": {
   "wk": 8,
-  "made": "2026-10-26T21:51+00:00",
+  "made": "2026-10-26T21:56+00:00",
   "locks": "2026-10-29T20:15:00-04:00",
-  "lines_at": "2026-10-26T21:51+00:00",
+  "lines_at": "2026-10-26T21:56+00:00",
   "src": "BFF predicted lines",
-  "parlays": [
-   {
-    "type": "safe",
-    "prob": 0.3272,
-    "legs": [
-     {
-      "pid": "00-0036358",
-      "t": "DAL",
-      "opp": "ARI",
-      "k": "ty",
-      "line": 82.5,
-      "lean": "Under",
-      "pr": 0.572,
-      "book": "bff",
-      "n": "CeeDee Lamb",
-      "pos": "WR",
-      "res": "pending"
-     },
-     {
-      "pid": "00-0036912",
-      "t": "PHI",
-      "opp": "WAS",
-      "k": "ty",
-      "line": 60.5,
-      "lean": "Under",
-      "pr": 0.572,
-      "book": "bff",
-      "n": "DeVonta Smith",
-      "pos": "WR",
-      "res": "pending"
-     }
-    ],
-    "status": "pending"
-   }
-  ]
+  "parlays": []
  }
 }
