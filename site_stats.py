@@ -1,5 +1,5 @@
 """ESPN's and Sleeper's public weekly projections, stat by stat (passing, rushing and receiving yards, receptions, passing
-touchdowns and PPR points), for the weeks BFF has prop lines.
+touchdowns, pass attempts, rush attempts, targets and PPR points), for the weeks BFF has prop lines.
 
 Why: sportsbook and pick'em prop lines track the public projections closely. On the real week-7 2026 lines, the average of
 ESPN's and Sleeper's projections (scaled where books set lines) missed by 3.4 receiving yards, 5.5 rushing yards and 9.6
@@ -9,15 +9,16 @@ scores job, so lines follow the sites as their projections move); a player keeps
 
 site_stats.json: {"season": 2026, "at": {"changed": time}, "weeks": {"7": {"<gsis id>": {"e": {...}, "s": {...}}}}}
 (written only when a number changed, so the 10-minute job does not save it for nothing)
-with keys py (passing yards), ptd (passing TDs), ry (rushing yards), ty (receiving yards), rec (receptions), fp (PPR points).
+with keys py (passing yards), ptd (passing TDs), ry (rushing yards), ty (receiving yards), rec (receptions), fp (PPR points),
+and (Oct 25 2026, for the new prop markets) patt (pass attempts), car (rush attempts), tg (targets).
 Standard library only."""
 import json, os, datetime, urllib.request
 
 OUT = 'site_stats.json'
 UA = {'User-Agent': 'Mozilla/5.0 (BFF projection tracker)', 'Accept': 'application/json'}
-ESPN_ID = {'3': 'py', '4': 'ptd', '24': 'ry', '42': 'ty', '53': 'rec'}
+ESPN_ID = {'3': 'py', '4': 'ptd', '24': 'ry', '42': 'ty', '53': 'rec', '0': 'patt', '23': 'car', '58': 'tg'}   # ESPN stat ids (0 pass attempts, 23 rush attempts, 58 targets)
 ESPN_PPR = {'3': .04, '4': 4, '20': -2, '24': .1, '25': 6, '42': .1, '43': 6, '53': 1, '72': -2}
-SL_KEY = {'pass_yd': 'py', 'pass_td': 'ptd', 'rush_yd': 'ry', 'rec_yd': 'ty', 'rec': 'rec', 'pts_ppr': 'fp'}
+SL_KEY = {'pass_yd': 'py', 'pass_td': 'ptd', 'rush_yd': 'ry', 'rec_yd': 'ty', 'rec': 'rec', 'pts_ppr': 'fp', 'pass_att': 'patt', 'rush_att': 'car', 'rec_tgt': 'tg'}
 
 
 def get_json(url, headers=None, timeout=40):

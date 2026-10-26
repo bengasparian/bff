@@ -25,6 +25,22 @@ that stat and that gap between BFF and the sites; passing TDs: the books' expect
 (0.578 + 0.676 x the market), scaled to match 2025 for that gap, through a Poisson count. A player neither site projects
 gets the model's line (below).
 
+MORE PROPS (Oct 26 2026, research/bt_props_more.py; no picks on any of these):
+  pass attempts (quarterbacks): the market projection, its whole number + .5; completions: projected attempts x his
+  completion rate (this season and last season at half weight, shrunk 100 attempts toward the league's 64.5%), whole
+  number + .5; rush attempts 1.003 x - 0.259; targets 1.025 x (books rarely post targets: set where 2025's overs hit as
+  often as receptions'). Against week 7's real lines (scoresandodds.com, Oct 25), every rule scored on players it never
+  saw: pass attempts 1.08 from the books' (books 1.25 apart, 24 passers), completions 0.84 (books 0.61, 28), rush
+  attempts 0.95 (books 0.48, 82). No side of these hit 55% in both 2025 and 2026, so no picks.
+  Interceptions (chance of 1+): projected attempts x his interception rate (this season, last season at 0.66, shrunk
+  2,489 attempts toward the league's 2.17%) x 0.963, as a Poisson count; within 3 points of the books' no-vig price on
+  average (26 passers, week 7). Anytime TD (rushing, receiving or a return): projected carries and targets at each
+  position's touchdown rate x (Vegas implied team total / 22)^1.11 x his own touchdowns per opportunity (this season and
+  last, shrunk), fit on 2025 by Poisson likelihood; in 2026 games it never saw it expected 23.9% of players to score and
+  22.4% did (2025: 23.4% and 23.4%). First-half TD: the same rate x the share of that position's touchdowns scored
+  before halftime (2024-2025: QB 48.4%, RB 47.2%, WR 50.5%, TE 45.5%). This season's touchdowns come from the game logs
+  (rushing + receiving; returns are about 1% of skill players' touchdowns), last season's from nflverse (returns too).
+
 MODEL LINES (the fallback when neither site projects a player) are built the way books build them, from OPPORTUNITY:
   expected volume (targets, carries or pass attempts; recent games count more, last season counts like 1-3 games,
   injury-shortened games are left out) x the player's efficiency (catch rate, yards per target / carry / attempt,
@@ -92,6 +108,40 @@ BT = {'season': 2025, 'tuned_on': 2024,
       'lines': {'rec': {'n': 2159, 'mae': 1.67, 'over': 46.8}, 'ty': {'n': 2159, 'mae': 21.9, 'over': 44.4}, 'ry': {'n': 658, 'mae': 26.4, 'over': 49.1},
                 'ryq': {'n': 293, 'mae': 13.7, 'over': 50.2}, 'py': {'n': 487, 'mae': 64.5, 'over': 50.0}, 'ptd': {'n': 502, 'mae': 1.00, 'over': 47.2}},
       'picks': {'thr': .55, 'n': 1080, 'won': .596, 'by': {'ptd': .582, 'py': .597, 'rec': .603, 'ry': .538}, 'ty': .46}}
+# ---- more markets (Oct 25 2026, research/bt_props_more.py; every number below is research/results_props_more.json, checked by
+# tests/linetest.py). Count lines from ESPN's and Sleeper's projections through rules fit to real week-7 lines: pass attempts
+# and completions at the projection (completions = projected attempts x his completion rate, shrunk 100 attempts toward the
+# league's 64.5% with last season at half weight), rush attempts 1.003 x - 0.26; targets 1.025 x (books rarely post them, so
+# set where 2025's overs hit like receptions'). Interceptions and touchdowns are yes/no: a rate per game from the models
+# below, fit on 2025 and checked on 2026, shown as a chance and fair odds. None of these get picks (not tested for picks).
+XR = {'patt': {'k': 1.0}, 'cmp': {'k': 1.0}, 'car': {'a': 1.003, 'b': -.259}, 'tg': {'k': 1.025}}
+XMIN = {'patt': 20, 'cmp': 12, 'car': 2, 'tg': 2.5}            # the smallest projection that gets a line (as in the research)
+XOVR = {'patt': {'below': .399, 'level': .444, 'above': .43}, 'cmp': {'below': .412, 'level': .486, 'above': .452},
+        'car': {'below': .447, 'level': .436, 'above': .471}, 'tg': {'below': .392, 'level': .423, 'above': .475}}   # 2025+2026 overs ('above' with under 50 games: the market's overall rate)
+LGR = {'int': .0217, 'cmp': .6452}                               # 2025: league interceptions and completions per attempt
+INTM = {'W': 2488.6, 'pw': .66, 'sc': .963}                      # interception rate shrunk W attempts toward the league's; last season at pw; scale
+TDP = [-3.0998, -3.37307, -49.94285, -67.02841, 2.23176, -3.88697, -3.01219, -2.80436, 1.10994, 3.94566, 76.04215]   # the touchdown model (research 'par')
+TDPOS = {'QB': 0, 'RB': 1, 'WR': 2, 'TE': 3}
+H1 = {'QB': .484, 'RB': .472, 'WR': .505, 'TE': .455}             # share of each position's touchdowns scored in the first half (2024-2025)
+BT_MORE = {'lg': LGR, 'int_sc': INTM['sc'], 'gap': {'patt': 1.08, 'cmp': .84, 'car': .95}, 'books': {'patt': 1.25, 'cmp': .61, 'car': .48}, 'n': {'patt': 24, 'cmp': 28, 'car': 82},
+           'int_books': {'n': 26, 'gap': .03}, 'td': {'2026': {'predicted': .239, 'actual': .224}, '2025': {'predicted': .234, 'actual': .234}}}
+def td_rate(pos, car, tg, it, c_car, c_tg, c_td, p_car, p_tg, p_td, parts=False):
+    """expected touchdowns (rushing, receiving, returns) this game: projected carries and targets at the position's
+    touchdown rates, the Vegas implied team total, and his own touchdowns per opportunity (this season and last), shrunk
+    (parts=True also returns the three factors the page shows: volume at league rates, team total, his own rate)"""
+    i = TDPOS[pos]; ac, at = math.exp(TDP[i]), math.exp(TDP[4 + i])
+    gam, W, pw = TDP[8], math.exp(TDP[9]), 1 / (1 + math.exp(-TDP[10]))
+    exp0 = ac * (car or 0) + (0.0 if pos == 'QB' else at * (tg or 0))   # quarterbacks: projected targets left out (both sites projected
+    # none in all 651 tested games, and the fitted quarterback target rate only describes his history below; it is no rate for a real target)
+    e_c = ac * (c_car + pw * p_car) + at * (c_tg + pw * p_tg)
+    own = (c_td + pw * p_td + W) / (e_c + W); vf = ((it or 22.0) / 22) ** gam
+    return (exp0 * vf * own, exp0, vf, own) if parts else exp0 * vf * own
+def int_rate(c_int, c_att, p_int, p_att):
+    return (c_int + INTM['pw'] * p_int + LGR['int'] * INTM['W']) / (c_att + INTM['pw'] * p_att + INTM['W'])
+def cmp_rate(c_cmp, c_att, p_cmp, p_att):
+    return (c_cmp + .5 * p_cmp + LGR['cmp'] * 100) / (c_att + .5 * p_att + 100)
+def x_line(k, mk):
+    R_ = XR[k]; return max(.5, math.floor(R_['k'] * mk if 'k' in R_ else R_['a'] * mk + R_['b']) + .5)
 TEAMFIX = {'WSH': 'WAS', 'LAR': 'LA', 'JAC': 'JAX'}
 LV = 3   # line rules version: lines from an older version reopen instead of counting as moves (2 = the Oct 25 2026 refit, 3 = its evening refit)
 
@@ -126,13 +176,17 @@ def build_inputs():
                                        car=('carries', 'sum'), ry=('rushing_yards', 'sum'), att=('attempts', 'sum'), py=('passing_yards', 'sum'), ptd=('passing_tds', 'sum'))
         g = g[g.n >= 3]
         pri = {pid: {k: round(float(v), 2) for k, v in r.items()} for pid, r in g.iterrows()}
+        s2 = pd.read_parquet(f); s2 = s2[(s2.season_type == 'REG') & s2.position.isin(['QB', 'RB', 'WR', 'TE'])].copy()   # every game (the new markets' priors)
+        for c in ['attempts', 'completions', 'passing_interceptions', 'carries', 'targets', 'rushing_tds', 'receiving_tds', 'special_teams_tds']: s2[c] = s2[c].fillna(0)
+        s2['td'] = s2.rushing_tds + s2.receiving_tds + s2.special_teams_tds
+        pv_all = {pid: {k: int(v) for k, v in r.items()} for pid, r in s2.groupby('player_id')[['attempts', 'completions', 'passing_interceptions', 'carries', 'targets', 'td']].sum().iterrows()}
         pos_of = s.drop_duplicates('player_id').set_index('player_id').position
         for q in ['QB', 'RB', 'WR', 'TE']:
             X = g[g.index.isin(pos_of[pos_of == q].index)]
             mu[q] = {k: round(float(v), 4) for k, v in {'rec': X.rec.sum() / max(1, X.tg.sum()), 'ty': X.ty.sum() / max(1, X.tg.sum()), 'ry': X.ry.sum() / max(1, X.car.sum()),
                      'py': X.py.sum() / max(1, X.att.sum()), 'ptd': X.ptd.sum() / max(1, X.att.sum())}.items()}
     else:
-        print(f'{f} not found: lines use this season only')
+        print(f'{f} not found: lines use this season only'); pv_all = {}
     if not mu:   # league-typical efficiency if last season's file is missing
         mu = {'QB': {'rec': 1, 'ty': 1.6, 'ry': 4.6, 'py': 6.9, 'ptd': .045}, 'RB': {'rec': .78, 'ty': 5.6, 'ry': 4.3, 'py': 7, 'ptd': .04},
               'WR': {'rec': .64, 'ty': 8.1, 'ry': 6, 'py': 7, 'ptd': .04}, 'TE': {'rec': .72, 'ty': 7.4, 'ry': 4, 'py': 7, 'ptd': .04}}
@@ -142,7 +196,7 @@ def build_inputs():
         if p['p'] not in ('QB', 'RB', 'WR', 'TE'): continue
         q = {k: p.get(k) for k in keep}
         q['ros'] = [x for x in (p.get('ros') or []) if x[0] in (NW, FW)]
-        q['pri'] = pri.get(p['id'])
+        q['pri'] = pri.get(p['id']); q['pv'] = pv_all.get(p['id'])
         if p.get('nw') == NW and p.get('proj') is not None: q['mo'] = round(float(p['proj']) - float(p.get('adjc') or 0), 2)   # BFF's model alone, before the stack
         players.append(q)
     I = {'asof': D['asof'], 'fw': FW, 'nw': NW, 'sched': SCHED, 'dvp': D.get('dvp', {}), 'mu': mu, 'players': players}
@@ -322,7 +376,36 @@ def build_lines(I, wk=None, teams=None):
                           'pick': pick, 'hold': hold, 'v': LV, 'kick': r['kick'], 'q': bool(p.get('inj') == 'Questionable'), 'src': src, 'mk': round(float(mk), 2 if k == 'ptd' else 1) if src == 'mkt' else None,
                           'gap': gr if src == 'mkt' else None, 'sa': round(float(sa), 1) if src == 'mkt' and k in ('py', 'ry', 'ryq') and sa is not None else None,
                           'vol': round(float(vol), 1), 'eff': round(float(eff), 3), 'it': round(float(r['it']), 1), 'its': r['it_src'], 'bmp': round(float(r['bmp']), 1), 'pp': bool(r['last_part'])})
+        lines += more_lines(r, FW, gb, gr)
     return lines
+
+def more_lines(r, FW, gb, gr):
+    """the newer markets (pass attempts, completions, interceptions, rush attempts, targets, anytime and first-half TD):
+    from ESPN's and Sleeper's projections only, no picks (research/bt_props_more.py)"""
+    p, pos, G, pv = r['p'], r['pos'], r['G'], r['p'].get('pv') or {}
+    mk = lambda k: market(r['site'], k)
+    c = lambda i: sum(x[i] for x in G)                       # this season before this week (every game he played)
+    base = {'pid': p['id'], 'wk': FW, 't': p['t'], 'opp': r['opp'], 'v': LV, 'kick': r['kick'], 'q': bool(p.get('inj') == 'Questionable'), 'src': 'mkt',
+            'gap': gr, 'it': round(float(r['it']), 1), 'its': r['it_src']}            # no 'pick' (never a pick), kept small: the page carries every line
+    out = []
+    def add(k, line, mm, po, m_, x):
+        yn = k in ('int', 'td', 'td1')                                     # yes/no: expected counts to 3 decimals, so the page's sums check out
+        out.append(dict(base, k=k, line=line, mm=round(float(mm), 3 if yn else 2), po=round(float(po), 3), mk=round(float(m_), 3 if yn else 1), x=x))
+    pa, car, tg = mk('patt'), mk('car') or 0, mk('tg') or 0
+    if pos == 'QB' and pa and pa >= XMIN['patt']:
+        add('patt', x_line('patt', pa), pa, XOVR['patt'][gb], pa, None)
+        cr = cmp_rate(c(1), c(2), pv.get('completions', 0), pv.get('attempts', 0)); cm = pa * cr
+        if cm >= XMIN['cmp']: add('cmp', x_line('cmp', cm), cm, XOVR['cmp'][gb], cm, {'pa': round(pa, 2), 'cr': round(cr, 4)})
+        ir = int_rate(c(5), c(2), pv.get('passing_interceptions', 0), pv.get('attempts', 0)); li = INTM['sc'] * pa * ir
+        add('int', .5, li, 1 - math.exp(-li), li, {'pa': round(pa, 2), 'ir': round(ir, 5)})
+    if car >= XMIN['car']: add('car', x_line('car', car), car, XOVR['car'][gb], car, None)
+    if pos != 'QB' and tg >= XMIN['tg']: add('tg', x_line('tg', tg), tg, XOVR['tg'][gb], tg, None)
+    if car + (0 if pos == 'QB' else tg) >= 1.5:
+        lt, b0, vf, own = td_rate(pos, car, tg, r['it'], c(6), c(10), c(8) + c(12), pv.get('carries', 0), pv.get('targets', 0), pv.get('td', 0), parts=True)
+        x = {'car': round(car, 1), 'tg': round(tg, 1) if pos != 'QB' else 0, 'b': round(b0, 4), 'vf': round(vf, 4), 'own': round(own, 4)}
+        add('td', .5, lt, 1 - math.exp(-lt), lt, x)
+        add('td1', .5, lt * H1[pos], 1 - math.exp(-lt * H1[pos]), lt, dict(x, h1=H1[pos]))
+    return out
 
 # ------------------------------------------------------------------ history: opening line and every move, with the reason
 def why(old, new):
@@ -368,7 +451,7 @@ def merge_history(new_lines, fw):
         moves.append({'pid': pid, 'k': k, 'from': o_['line'], 'to': None, 'at': STAMP, 'why': w_})
     sig = lambda L: sorted((l['pid'], l['k'], l['line'], round(l['po'], 2), l['q']) for l in L)
     changed = (not old) or sig(new_lines) != sig(old.get('lines') or [])
-    out = {'wk': fw, 'at': STAMP if changed else old.get('at', STAMP), 'odds_from': None, 'bt': BT, 'mkt': BT_MKT, 'lines': new_lines, 'moves': moves[-60:],
+    out = {'wk': fw, 'at': STAMP if changed else old.get('at', STAMP), 'odds_from': None, 'bt': BT, 'mkt': BT_MKT, 'more': BT_MORE, 'lines': new_lines, 'moves': moves[-60:],
            'pulled': [{'pid': k, 'h': v[1], 's': v[2]} for k, v in PULLED.items()]}
     return out, changed
 
@@ -397,5 +480,5 @@ if __name__ == '__main__':
     if D is not None:
         D['lines'] = out; json.dump(D, open('ff_data.json', 'w'), separators=(',', ':'))
     mv = sum(1 for m in out['moves'] if m['at'] == STAMP)
-    print(f"lines: {len(L)} for week {I['fw']}{' and this week' + chr(39) + 's late games' if any(l.get('wk') != I['fw'] for l in L) else ''} ({sum(l['pick'] for l in L)} picks at {int(PICK_MIN*100)}%+), {mv} moved this run, odds from {out['odds_from']}"
+    print(f"lines: {len(L)} for week {I['fw']}{' and this week' + chr(39) + 's late games' if any(l.get('wk') != I['fw'] for l in L) else ''} ({sum(bool(l.get('pick')) for l in L)} picks at {int(PICK_MIN*100)}%+), {mv} moved this run, odds from {out['odds_from']}"
           + ('' if changed else ' (no change)'))

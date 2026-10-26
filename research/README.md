@@ -14,6 +14,7 @@ the model), so what is tested is what the site runs.
 | `bt_weekly_v5.py` | Weekly projections (version 5) vs the FantasyPros weekly expert consensus, 2021-2026, on the same player-games (about 24,000); the expert weight; the must-start calls. With `BT_FROM=2020 BT_SAVE=1` it also saves `h_weekly_v5.parquet` for the next script | about 40 minutes |
 | `bt_sites.py` | The weekly stack BFF publishes (its model + the experts + ESPN + Sleeper) head to head with ESPN, Sleeper and the experts on the same player-games, 2020-2026; the stack weights (chosen on 2020-22); by position; hindsight bounds on how much room any projection has (`--ceiling` adds the perfect-usage bound) | about 5 minutes (10 with `--ceiling`) |
 | `bt_lines.py` | Predicted prop lines against real posted week-7 2026 lines (before and after setting them from ESPN's and Sleeper's stat projections), over rates in 2025, and the picks against lines built that way. Data in `props/` | seconds |
+| `bt_props_more.py` | The newer props: pass attempts, completions, interceptions, rush attempts, targets, anytime and 1st-half TD. Rules fit to real week-7 lines, over rates in 2025 and 2026, and the interception and touchdown models fit on 2025 and checked on 2026. Data in `props/` | seconds |
 | `bt_fillin.py` | Fill-ins (backups who took a hurt starter's snaps) and returning starters: BFF's model vs what happened once the starter was back, 2020-25; the scaling the site uses | seconds |
 | `bt_commonsense.py` | Buy-low and sell-high calls with and without the common-sense checks (fill-ins, two games, falling snaps, top-6 usage), 2020-25 | seconds |
 | `hist_fetch.py` | Fetches ESPN's and Sleeper's past weekly projections into `hist/` (run on GitHub Actions or anywhere those sites are reachable; already done, the files are here) | about 15 minutes |
@@ -134,6 +135,38 @@ the first refit's lines, 58.0%, but not at these lines, which sit closer to the 
 and passing TDs 59.6% (not picks: real books price those unders at -150 to -200); every yardage under 54.2%; overs
 where BFF was higher 46.1%. A receiving-yard under pick still hits 55% down to 4.5% below our line. These used lines
 built from ESPN and Sleeper, not real book lines.
+
+### More props (`bt_props_more.py`)
+
+`python research/bt_props_more.py` (writes `results_props_more.json`). Real lines: scoresandodds.com's week-7 prop pages
+read by hand Sunday Oct 25 (each player's lowest and highest line across books: 25 pass-attempt, 29 completion, 86
+rush-attempt and 27 interception lines with odds; `props/real_lines_2026_w7_more.json`). The touchdown page showed one
+price per player and no under, some apparently taken during or after the games, so it was not used; the pass+rush and
+rush+rec pages had no week-7 rows, so those combos wait. Every rule scored on players it never saw (a fitted rule had to
+beat the simpler one by more than 0.02):
+
+| Prop | Rule (x = ESPN and Sleeper's average) | Gap to the books' middle | Books' own spread | Overs 2025 / 2026 |
+| --- | --- | --- | --- | --- |
+| Pass attempts | x, whole number + .5 | 1.08 (24 passers) | 1.25 | 41.6% / 47.4% |
+| Completions | projected attempts x completion rate (this season + half of last, shrunk 100 attempts to 64.5%) | 0.84 (28) | 0.61 | 42.8% / 53.2% |
+| Rush attempts | 1.003 x - 0.259 | 0.95 (82) | 0.48 | 45.6% / 41.1% |
+| Targets | 1.025 x (no real lines; set so 2025's overs hit like receptions', 41.4%) | | | 41.3% / 45.7% |
+
+Picks would need one side to hit 55% in both seasons for a gap bin (BFF's model 10%+ below, level, 10%+ above the sites);
+none does at the real-line rules (target unders below the sites did, 61.5% and 58.8%, but no books post targets to test
+against), so these props get no picks. Interceptions: projected attempts x the passer's rate (this season, last season
+at 0.66, shrunk 2,489 attempts toward the league's 2.17%) x 0.963, Poisson; fit on 2025 (expected 48.7% to throw
+one, 49.1% did; Brier 0.2463 vs 0.2499 for a flat rate) and checked on 2026 (48.5% vs 49.4%; 0.2494 vs 0.2500):
+barely better than the league rate, and against the books' week-7 prices with the fee removed, 3 points apart on average
+(26 passers; BFF 49.1%, books 49.7%). Anytime touchdowns: projected carries and targets at each position's rate (carry:
+QB 4.5%, RB 3.4%; target: RB 2.1%, WR 4.9%, TE 6.1%; WR and TE carries fit to zero) x (implied team total / 22)^1.11 x his
+own touchdowns per opportunity (this season and last, shrunk by 52 expected touchdowns' worth), Poisson, fit on 2025:
+2025 predicted 23.4% score, 23.4% did (Brier 0.1623 vs 0.1774 for a rate by position); 2026, never seen, 23.9% vs 22.4%
+(0.1571 vs 0.1719), and each fifth of the chances lands within 4 points of what happened. First-half touchdowns: that
+rate x the share of the position's touchdowns scored in the first half (2024-2025 play-by-play: QB 48.4%, RB 47.2%, WR
+50.5%, TE 45.5%): 2025 12.5% vs 12.8%, 2026 12.7% vs 11.9%. Quarterbacks' projected targets are left out (both sites
+projected none in all 651 tested games). `spread` holds actual / projection at 5% to 95% for each count prop, which the
+page uses for the chance at a line other than BFF's.
 
 ### Kickers and team defenses (`bt_kdst.py`)
 

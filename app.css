@@ -944,14 +944,22 @@ body.boton .botfab{opacity:0;pointer-events:none}
 .aidraft{opacity:.7}
 .aiopt{margin:0 14px 8px;font-size:.72rem;color:var(--mute)}.aiopt>summary{cursor:pointer;font-weight:700;color:var(--ink2,var(--mute));padding:2px 0}.aiopt .aibody{max-height:min(32vh,240px);overflow:auto;overscroll-behavior:contain;padding:6px 2px 2px}.aiopt p{margin:0 0 6px}.aiopt p.m{font-size:.68rem}.aiopt .ghost{padding:3px 10px;font-size:.7rem;margin-left:4px}
 .aibar{height:5px;border-radius:9px;background:var(--line);overflow:hidden;margin:0 0 8px}.aibar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s}
-.lvwrap{display:block;margin:4px 0 2px;line-height:1}.lvwrap:empty{display:none}
-.lvpts{display:inline-flex;align-items:center;gap:5px;margin:0;padding:2px 9px 2px 8px;border-radius:999px;font:800 .78rem/1.3 var(--cond);letter-spacing:.03em;white-space:nowrap;vertical-align:middle;text-transform:uppercase}
-.lvpts b{font-size:1.02rem;letter-spacing:0}.lvpts em{font-style:normal;opacity:.75}.lvpts .lvst{opacity:.85;font-weight:700}
-.lvpts.in{color:#04140a;background:linear-gradient(135deg,var(--good),color-mix(in srgb,var(--good) 70%,#fff));box-shadow:0 0 0 1px color-mix(in srgb,var(--good) 60%,transparent),0 0 14px color-mix(in srgb,var(--good) 45%,transparent)}
-.lvpts.in i{width:7px;height:7px;border-radius:50%;background:#04140a;animation:lvpulse 1.2s ease-in-out infinite}@keyframes lvpulse{50%{opacity:.25}}
-.lvpts.fin{color:var(--ink);background:color-mix(in srgb,var(--ink) 9%,transparent);border:1px solid var(--line2)}
+.lvwrap{display:block;margin:5px 0 3px;line-height:1}.lvwrap:empty{display:none}
+/* live points by a name: a small scoreboard (tag, big number, clock) */
+.lvpts{display:inline-flex;align-items:center;gap:7px;padding:3px 10px 3px 4px;border-radius:9px;font:800 .7rem/1 var(--cond);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;vertical-align:middle;background:var(--solid,var(--bg2));border:1px solid var(--line2);color:var(--ink)}
+.lvpts .lvtag{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:6px;font-size:.66rem;letter-spacing:.08em}
+.lvpts .lvn{font:800 1.12rem/1 var(--cond);letter-spacing:.01em;font-variant-numeric:tabular-nums;min-width:2.6ch;text-align:right}
+.lvpts small{font-size:.66rem;color:var(--mute);letter-spacing:.06em}.lvpts .lvst{font-size:.68rem;color:var(--mute);font-variant-numeric:tabular-nums}
+.lvpts.in{border-color:color-mix(in srgb,var(--good) 65%,var(--line2));box-shadow:0 0 0 1px color-mix(in srgb,var(--good) 25%,transparent),0 0 16px color-mix(in srgb,var(--good) 30%,transparent)}
+.lvpts.in .lvtag{background:var(--good);color:#06140b}.lvpts.in .lvn{color:var(--good)}
+:root[data-theme="light"] .lvpts.in .lvn{color:color-mix(in srgb,var(--good) 62%,#000)}:root[data-theme="light"] .lvpts.in{background:color-mix(in srgb,var(--good) 7%,#fff)}
+.lvpts.in .lvtag i{width:6px;height:6px;border-radius:50%;background:#06140b;box-shadow:0 0 0 0 rgba(6,20,11,.6);animation:lvping 1.4s ease-out infinite}
+@keyframes lvping{0%{box-shadow:0 0 0 0 rgba(6,20,11,.55)}70%{box-shadow:0 0 0 6px rgba(6,20,11,0)}100%{box-shadow:0 0 0 0 rgba(6,20,11,0)}}
+.lvpts.fin .lvtag{background:color-mix(in srgb,var(--ink) 12%,transparent);color:var(--ink)}
+.lvpts.lvbump{animation:lvbump .9s ease-out}
+@keyframes lvbump{0%{transform:scale(1)}20%{transform:scale(1.07);box-shadow:0 0 0 2px var(--good),0 0 26px color-mix(in srgb,var(--good) 60%,transparent)}100%{transform:scale(1)}}
 .row.islive{box-shadow:inset 3px 0 0 var(--good)}
-@media(prefers-reduced-motion:reduce){.lvpts.in i{animation:none}}
+@media(prefers-reduced-motion:reduce){.lvpts.in .lvtag i,.lvpts.lvbump{animation:none}}
 .aichk{display:flex!important;gap:6px;align-items:center;justify-content:flex-start;margin:0 0 6px;cursor:pointer;font-size:.72rem;text-transform:none;letter-spacing:0}.aichk input{width:auto!important;min-width:0;height:auto;margin:0;flex:none;accent-color:var(--acc)}
 
 /* ---- phone header search button (hidden on computers) */
@@ -1693,7 +1701,7 @@ button.artsr:hover{border-color:var(--acc)}
  table.bx.btab,#bt_leans table.btab,.btab tbody{display:block;width:100%;min-width:0}
  .btab td.lmath{min-width:0;max-width:none}
  .btab tr:first-child{display:none}
- .btab tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"pl pl ch" "pr ln pk" "mt mt mt" "pj pj ad";gap:3px 10px;padding:10px 2px;border-top:1px solid var(--line);align-items:center}
+ .btab tr{display:grid;grid-template-columns:auto minmax(0,1fr) fit-content(58%);grid-template-areas:"pl pl ch" "pr ln pk" "mt mt mt" "pj pj ad";gap:3px 10px;padding:10px 2px;border-top:1px solid var(--line);align-items:center}
  .btab td{padding:0;border:0;white-space:normal}
  .btab td[colspan]{grid-column:1/-1}
  .btab td:nth-child(1){grid-area:pl}
@@ -1895,3 +1903,27 @@ body::before{content:"";position:fixed;inset:-12% -8%;z-index:-1;pointer-events:
 .lite body::before,.lite .cvlead::after{animation:none!important}
 .lite .cvlead::after{display:none}
 .homenew .tshead{flex-wrap:wrap;align-items:baseline}.homenew .tshead h2{font-size:1.45rem;white-space:nowrap}
+/* bets: prop-type filter, touchdown chances (Oct 26 2026) */
+.btkind{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:0}
+.btkind select{width:auto;min-width:150px;padding:7px 10px;font-weight:700}
+.bttd td:nth-child(2) b,.bttd td:nth-child(3) b{font:800 1.08rem var(--cond)}
+@media(max-width:560px){.btkind{width:100%}.btkind select{flex:1 1 100%;min-width:0}}
+/* player card: the newer props as chips */
+.pmore{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+.pmh{font:700 .8rem Inter,sans-serif;letter-spacing:.02em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}.pmh .sub{text-transform:none;letter-spacing:0;font-weight:500;margin-left:4px}
+.pmchips{display:flex;flex-wrap:wrap;gap:6px}
+.pmchip{display:inline-flex;align-items:baseline;gap:5px;padding:5px 10px;border-radius:99px;border:1px solid var(--line2);background:color-mix(in srgb,var(--acc2) 5%,transparent);font-size:.84rem;line-height:1.25;max-width:100%}
+.pmchip b{font:700 .95rem var(--cond)}.pmchip .pmpc{font:800 1rem var(--cond);color:var(--acc)}.pmchip .sub{font-size:.74rem}
+.pmhow{margin-top:8px}.pmhow summary{cursor:pointer;font-size:.82rem;color:var(--mute)}.pmhow p{margin:6px 0;font-size:.8rem}
+/* player card prop rows: a long "no pick: ..." reason wraps instead of squeezing the line off the row */
+.mrow.prow>span:first-child{flex:1 1 55%;min-width:0}.mrow.prow>span:last-child{flex:0 1 auto;max-width:45%;text-align:right}
+@media(max-width:700px){.mrow.prow{flex-wrap:wrap;row-gap:4px}.mrow.prow>span:last-child{white-space:normal;flex:1 1 100%;max-width:none;text-align:left}}
+/* lines table: the "why no pick" text wraps (desktop: a readable column; phones: inside the card) */
+table.bx.btab td:nth-child(6){white-space:normal;min-width:160px;max-width:260px}
+@media(max-width:700px){table.bx.btab td:not(:first-child):not(:nth-child(3)){white-space:normal}table.bx.btab td:nth-child(6){min-width:0;max-width:none}}
+@media(max-width:700px){
+ .bttd tr{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"pl pl" "pr ln" "mt mt"}
+ .bttd td:nth-child(2),.bttd td:nth-child(3){font-weight:400}
+ .bttd td:nth-child(2)::before,.bttd td:nth-child(3)::before{display:block;font:700 .68rem Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin-bottom:1px}
+ .bttd td:nth-child(2)::before{content:'Anytime TD'}.bttd td:nth-child(3)::before{content:'1st-half TD'}
+}

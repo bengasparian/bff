@@ -549,6 +549,21 @@ allows.
   model against theirs. A line you type in (your book's) gets its chance by shifting ours by the usual spread of
   outcomes between the two lines. The test used lines built from ESPN and Sleeper, not real book lines, and real prices
   carry a fee, so expect real results to run lower.
+- **More props (October 26, 2026, `research/bt_props_more.py`):** pass attempts, completions, interceptions, rush
+  attempts, targets, anytime TD and 1st-half TD, from the same ESPN and Sleeper projections (`site_stats.py` now also
+  saves their pass attempts, carries and targets). Pass attempts sit at the projection (its whole number + .5);
+  completions are projected attempts times the passer's completion rate (this season, last season at half weight, pulled
+  toward the league's 64.5%); rush attempts 1.003 x - 0.259; targets 1.025 x (few books post targets, so the line sits
+  where 2025's overs hit as often as receptions'). Against week 7's real lines, each rule scored on players it never saw:
+  pass attempts 1.08 from the books' (the books 1.25 apart), completions 0.84 (0.61), rush attempts 0.95 (0.48).
+  Interceptions and touchdowns are chances of 1 or more with fair odds: interceptions from projected attempts times the
+  passer's rate pulled toward the league's 2.17% (3 points from the books' no-vig price on average, 26 passers);
+  touchdowns from projected carries and targets at each position's touchdown rate, the Vegas team total and the player's
+  own scoring history, fit on 2025 and checked on 2026 games it never saw (expected 23.9% of players to score, 22.4%
+  did); 1st-half TD takes the share of each position's touchdowns scored before halftime (about half). None get picks:
+  at the count lines no side hit 55% in both 2025 and 2026, and touchdown and interception prices are for comparing with
+  your book. The bets page filters by prop type and lists the week's top touchdown chances; player cards, the prop
+  checker and Ask BFF show them too; parlay leans stay on the tested yardage stats.
 - **Players neither site projects** keep the opportunity model (expected targets, carries or pass attempts times
   efficiency, adjusted for the Vegas team total and the defense; tuned on 2024, tested on 2025), with a chance but no
   pick.
