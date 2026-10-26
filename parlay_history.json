@@ -318,7 +318,8 @@
       "book": "bff",
       "n": "Bo Nix",
       "pos": "QB",
-      "res": "pending"
+      "res": "hit",
+      "act": 222
      },
      {
       "pid": "00-0039793",
@@ -335,6 +336,48 @@
      }
     ],
     "status": "lost"
+   }
+  ]
+ },
+ "8": {
+  "wk": 8,
+  "made": "2026-10-26T00:33+00:00",
+  "locks": "2026-10-29T20:15:00-04:00",
+  "lines_at": "2026-10-26T00:33+00:00",
+  "src": "BFF predicted lines",
+  "parlays": [
+   {
+    "type": "safe",
+    "prob": 0.3272,
+    "legs": [
+     {
+      "pid": "00-0038543",
+      "t": "SEA",
+      "opp": "CHI",
+      "k": "ty",
+      "line": 98.5,
+      "lean": "Under",
+      "pr": 0.572,
+      "book": "bff",
+      "n": "Jaxon Smith-Njigba",
+      "pos": "WR",
+      "res": "pending"
+     },
+     {
+      "pid": "00-0036358",
+      "t": "DAL",
+      "opp": "ARI",
+      "k": "ty",
+      "line": 83.5,
+      "lean": "Under",
+      "pr": 0.572,
+      "book": "bff",
+      "n": "CeeDee Lamb",
+      "pos": "WR",
+      "res": "pending"
+     }
+    ],
+    "status": "pending"
    }
   ]
  }
