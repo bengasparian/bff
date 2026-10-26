@@ -115,20 +115,25 @@ rule scored on players it never saw (sample B; the old rule on the same players 
 
 | Stat | Rule | Gap (B) | Books' own spread | Inside the books' range |
 | --- | --- | --- | --- | --- |
-| Passing yards | 0.981 x | 11.2 (11.1) | 7.2 | 7 of 28 |
+| Passing yards | 0.404 x + 0.250 x season average + 0.218 x market x (Vegas total / 22 - 1) + 75.5 | 7.8 (11.1) | 7.2 | 12 of 28 (9) |
 | Receiving yards | 0.916 x | 3.3 (3.3) | 3.3 | 32 of 81 |
-| Rushing yards | 0.957 x - 3.9 | 4.0 (4.6) | 2.8 | 28 of 84 (21) |
+| Rushing yards | 0.843 x + 0.112 x season average - 3.5 | 3.8 (4.6) | 2.8 | 28 of 84 (21) |
 | Receptions | 0.975 x + 0.15 | 0.25 (0.29) | 0.38 | 76 of 81 (73) |
 | Passing TDs | 0.5 below 0.95, 2.5 from 2.3 | 26 of 28 match (24 left out one at a time) | | was 21 of 25 |
 
-Adding BFF's own stat model, its fantasy-point gap to the sites or the Vegas team total did not shrink the gap on players
-left out. The books' expected passing TDs, read from the odds, are 0.578 + 0.676 x the projection (they lift low
-projections: every 0.5 line came with about one expected TD). In 2025, at lines built this way, overs hit 46.9%
-(passing), 43.5% (receiving), 48.3% (rushing), 41.4% (receptions), 46.3% (passing TDs). Picks, unders when BFF's own
-model is at least 10% below ESPN and Sleeper: passing 58.0% of 250, receiving 57.2% of 719 (together 57.4%), rushing
-53.7% (not a pick), receptions 60.8% and passing TDs 59.6% (not picks: real books price those unders at -150 to -200);
-every yardage under 54.4%; overs where BFF was higher 46.6%. A passing-yard under pick still hits 55% down to 1.5% below
-our line, receiving 4.5%. These used lines built from ESPN and Sleeper, not real book lines.
+The second refit (Oct 25 evening): the player's season average (his mean for the stat in his games before the line's
+week) brings rushing and passing lines closer, and the Vegas implied team total helps passing lines; on the earlier
+sample (Oct 21-23 lines), each player scored by a fit that left him out, passing yards sit 5.6 from the real lines
+(was 8.6) and rushing 4.3 (was 4.9). For receiving yards and receptions nothing tried closed the gap on players left
+out (season or last-3 averages, BFF's own stat model, the defense, the Vegas total): what is left is the books' own
+information. The books' expected passing TDs, read from the odds, are 0.578 + 0.676 x the projection (they lift low
+projections: every 0.5 line came with about one expected TD). In 2025, at lines built this way, overs hit 48.6%
+(passing), 43.5% (receiving), 48.5% (rushing), 41.4% (receptions), 46.3% (passing TDs). Picks, unders when BFF's own
+model is at least 10% below ESPN and Sleeper: receiving 57.2% of 719 (the only pick); passing 52.6% of 249 (a pick at
+the first refit's lines, 58.0%, but not at these lines, which sit closer to the books'), rushing 52.8%, receptions 60.8%
+and passing TDs 59.6% (not picks: real books price those unders at -150 to -200); every yardage under 54.2%; overs
+where BFF was higher 46.1%. A receiving-yard under pick still hits 55% down to 4.5% below our line. These used lines
+built from ESPN and Sleeper, not real book lines.
 
 ### Kickers and team defenses (`bt_kdst.py`)
 

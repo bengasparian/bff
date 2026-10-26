@@ -116,10 +116,15 @@ last good version, so the published site never breaks.
   catch), 6-point passing touchdowns, points per carry or first down, interception and fumble penalties, and the
   rest. Every projection, ranking, BFF value, trade value, draft pick and waiver target re-scores for it. A linked
   Sleeper league's scoring is read automatically.
+- **Live points by every name:** during games, the home page's This week list and the start/sit cheat sheet show each
+  player's fantasy points so far in a bright badge by his name, with the quarter and clock (and the row gets a green
+  edge), then "Final" with his points; scored with your scoring, updated on every live poll (every 30 seconds on your
+  own site during games) without redrawing the list.
 - **Ask BFF AI:** Ask BFF now talks like a person: any wording, follow-ups ("what about him next week?"), comparisons,
   "why", small talk, all from BFF's numbers. An open AI model writes the replies (no Claude): on **BFF's AI server**
   (OpenAI's open-weight gpt-oss-120b on Cloudflare's free tier, once you switch it on: see **Ask BFF AI** below), or the
-  **on-device AI** a visitor can turn on (an open Qwen3 model run in the browser). The page hands the model the facts
+  **AI built into Chrome** (Gemini Nano, on desktop Chrome; nothing to set up), or the **on-device AI** a visitor can
+  turn on (an open Qwen3 model run in the browser). The page hands the model the facts
   for the question (the players and teams asked about, with this week's projection and range, matchup, injuries, stats,
   rest of season, trade value, prop lines, news and where they sit in your league; teams' schedules, results and
   injuries; rankings, waiver targets, scores, your roster and best lineup, and the classic answer below), and **every
@@ -518,28 +523,32 @@ allows.
 ## Predicted prop lines (`ff_lines.py`)
 - **Set where the market sets them (refit October 25, 2026).** Books' prop lines track the public projections, so every
   line comes from the average of ESPN's and Sleeper's projection for that stat (`site_stats.py`), put through a rule fit
-  to real posted lines: passing yards 0.981 x, receiving yards 0.916 x, rushing yards 0.957 x - 3.9, receptions
-  0.975 x + 0.15 (rounded down to .5), and passing touchdowns 0.5 below a projection of 0.95, 2.5 from 2.3, else 1.5.
-  Books post 0.5 passing TDs for low-scoring passers (Cam Ward, Daniel Jones, Malik Willis, J.J. McCarthy in week 7);
+  to real posted lines: receiving yards 0.916 x, receptions 0.975 x + 0.15, rushing yards 0.843 x + 0.112 x the player's
+  season average - 3.5, passing yards 0.404 x + 0.250 x his season average + 0.218 x the market x (Vegas implied team
+  total / 22 - 1) + 75.5 (rounded down to .5), and passing touchdowns 0.5 below a projection of 0.95, 2.5 from 2.3, else
+  1.5. Books post 0.5 passing TDs for low-scoring passers (Cam Ward, Daniel Jones, Malik Willis, J.J. McCarthy in week 7);
   the old model-based TD lines said 1.5 for them. BFF's own model stays out of the line so the picks can test it.
 - **How close (research/bt_lines.py):** two samples of real week-7 lines: a public props page (Oct 21-23) and
   scoresandodds.com on Sunday morning (every player's lowest and highest line across books: 28 passing, 84 receiving,
   86 rushing, 85 receptions, 28 passing-TD lines with odds). Each rule scored on players it never saw, against Sunday's
-  lines: 3.3 receiving yards from the books' line on average (the books themselves sit 3.3 apart), 4.0 rushing (books
-  2.8; was 4.6), 0.25 receptions (books 0.38; was 0.29), 11 passing yards (books 7.2; unchanged), and passing-TD lines
-  match 26 of 28 (was 21 of 25). Nothing else tried closed more of the gap (BFF's own model, its gap to the sites, the
-  Vegas team total): what is left is the books' own information.
-- **Picks:** an under on passing or receiving yards when BFF's own model projects the player at least 10% below ESPN
-  and Sleeper: 57.4% of 969 in 2025 at lines built this way (passing 58.0%, receiving 57.2%; every yardage under 54.4%).
-  Rushing unders hit only 53.7% at the refit lines and overs where BFF was higher 46.6%, so neither is a pick. Receptions
-  and passing-TD unders hit often, but books charge -150 to -200 for those, so a high chance there is not an edge and
-  they get no picks. Each pick says how far down it holds (2025: still 55%+ down to 1.5% below our line for passing
-  yards, 4.5% for receiving), because a real book's line can sit lower than ours; Ask BFF's "best bets" lists only
-  these picks. "Chance" on each line is how often the over hit in 2025 for that stat and gap; passing TDs use the books'
-  expected touchdowns read from real odds (0.578 + 0.676 x the projection), scaled to 2025 for the gap, as a Poisson
-  count. "Our projection" = the sites' average scaled by BFF's model against theirs. A line you type in (your book's)
-  gets its chance by shifting ours by the usual spread of outcomes between the two lines. The test used lines built from
-  ESPN and Sleeper, not real book lines, and real prices carry a fee, so expect real results to run lower.
+  lines: 3.3 receiving yards from the books' line on average (the books themselves sit 3.3 apart), 3.8 rushing (books
+  2.8; was 4.6), 0.25 receptions (books 0.38; was 0.29), 7.8 passing yards (books 7.2; was 11.1), and passing-TD lines
+  match 26 of 28 (was 21 of 25). The season average (rushing, passing) and the Vegas total (passing) came in on a second
+  refit that evening; on the earlier sample, each player scored by a fit that left him out: passing 5.6 (was 8.6),
+  rushing 4.3 (was 4.9). For
+  receiving yards and receptions nothing else tried closed the gap: what is left is the books' own information.
+- **Picks:** an under on receiving yards when BFF's own model projects the player at least 10% below ESPN and Sleeper:
+  57.2% of 719 in 2025 at lines built this way (every yardage under 54.2%). Passing-yard unders were picks at the first
+  refit's lines but hit only 52.6% at these closer-to-the-books lines, rushing unders 52.8%, and overs where BFF was
+  higher 46.1%, so none of those is a pick. Receptions and passing-TD unders hit often, but books charge -150 to -200
+  for those, so a high chance there is not an edge: they get no picks and stay out of Ask BFF's leans and parlays. Each
+  pick says how far down it holds (2025: still 55%+ down to 4.5% below our line), because a real book's line can sit
+  lower than ours; Ask BFF's "best bets" lists only these picks. "Chance" on each line is how often the over hit in
+  2025 for that stat and gap; passing TDs use the books' expected touchdowns read from real odds (0.578 + 0.676 x the
+  projection), scaled to 2025 for the gap, as a Poisson count. "Our projection" = the sites' average scaled by BFF's
+  model against theirs. A line you type in (your book's) gets its chance by shifting ours by the usual spread of
+  outcomes between the two lines. The test used lines built from ESPN and Sleeper, not real book lines, and real prices
+  carry a fee, so expect real results to run lower.
 - **Players neither site projects** keep the opportunity model (expected targets, carries or pass attempts times
   efficiency, adjusted for the Vegas team total and the defense; tuned on 2024, tested on 2025), with a chance but no
   pick.
@@ -574,6 +583,11 @@ repository, plus `CNAME` if you use your own domain), the server adds BFF's rule
 the page can't change them), each address gets 12 requests a minute, messages are size-capped, and nothing is stored.
 To answer more questions a day, swap `MODEL` and `FALLBACK_MODEL` in `ai/wrangler.toml` (Qwen3 30B fits about four
 times as many) and run the workflow again. To switch the server off, delete `ai.json` (or the Worker in Cloudflare).
+**Chrome's built-in AI** needs no setup at all: on desktop Chrome 148 and later, Chrome has its own AI model (Gemini
+Nano, through the Prompt API). When it is already on the visitor's computer, Ask BFF uses it as soon as it opens; when
+Chrome has not downloaded it yet, AI settings offer to turn it on (Chrome downloads it once for every site, about 3-4
+GB). It runs on the visitor's computer, so nothing is sent anywhere. Order: BFF's AI server, then Chrome's built-in AI,
+then the on-device AI below, then the classic Ask BFF.
 **On-device AI** needs no setup: in Ask BFF's AI settings a visitor can turn it on; the browser downloads an open Qwen3
 model once (about 1 GB on phones and smaller computers, about 2.5 GB on bigger ones) and runs it with WebGPU (recent
 Chrome or Edge on a computer, Chrome on Android, Safari 26 and later). It is used when the server is not available.

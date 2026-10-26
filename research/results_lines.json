@@ -6,13 +6,16 @@
   },
   "py": {
    "rule": {
-    "k": 0.9809
+    "a": 0.404,
+    "c": 0.2502,
+    "d": 0.2181,
+    "b": 75.536
    },
    "n": 45,
    "A": {
     "n": 17,
-    "gap_after_leave_one_out": 8.82,
-    "bias_after": -1.35,
+    "gap_after_leave_one_out": 5.59,
+    "bias_after": -1.18,
     "gap_old_rule": 8.59,
     "published_before": {
      "n": 15,
@@ -22,8 +25,8 @@
    },
    "B": {
     "n": 28,
-    "gap_after_leave_one_out": 11.16,
-    "bias_after": 1.05,
+    "gap_after_leave_one_out": 7.77,
+    "bias_after": 0.55,
     "gap_old_rule": 11.12,
     "published_before": {
      "n": 25,
@@ -31,7 +34,7 @@
      "bias": 1.82
     },
     "inside_books_range": {
-     "after": 7,
+     "after": 12,
      "old_rule": 9
     },
     "books_range_width": 7.18
@@ -72,14 +75,15 @@
   },
   "ry": {
    "rule": {
-    "a": 0.9571,
-    "b": -3.894
+    "a": 0.8433,
+    "c": 0.1115,
+    "b": -3.476
    },
    "n": 133,
    "A": {
     "n": 49,
-    "gap_after_leave_one_out": 4.5,
-    "bias_after": 0.01,
+    "gap_after_leave_one_out": 4.3,
+    "bias_after": 0.13,
     "gap_old_rule": 4.93,
     "published_before": {
      "n": 31,
@@ -89,8 +93,8 @@
    },
    "B": {
     "n": 84,
-    "gap_after_leave_one_out": 4.02,
-    "bias_after": 0.01,
+    "gap_after_leave_one_out": 3.78,
+    "bias_after": -0.08,
     "gap_old_rule": 4.6,
     "published_before": {
      "n": 64,
@@ -151,14 +155,18 @@
  },
  "rule": {
   "py": {
-   "k": 0.9809
+   "a": 0.404,
+   "c": 0.2502,
+   "d": 0.2181,
+   "b": 75.536
   },
   "ty": {
    "k": 0.9163
   },
   "ry": {
-   "a": 0.9571,
-   "b": -3.894
+   "a": 0.8433,
+   "c": 0.1115,
+   "b": -3.476
   },
   "rec": {
    "a": 0.9746,
@@ -171,8 +179,8 @@
  },
  "overs_2025": {
   "py": {
-   "n": 508,
-   "over_pct": 46.9
+   "n": 504,
+   "over_pct": 48.6
   },
   "ty": {
    "n": 2612,
@@ -180,7 +188,7 @@
   },
   "ry": {
    "n": 1574,
-   "over_pct": 48.3
+   "over_pct": 48.5
   },
   "rec": {
    "n": 2665,
@@ -205,25 +213,25 @@
   "gap_10": {
    "overs": {
     "n": 1088,
-    "hit_pct": 46.6
+    "hit_pct": 46.1
    },
    "unders_all": {
-    "n": 2521,
-    "hit_pct": 57.8
+    "n": 2520,
+    "hit_pct": 57.1
    },
    "unders_yards": {
-    "n": 1511,
-    "hit_pct": 56.1,
+    "n": 1510,
+    "hit_pct": 54.8,
     "by": {
-     "py": 58.0,
+     "py": 52.6,
      "ty": 57.2,
-     "ry": 53.7
+     "ry": 52.8
     }
    },
    "unders_by_stat": {
     "py": {
-     "n": 250,
-     "hit_pct": 58.0
+     "n": 249,
+     "hit_pct": 52.6
     },
     "ty": {
      "n": 719,
@@ -231,7 +239,7 @@
     },
     "ry": {
      "n": 542,
-     "hit_pct": 53.7
+     "hit_pct": 52.8
     },
     "rec": {
      "n": 760,
@@ -253,7 +261,7 @@
     },
     "ry": {
      "n": 218,
-     "hit_pct": 51.4
+     "hit_pct": 49.1
     },
     "rec": {
      "n": 412,
@@ -264,30 +272,30 @@
      "hit_pct": NaN
     }
    },
-   "every_yards_under": 54.4
+   "every_yards_under": 54.2
   },
   "gap_15": {
    "overs": {
     "n": 756,
-    "hit_pct": 45.4
+    "hit_pct": 44.8
    },
    "unders_all": {
-    "n": 1508,
-    "hit_pct": 57.9
+    "n": 1507,
+    "hit_pct": 56.7
    },
    "unders_yards": {
-    "n": 909,
-    "hit_pct": 56.2,
+    "n": 908,
+    "hit_pct": 54.2,
     "by": {
-     "py": 63.6,
+     "py": 52.5,
      "ty": 55.0,
-     "ry": 54.7
+     "ry": 53.8
     }
    },
    "unders_by_stat": {
     "py": {
-     "n": 140,
-     "hit_pct": 63.6
+     "n": 139,
+     "hit_pct": 52.5
     },
     "ty": {
      "n": 436,
@@ -295,7 +303,7 @@
     },
     "ry": {
      "n": 333,
-     "hit_pct": 54.7
+     "hit_pct": 53.8
     },
     "rec": {
      "n": 459,
@@ -317,7 +325,7 @@
     },
     "ry": {
      "n": 160,
-     "hit_pct": 51.2
+     "hit_pct": 48.8
     },
     "rec": {
      "n": 273,
@@ -328,19 +336,15 @@
      "hit_pct": NaN
     }
    },
-   "every_yards_under": 54.4
+   "every_yards_under": 54.2
   }
  },
  "hold": {
   "py": {
-   "n": 250,
-   "pct_below_line": 0.015,
+   "n": 249,
+   "pct_below_line": 0.0,
    "curve": {
-    "0.000": 0.58,
-    "0.005": 0.572,
-    "0.010": 0.568,
-    "0.015": 0.556,
-    "0.020": 0.548
+    "0.000": 0.526
    }
   },
   "ty": {
@@ -364,19 +368,19 @@
    "n": 542,
    "pct_below_line": 0.0,
    "curve": {
-    "0.000": 0.537
+    "0.000": 0.528
    }
   }
  },
  "over_rate_2025": {
   "py": {
    "below": {
-    "n": 250,
-    "over": 0.42
+    "n": 249,
+    "over": 0.474
    },
    "level": {
     "n": 188,
-    "over": 0.532
+    "over": 0.505
    }
   },
   "ty": {
@@ -396,7 +400,7 @@
   "ry": {
    "below": {
     "n": 542,
-    "over": 0.463
+    "over": 0.472
    },
    "level": {
     "n": 590,
@@ -404,7 +408,7 @@
    },
    "above": {
     "n": 218,
-    "over": 0.514
+    "over": 0.491
    }
   },
   "rec": {
