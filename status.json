@@ -1,7 +1,12 @@
 {
  "date": "2026-10-27",
  "failing_since": null,
- "forecasts": {},
+ "forecasts": {
+  "QB": "m+r+s+e",
+  "RB": "m+r+s+e",
+  "TE": "m+r+s+e",
+  "WR": "m+r+s+e"
+ },
  "last_good": "2026-10-27",
  "ok": true,
  "season": {
