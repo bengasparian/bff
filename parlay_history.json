@@ -342,9 +342,9 @@
  },
  "8": {
   "wk": 8,
-  "made": "2026-10-27T09:43+00:00",
+  "made": "2026-10-27T10:04+00:00",
   "locks": "2026-10-29T20:15:00-04:00",
-  "lines_at": "2026-10-27T09:43+00:00",
+  "lines_at": "2026-10-27T10:04+00:00",
   "src": "BFF predicted lines",
   "parlays": [
    {
@@ -365,15 +365,15 @@
       "res": "pending"
      },
      {
-      "pid": "00-0036358",
-      "t": "DAL",
-      "opp": "ARI",
+      "pid": "00-0036900",
+      "t": "CIN",
+      "opp": "TEN",
       "k": "ty",
-      "line": 85.5,
+      "line": 77.5,
       "lean": "Under",
       "pr": 0.572,
       "book": "bff",
-      "n": "CeeDee Lamb",
+      "n": "Ja'Marr Chase",
       "pos": "WR",
       "res": "pending"
      }
